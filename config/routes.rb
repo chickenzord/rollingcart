@@ -25,5 +25,13 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  # React app handles all frontend routing
+  root "pages#index"
+
+  # Catch-all route: serve React app for all non-API routes
+  # This allows React Router to handle client-side routing (/login, /dashboard, etc.)
+  get "*path", to: "pages#index", constraints: ->(req) {
+    # Don't catch API routes or Rails health check
+    !req.path.start_with?("/auth/", "/api/", "/up", "/rails", "/vite-dev")
+  }
 end
