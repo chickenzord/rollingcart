@@ -12,7 +12,7 @@ class Api::V1::Shopping::ItemsController < Api::BaseController
     end
 
     render json: items,
-      only: [ :id, :notes, :created_at ],
+      only: [ :id, :notes, :created_at, :catalog_item_id ],
       methods: [ :name, :description, :done? ],
       include: {
         category: { only: [ :id, :name ] }
@@ -91,7 +91,7 @@ class Api::V1::Shopping::ItemsController < Api::BaseController
   end
 
   def item_create_params
-    params.require(:catalog_item_id).permit(:notes)
+    params.permit(:catalog_item_id, :notes)
   end
 
   def item_update_params

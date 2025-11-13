@@ -47,7 +47,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
 
   create_table "catalog_items", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.integer "category_id", null: false
+    t.integer "category_id"
     t.string "name", null: false
     t.text "description"
     t.datetime "created_at", null: false

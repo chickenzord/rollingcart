@@ -25,7 +25,25 @@ module Api
           item = current_account.catalog_items.build(item_params)
 
           if item.save
-            render json: item, include: :category, status: :created
+            # If add_to_shopping flag is set, also create a shopping item
+            if params[:add_to_shopping] == "true"
+              shopping_item = current_account.shopping_items.build(
+                catalog_item_id: item.id,
+                notes: nil
+              )
+
+              if shopping_item.save
+                render json: shopping_item,
+                  only: [ :id, :notes, :created_at, :catalog_item_id ],
+                  methods: [ :name, :description, :done? ],
+                  include: { category: { only: [ :id, :name ] } },
+                  status: :created
+              else
+                render json: { errors: shopping_item.errors.full_messages }, status: :unprocessable_entity
+              end
+            else
+              render json: item, include: :category, status: :created
+            end
           else
             render json: { errors: item.errors.full_messages }, status: :unprocessable_entity
           end
