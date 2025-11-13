@@ -12,6 +12,13 @@ gem "puma", ">= 5.0"
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
+# Authentication with Rodauth
+gem "rodauth-rails", "~> 2.1"
+gem "jwt", "~> 2.7"
+gem "sequel-activerecord_connection", "~> 2.0", require: false
+gem "bcrypt", "~> 3.1", require: false
+gem "tilt", "~> 2.4", require: false
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -45,3 +52,6 @@ group :development, :test do
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 end
+
+gem "rack-cors", "~> 3.0"
+gem "vite_rails", "~> 3.0"
