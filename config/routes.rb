@@ -17,6 +17,13 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "me", to: "accounts#me"
+
+      namespace :catalog do
+        resources :categories, only: [ :index, :show, :create, :update, :destroy ] do
+          get "items", to: "categories#items_index"
+        end
+        resources :items, only: [ :index, :show, :create, :update, :destroy ]
+      end
     end
   end
 

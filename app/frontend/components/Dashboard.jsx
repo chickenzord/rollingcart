@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { Link } from 'react-router-dom'
 
 function Dashboard() {
   const { user, logout } = useAuth()
@@ -50,9 +51,26 @@ function Dashboard() {
           <h2 style={{ marginTop: 0 }}>Welcome to Rollingcart!</h2>
           <p>You are logged in as: <strong>{user?.email}</strong></p>
           <p style={{ color: '#888', fontSize: '0.875rem' }}>Account ID: {user?.id}</p>
-          <p style={{ color: '#666' }}>
-            This is your dashboard. Start building your features here.
-          </p>
+
+          <div style={{ marginTop: '2rem' }}>
+            <h3>Quick Links</h3>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+              <Link
+                to="/catalog/categories"
+                style={{
+                  display: 'inline-block',
+                  padding: '0.75rem 1.5rem',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  fontWeight: '500'
+                }}
+              >
+                View Categories
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
     </div>

@@ -128,8 +128,10 @@ class RodauthMain < Rodauth::Rails::Auth
     # end
 
     # Perform additional actions after the account is created.
+    # TODO enable this when create_account feature is enabled
     # after_create_account do
-    #   Profile.create!(account_id: account_id, name: param("name"))
+    #   # Seed default catalog for new accounts
+    #   Catalog::Seeder.new(Account.find(account[:id])).seed_default_catalog
     # end
 
     # Do additional cleanup after the account is closed.

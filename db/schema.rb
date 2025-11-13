@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_13_060011) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_13_091434) do
   create_table "account_jwt_refresh_keys", force: :cascade do |t|
     t.integer "account_id", null: false
     t.string "key", null: false
@@ -37,7 +37,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_060011) do
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
   end
 
+  create_table "catalog_categories", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_catalog_categories_on_account_id"
+  end
+
+  create_table "catalog_items", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "category_id", null: false
+    t.string "name", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_catalog_items_on_account_id"
+    t.index ["category_id"], name: "index_catalog_items_on_category_id"
+  end
+
   add_foreign_key "account_jwt_refresh_keys", "accounts"
   add_foreign_key "account_login_change_keys", "accounts", column: "id"
   add_foreign_key "account_password_reset_keys", "accounts", column: "id"
+  add_foreign_key "catalog_categories", "accounts"
+  add_foreign_key "catalog_items", "accounts"
+  add_foreign_key "catalog_items", "catalog_categories", column: "category_id"
 end

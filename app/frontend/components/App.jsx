@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 import Login from './Login'
 import Dashboard from './Dashboard'
+import CatalogCategories from './CatalogCategories'
+import CatalogItems from './CatalogItems'
 import ProtectedRoute from './ProtectedRoute'
 
 function AppRoutes() {
@@ -33,6 +35,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/catalog/categories"
+        element={
+          <ProtectedRoute>
+            <CatalogCategories />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/catalog/categories/:categoryId/items"
+        element={
+          <ProtectedRoute>
+            <CatalogItems />
           </ProtectedRoute>
         }
       />
