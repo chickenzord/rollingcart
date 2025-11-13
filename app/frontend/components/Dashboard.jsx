@@ -6,66 +6,32 @@ function Dashboard() {
   const { user, logout } = useAuth()
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}>
-      <nav style={{
-        backgroundColor: 'white',
-        padding: '1rem 2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>Rollingcart</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ color: '#666' }}>{user?.email || 'Loading...'}</span>
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white px-8 py-4 shadow-sm flex justify-between items-center">
+        <h1 className="m-0 text-2xl font-semibold">Rollingcart</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-600">{user?.email || 'Loading...'}</span>
           <button
             onClick={logout}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <main style={{ padding: '2rem' }}>
-        <div style={{
-          backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}>
-          <h2 style={{ marginTop: 0 }}>Welcome to Rollingcart!</h2>
-          <p>You are logged in as: <strong>{user?.email}</strong></p>
-          <p style={{ color: '#888', fontSize: '0.875rem' }}>Account ID: {user?.id}</p>
+      <main className="p-8">
+        <div className="bg-white p-8 rounded-lg shadow-sm max-w-6xl mx-auto">
+          <h2 className="mt-0 text-3xl font-bold mb-4">Welcome to Rollingcart!</h2>
+          <p className="mb-2">You are logged in as: <strong>{user?.email}</strong></p>
+          <p className="text-gray-500 text-sm mb-8">Account ID: {user?.id}</p>
 
-          <div style={{ marginTop: '2rem' }}>
-            <h3>Quick Links</h3>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+            <div className="flex gap-4">
               <Link
                 to="/catalog/categories"
-                style={{
-                  display: 'inline-block',
-                  padding: '0.75rem 1.5rem',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  textDecoration: 'none',
-                  borderRadius: '4px',
-                  fontWeight: '500'
-                }}
+                className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors"
               >
                 View Categories
               </Link>

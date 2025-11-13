@@ -59,7 +59,7 @@ export default function CatalogItems() {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <div className="p-5">
         <p>Loading items...</p>
       </div>
     )
@@ -67,11 +67,16 @@ export default function CatalogItems() {
 
   if (error) {
     return (
-      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-        <p style={{ color: 'red' }}>Error: {error}</p>
-        <button onClick={fetchCategoryAndItems}>Retry</button>
+      <div className="p-5">
+        <p className="text-red-600 mb-3">Error: {error}</p>
+        <button
+          onClick={fetchCategoryAndItems}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors mb-3"
+        >
+          Retry
+        </button>
         <br />
-        <Link to="/catalog/categories" style={{ marginTop: '10px', display: 'inline-block' }}>
+        <Link to="/catalog/categories" className="text-blue-600 hover:text-blue-800 transition-colors inline-block">
           &larr; Back to Categories
         </Link>
       </div>
@@ -79,60 +84,41 @@ export default function CatalogItems() {
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="p-5">
+      <div className="mb-5 flex justify-between items-center">
         <div>
-          <h1 style={{ margin: '0 0 5px 0' }}>{category?.name || 'Category'}</h1>
-          <Link to="/catalog/categories" style={{ textDecoration: 'none', color: '#007bff', fontSize: '14px' }}>
+          <h1 className="m-0 mb-1 text-3xl font-bold">{category?.name || 'Category'}</h1>
+          <Link to="/catalog/categories" className="text-blue-600 hover:text-blue-800 transition-colors text-sm">
             &larr; Back to Categories
           </Link>
         </div>
-        <Link to="/" style={{ textDecoration: 'none', color: '#007bff' }}>
+        <Link to="/" className="text-blue-600 hover:text-blue-800 transition-colors">
           Dashboard
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <div style={{ padding: '20px', backgroundColor: '#fff3cd', borderRadius: '8px', border: '1px solid #ffeaa7' }}>
-          <p style={{ margin: 0, color: '#856404' }}>
+        <div className="p-5 bg-yellow-50 rounded-lg border border-yellow-200">
+          <p className="m-0 text-yellow-800">
             No items found in this category. Items will appear here once added.
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '15px' }}>
+        <div className="grid gap-4">
           {items.map((item) => (
             <div
               key={item.id}
-              style={{
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                padding: '20px',
-                backgroundColor: '#ffffff',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-              }}
+              className="border border-gray-300 rounded-lg p-5 bg-white shadow-sm"
             >
-              <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>
+              <h3 className="m-0 mb-2 text-xl font-semibold text-gray-800">
                 {item.name}
               </h3>
               {item.notes && (
-                <p style={{
-                  margin: '0 0 10px 0',
-                  color: '#666',
-                  fontSize: '14px',
-                  lineHeight: '1.5'
-                }}>
+                <p className="m-0 mb-2 text-gray-600 text-sm leading-relaxed">
                   {item.notes}
                 </p>
               )}
-              <div style={{
-                display: 'flex',
-                gap: '15px',
-                fontSize: '12px',
-                color: '#888',
-                borderTop: '1px solid #eee',
-                paddingTop: '10px',
-                marginTop: '10px'
-              }}>
+              <div className="flex gap-4 text-xs text-gray-500 border-t border-gray-200 pt-2 mt-2">
                 <span>ID: {item.id}</span>
                 <span>Created: {new Date(item.created_at).toLocaleDateString()}</span>
               </div>
@@ -141,20 +127,12 @@ export default function CatalogItems() {
         </div>
       )}
 
-      <div style={{
-        marginTop: '20px',
-        padding: '15px',
-        backgroundColor: '#e3f2fd',
-        borderRadius: '8px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <p style={{ margin: 0, fontSize: '14px' }}>
+      <div className="mt-5 p-4 bg-blue-50 rounded-lg flex justify-between items-center">
+        <p className="m-0 text-sm">
           <strong>Total Items:</strong> {items.length}
         </p>
         {category && (
-          <p style={{ margin: 0, fontSize: '12px', color: '#666' }}>
+          <p className="m-0 text-xs text-gray-600">
             Category ID: {category.id}
           </p>
         )}

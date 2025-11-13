@@ -38,7 +38,7 @@ export default function CatalogCategories() {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+      <div className="p-5">
         <p>Loading categories...</p>
       </div>
     )
@@ -46,60 +46,47 @@ export default function CatalogCategories() {
 
   if (error) {
     return (
-      <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-        <p style={{ color: 'red' }}>Error: {error}</p>
-        <button onClick={fetchCategories}>Retry</button>
+      <div className="p-5">
+        <p className="text-red-600 mb-3">Error: {error}</p>
+        <button
+          onClick={fetchCategories}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+        >
+          Retry
+        </button>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Catalog Categories</h1>
-        <Link to="/" style={{ textDecoration: 'none', color: '#007bff' }}>
+    <div className="p-5">
+      <div className="mb-5 flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Catalog Categories</h1>
+        <Link to="/" className="text-blue-600 hover:text-blue-800 transition-colors">
           &larr; Back to Dashboard
         </Link>
       </div>
 
       {categories.length === 0 ? (
-        <p style={{ color: '#666' }}>No categories found. Run the seed task to populate default categories.</p>
+        <p className="text-gray-600">No categories found. Run the seed task to populate default categories.</p>
       ) : (
-        <div style={{ display: 'grid', gap: '15px' }}>
+        <div className="grid gap-4">
           {categories.map((category) => (
             <Link
               key={category.id}
               to={`/catalog/categories/${category.id}/items`}
-              style={{
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                padding: '20px',
-                backgroundColor: '#f9f9f9',
-                textDecoration: 'none',
-                color: 'inherit',
-                display: 'block',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e8f4f8'
-                e.currentTarget.style.borderColor = '#007bff'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f9f9f9'
-                e.currentTarget.style.borderColor = '#ddd'
-              }}
+              className="border border-gray-300 rounded-lg p-5 bg-gray-50 hover:bg-blue-50 hover:border-blue-500 transition-all block"
             >
-              <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>
+              <h3 className="m-0 mb-2 text-xl font-semibold text-gray-800">
                 {category.name}
               </h3>
-              <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+              <p className="m-0 text-gray-600 text-sm">
                 ID: {category.id}
               </p>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+              <p className="mt-1 text-gray-600 text-sm">
                 Created: {new Date(category.created_at).toLocaleDateString()}
               </p>
-              <p style={{ margin: '10px 0 0 0', color: '#007bff', fontSize: '14px', fontWeight: '500' }}>
+              <p className="mt-2 text-blue-600 text-sm font-medium">
                 View items &rarr;
               </p>
             </Link>
@@ -107,8 +94,8 @@ export default function CatalogCategories() {
         </div>
       )}
 
-      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e3f2fd', borderRadius: '8px' }}>
-        <p style={{ margin: 0, fontSize: '14px' }}>
+      <div className="mt-5 p-4 bg-blue-50 rounded-lg">
+        <p className="m-0 text-sm">
           <strong>Total Categories:</strong> {categories.length}
         </p>
       </div>
