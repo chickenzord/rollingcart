@@ -249,7 +249,7 @@ export default function Backlog() {
   }
 
   const searchCatalogItems = async (query) => {
-    if (query.length < 3) {
+    if (query.length < 1) {
       setCatalogSuggestions([])
       setShowAutocomplete(false)
       return
@@ -272,7 +272,7 @@ export default function Backlog() {
 
     // Search and sort by relevance
     const results = fuse.search(query)
-    const filtered = results.map(result => result.item)
+    const filtered = results.map(result => ({ ...result.item, score: result.score }))
 
     setCatalogSuggestions(filtered)
     setShowAutocomplete(true)
@@ -292,7 +292,10 @@ export default function Backlog() {
   const handleSearchKeyDown = (e) => {
     if (!showAutocomplete) return
 
-    const totalOptions = catalogSuggestions.length + (searchQuery.length >= 3 && catalogSuggestions.length === 0 ? 1 : 0)
+    // Show "Create new item" only if query is 3+ chars and no high-similarity matches (95%+)
+    const hasHighSimilarityMatch = catalogSuggestions.some(item => item.score <= 0.05)
+    const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
+    const totalOptions = catalogSuggestions.length + (showCreateOption ? 1 : 0)
 
     if (e.key === 'ArrowDown') {
       e.preventDefault()
@@ -487,11 +490,11 @@ export default function Backlog() {
             value={searchQuery}
             onChange={handleSearchChange}
             onKeyDown={handleSearchKeyDown}
-            onFocus={() => searchQuery.length >= 3 && setShowAutocomplete(true)}
+            onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
             onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {showAutocomplete && searchQuery.length >= 3 && (
+          {showAutocomplete && searchQuery.length >= 1 && (
             <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {catalogSuggestions.map((item, index) => (
                 <div
@@ -514,16 +517,22 @@ export default function Backlog() {
                   </div>
                 </div>
               ))}
-              <div
-                onClick={createNewCatalogItem}
-                className={`px-4 py-3 cursor-pointer ${
-                  selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
-                }`}
-              >
-                <div className="text-sm text-blue-600 font-medium">
-                  + Create new catalog item <span className="font-semibold">"{searchQuery}"</span>
-                </div>
-              </div>
+              {(() => {
+                const hasHighSimilarityMatch = catalogSuggestions.some(item => item.score <= 0.05)
+                const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
+                return showCreateOption ? (
+                  <div
+                    onClick={createNewCatalogItem}
+                    className={`px-4 py-3 cursor-pointer ${
+                      selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="text-sm text-blue-600 font-medium">
+                      + Create new catalog item <span className="font-semibold">"{searchQuery}"</span>
+                    </div>
+                  </div>
+                ) : null
+              })()}
             </div>
           )}
         </div>
