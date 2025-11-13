@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
 import * as catalogService from '../services/catalogService'
 
 export default function CatalogCategories() {
-  const { token } = useAuth()
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     fetchCategories()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchCategories = async () => {
     try {
       setLoading(true)
-      const data = await catalogService.getCategories(token)
+      const data = await catalogService.getCategories()
       setCategories(data)
     } catch (err) {
       setError(err.message)

@@ -28,12 +28,52 @@ Consult CONCEPT.md for more details on the business design.
 - **Styling**: Tailwind CSS v4
 - **Search**: Fuse.js for fuzzy search in autocomplete
 
+#### Frontend Code Structure
+```
+app/frontend/
+├── components/      # Reusable UI components
+│   ├── App.jsx           # Root component with routing
+│   └── ProtectedRoute.jsx # Auth route wrapper
+├── contexts/        # React contexts
+│   └── AuthContext.jsx   # Authentication state
+├── entrypoints/     # Vite entry points
+│   ├── application.css   # Global styles
+│   └── application.jsx   # Main entry point
+├── layouts/         # Layout components
+│   └── Layout.jsx        # Main app layout (nav, content)
+├── pages/           # Page-level components
+│   ├── Backlog.jsx           # Shopping backlog management
+│   ├── CatalogCategories.jsx # Catalog category browser
+│   ├── CatalogItems.jsx      # Category items view
+│   ├── Dashboard.jsx         # Welcome/home page
+│   └── Login.jsx             # Login page
+├── services/        # API service layer
+│   ├── api.js              # Base API utilities (get, post, patch, del)
+│   ├── authService.js      # Auth endpoints (login, logout, getMe)
+│   ├── catalogService.js   # Catalog endpoints (categories, items)
+│   └── shoppingService.js  # Shopping endpoints (sessions, items)
+└── utils/           # Utility functions
+    └── dateUtils.js      # Date formatting (formatTimeAgo)
+```
+
+**Service Layer Benefits**:
+- Centralized API logic - all fetch calls abstracted into service functions
+- Reusable across components - import services instead of duplicating fetch code
+- Easier testing - services can be mocked independently
+- Consistent error handling - APIError class for standardized errors
+- Type safety ready - easy to add TypeScript types later
+
 ### Authentication Flow
 - **JWT-based**: Stateless authentication using Rodauth JWT feature
-- **Login**: POST `/auth/login` → Returns JWT in `Authorization` header
+- **Login**: POST `/auth/login` → Returns JWT access token and refresh token
+- **Token refresh**: POST `/auth/jwt-refresh` → Automatically refreshes expired access tokens
 - **User data**: GET `/api/v1/me` → Returns user details (id, email, status)
 - **Logout**: POST `/auth/logout` → Invalidates JWT refresh token
 - **Token storage**: Client-side in localStorage
+- **Token lifetimes**:
+  - Access token: 2 hours (auto-refreshed transparently by frontend)
+  - Refresh token: 7 days
+- **Auto-refresh**: Frontend automatically detects 401 errors and refreshes tokens without user intervention
 
 ### Routing Strategy
 - `/auth/*` → Rodauth authentication endpoints
@@ -149,7 +189,11 @@ npm update
 - **Config**: `app/misc/rodauth_main.rb`
 - **Enabled features**: login, logout, jwt, jwt_refresh, json, reset_password, change_password, change_login, close_account
 - **Disabled features**: create_account (use CLI), verify_account (not needed for single-user)
-- **JWT secret**: Uses `Rails.application.credentials.secret_key_base`
+- **JWT configuration**:
+  - Secret: Uses `Rails.application.credentials.secret_key_base`
+  - Access token lifetime: 2 hours (`jwt_access_token_period 7200`)
+  - Refresh token lifetime: 7 days (`jwt_refresh_token_period 604800`)
+  - Allow expired tokens for refresh: `allow_refresh_with_expired_jwt_access_token? true` (required for auto-refresh)
 - **Routes prefix**: `/auth`
 - **JSON only**: `only_json? true` - no HTML responses
 

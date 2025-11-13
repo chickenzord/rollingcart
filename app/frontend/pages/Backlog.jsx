@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
 import Fuse from 'fuse.js'
 import * as catalogService from '../services/catalogService'
@@ -32,7 +31,6 @@ export default function Backlog() {
     document.head.appendChild(style)
     return () => document.head.removeChild(style)
   }, [])
-  const { token } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeSession, setActiveSession] = useState(null)
@@ -47,7 +45,6 @@ export default function Backlog() {
 
   useEffect(() => {
     fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchData = async () => {
@@ -56,16 +53,16 @@ export default function Backlog() {
       setError(null)
 
       // Fetch active session
-      const session = await shoppingService.getActiveSession(token)
+      const session = await shoppingService.getActiveSession()
       setActiveSession(session)
 
       // Fetch unchecked items (is_done=false)
-      const uncheckedData = await shoppingService.getItems({ isDone: false }, token)
+      const uncheckedData = await shoppingService.getItems({ isDone: false })
       setUncheckedItems(uncheckedData)
 
       // Fetch checked items if there's an active session
       if (session) {
-        const checkedData = await shoppingService.getItems({ forSession: session.id }, token)
+        const checkedData = await shoppingService.getItems({ forSession: session.id })
         setCheckedItems(checkedData)
       } else {
         setCheckedItems([])
@@ -79,7 +76,7 @@ export default function Backlog() {
 
   const startSession = async () => {
     try {
-      await shoppingService.createSession(token)
+      await shoppingService.createSession()
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -90,7 +87,7 @@ export default function Backlog() {
     if (!activeSession) return
 
     try {
-      await shoppingService.finishSession(activeSession.id, token)
+      await shoppingService.finishSession(activeSession.id)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -103,7 +100,7 @@ export default function Backlog() {
     if (!confirm('Are you sure you want to cancel this session? This will delete the session.')) return
 
     try {
-      await shoppingService.deleteSession(activeSession.id, token)
+      await shoppingService.deleteSession(activeSession.id)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -113,9 +110,9 @@ export default function Backlog() {
   const toggleCheck = async (item, isCurrentlyChecked) => {
     try {
       if (isCurrentlyChecked) {
-        await shoppingService.uncheckItem(item.id, token)
+        await shoppingService.uncheckItem(item.id)
       } else {
-        await shoppingService.checkItem(item.id, token)
+        await shoppingService.checkItem(item.id)
       }
       await fetchData()
     } catch (err) {
@@ -127,7 +124,7 @@ export default function Backlog() {
     if (!confirm('Are you sure you want to delete this item?')) return
 
     try {
-      await shoppingService.deleteItem(itemId, token)
+      await shoppingService.deleteItem(itemId)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -136,7 +133,7 @@ export default function Backlog() {
 
   const fetchCatalogCache = async () => {
     try {
-      const items = await catalogService.getItems({ includeCategory: true }, token)
+      const items = await catalogService.getItems({ includeCategory: true })
       setCatalogCache(items)
       return items
     } catch (err) {
@@ -217,7 +214,7 @@ export default function Backlog() {
 
   const addItemFromCatalog = async (catalogItem) => {
     try {
-      await shoppingService.addItem(catalogItem.id, token)
+      await shoppingService.addItem(catalogItem.id)
 
       setSearchQuery('')
       setShowAutocomplete(false)
@@ -234,7 +231,6 @@ export default function Backlog() {
       await catalogService.createItem(
         { name: searchQuery, category_id: null },
         { addToShopping: true },
-        token,
       )
 
       // Invalidate catalog cache since we added a new item

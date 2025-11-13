@@ -1,45 +1,42 @@
 /**
  * Catalog API service
+ * All functions automatically use stored auth token
  */
 import { get, post } from './api'
 
 /**
  * Fetch all catalog categories
- * @param {string} token - JWT token
  * @returns {Promise<Array>} Categories
  */
-export async function getCategories(token) {
-  return get('/api/v1/catalog/categories', token)
+export async function getCategories() {
+  return get('/api/v1/catalog/categories')
 }
 
 /**
  * Fetch a single category by ID
  * @param {string|number} categoryId
- * @param {string} token - JWT token
  * @returns {Promise<Object>} Category
  */
-export async function getCategory(categoryId, token) {
-  return get(`/api/v1/catalog/categories/${categoryId}`, token)
+export async function getCategory(categoryId) {
+  return get(`/api/v1/catalog/categories/${categoryId}`)
 }
 
 /**
  * Fetch items for a specific category
  * @param {string|number} categoryId
- * @param {string} token - JWT token
  * @returns {Promise<Array>} Items
  */
-export async function getCategoryItems(categoryId, token) {
-  return get(`/api/v1/catalog/categories/${categoryId}/items`, token)
+export async function getCategoryItems(categoryId) {
+  return get(`/api/v1/catalog/categories/${categoryId}/items`)
 }
 
 /**
  * Fetch all catalog items
  * @param {Object} options - Query options
  * @param {boolean} options.includeCategory - Include category in response
- * @param {string} token - JWT token
  * @returns {Promise<Array>} Items
  */
-export async function getItems(options = {}, token) {
+export async function getItems(options = {}) {
   const params = new URLSearchParams()
   if (options.includeCategory) {
     params.append('include_category', 'true')
@@ -49,7 +46,7 @@ export async function getItems(options = {}, token) {
     ? `/api/v1/catalog/items?${params.toString()}`
     : '/api/v1/catalog/items'
 
-  return get(url, token)
+  return get(url)
 }
 
 /**
@@ -60,10 +57,9 @@ export async function getItems(options = {}, token) {
  * @param {string} itemData.description - Description (optional)
  * @param {Object} options - Additional options
  * @param {boolean} options.addToShopping - Also add to shopping backlog
- * @param {string} token - JWT token
  * @returns {Promise<Object>} Created item
  */
-export async function createItem(itemData, options = {}, token) {
+export async function createItem(itemData, options = {}) {
   const params = new URLSearchParams()
   if (options.addToShopping) {
     params.append('add_to_shopping', 'true')
@@ -73,5 +69,5 @@ export async function createItem(itemData, options = {}, token) {
     ? `/api/v1/catalog/items?${params.toString()}`
     : '/api/v1/catalog/items'
 
-  return post(url, { item: itemData }, token)
+  return post(url, { item: itemData })
 }

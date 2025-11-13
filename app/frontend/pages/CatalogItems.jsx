@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { Link, useParams } from 'react-router-dom'
 import * as catalogService from '../services/catalogService'
 import * as shoppingService from '../services/shoppingService'
 
 export default function CatalogItems() {
   const { categoryId } = useParams()
-  const { token } = useAuth()
   const [items, setItems] = useState([])
   const [category, setCategory] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -25,8 +23,8 @@ export default function CatalogItems() {
 
       // Fetch category details and items in parallel
       const [categoryData, itemsData] = await Promise.all([
-        catalogService.getCategory(categoryId, token),
-        catalogService.getCategoryItems(categoryId, token),
+        catalogService.getCategory(categoryId),
+        catalogService.getCategoryItems(categoryId),
       ])
 
       setCategory(categoryData)
@@ -42,7 +40,7 @@ export default function CatalogItems() {
     setAddingItems(prev => new Set([...prev, catalogItemId]))
 
     try {
-      await shoppingService.addItem(catalogItemId, token)
+      await shoppingService.addItem(catalogItemId)
 
       // Show success feedback (optional: could add toast notification)
       setTimeout(() => {

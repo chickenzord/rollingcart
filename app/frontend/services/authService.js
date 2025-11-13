@@ -1,12 +1,17 @@
 /**
  * Authentication API service
+ * Handles login, logout, and user verification
+ * Token management is internal - components don't need to handle tokens
  */
+
+import { setTokens, clearTokens, getAccessToken } from '../utils/tokenStorage'
 
 /**
  * Login with email and password
+ * Stores tokens internally
  * @param {string} email
  * @param {string} password
- * @returns {Promise<{token: string, user: Object}>}
+ * @returns {Promise<Object>} User data
  */
 export async function login(email, password) {
   const response = await fetch('/auth/login', {
@@ -23,24 +28,35 @@ export async function login(email, password) {
     throw new Error(error.error || 'Login failed')
   }
 
-  // Get JWT token from Authorization header
-  const authHeader = response.headers.get('Authorization')
-  if (!authHeader) {
-    throw new Error('No authorization token received')
+  const data = await response.json()
+
+  // Extract and store both tokens
+  // Rodauth with jwt_refresh returns: { access_token, refresh_token }
+  if (data.access_token && data.refresh_token) {
+    setTokens(data.access_token, data.refresh_token)
+  } else {
+    throw new Error('Invalid response from server - missing tokens')
   }
 
-  return { token: authHeader }
+  // Fetch user details
+  return getMe()
 }
 
 /**
  * Get current user details
- * @param {string} token - JWT token
+ * Uses token from storage internally
  * @returns {Promise<Object>} User data
  */
-export async function getMe(token) {
+export async function getMe() {
+  const token = getAccessToken()
+
+  if (!token) {
+    throw new Error('No authentication token')
+  }
+
   const response = await fetch('/api/v1/me', {
     headers: {
-      'Authorization': token,
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
@@ -55,14 +71,25 @@ export async function getMe(token) {
 
 /**
  * Logout current user
- * @param {string} token - JWT token
+ * Clears tokens from storage
  */
-export async function logout(token) {
-  await fetch('/auth/logout', {
-    method: 'POST',
-    headers: {
-      'Authorization': token,
-      'Content-Type': 'application/json',
-    },
-  })
+export async function logout() {
+  const token = getAccessToken()
+
+  if (token) {
+    try {
+      await fetch('/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
+  // Always clear tokens, even if API call fails
+  clearTokens()
 }
