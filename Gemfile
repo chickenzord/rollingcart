@@ -14,7 +14,7 @@ gem "puma", ">= 5.0"
 
 # Authentication with Rodauth
 gem "rodauth-rails", "~> 2.1"
-gem "jwt", "~> 2.7"
+gem "jwt", "~> 3.1"
 gem "sequel-activerecord_connection", "~> 2.0", require: false
 gem "bcrypt", "~> 3.1", require: false
 gem "tilt", "~> 2.4", require: false
