@@ -19,12 +19,14 @@ Consult CONCEPT.md for more details on the business design.
 - **CORS**: Configured for `http://localhost:3000` with JWT token exposure
 
 ### Frontend (React + Vite)
-- **Framework**: React with React Router for client-side routing
+- **Framework**: React 19.2 with React Router for client-side routing
 - **Bundler**: Vite (vite-plugin-ruby integration)
 - **Source location**: `app/frontend/` directory
 - **Entrypoint**: `app/frontend/entrypoints/application.jsx`
 - **Vite dev server**: Port 3036 (development) / 3037 (test)
 - **Routing**: React Router handles all frontend routes, Rails serves the app for non-API paths
+- **Styling**: Tailwind CSS v4
+- **Search**: Fuse.js for fuzzy search in autocomplete
 
 ### Authentication Flow
 - **JWT-based**: Stateless authentication using Rodauth JWT feature
@@ -156,6 +158,10 @@ npm update
 - **Base path**: `/api/v1/`
 - **Available endpoints**:
   - `GET /api/v1/me` - Get current user details (requires JWT)
+  - `/api/v1/catalog/categories` - Catalog category management
+  - `/api/v1/catalog/items` - Catalog item management
+  - `/api/v1/shopping/sessions` - Shopping session management
+  - `/api/v1/shopping/items` - Shopping backlog item management
 
 ### CORS Configuration
 - **Config**: `config/initializers/cors.rb`
@@ -170,12 +176,24 @@ npm update
 - Vite config in `vite.config.ts` and `config/vite.json`
 - React plugin enabled for JSX support
 
+### Frontend Features
+- **Smart Autocomplete**: Fuzzy search with Fuse.js, starts at first character, catalog caching
+- **Visual Feedback**: 2-second glow animation for newly added items (CSS-based, no state management)
+- **Accessibility**: Keyboard navigation support, proper ARIA roles, form label associations
+- **UX Optimizations**:
+  - "Create new item" only shows when query is 3+ chars and no 95%+ similarity matches
+  - Items grouped by category when multiple categories present
+  - Session-based shopping workflow
+
 ### ESLint Configuration
-- **Config**: `eslint.config.js` (flat config format)
+- **Config**: `eslint.config.js` (modern flat config format)
 - **Plugins**: React, React Hooks, JSX Accessibility
 - **Rules**: Modern React patterns (no React import needed), hooks best practices, accessibility warnings
+- **Status**: All files pass linting with 0 errors and 0 warnings
 - **VSCode Integration**: Auto-fix on save enabled (see `.vscode/README.md`)
-- **Required VSCode extensions**: ESLint, Tailwind CSS IntelliSense
+- **Required VSCode extensions**:
+  - ESLint (`dbaeumer.vscode-eslint`) - Linting and auto-fix
+  - Tailwind CSS IntelliSense (`bradlc.vscode-tailwindcss`) - Autocomplete for Tailwind classes
 
 ### React Router Setup
 - **Routes**:
