@@ -38,7 +38,7 @@ export default function CatalogCategories() {
 
   if (loading) {
     return (
-      <div className="p-5">
+      <div className="bg-white p-8 rounded-lg shadow-sm">
         <p>Loading categories...</p>
       </div>
     )
@@ -46,7 +46,7 @@ export default function CatalogCategories() {
 
   if (error) {
     return (
-      <div className="p-5">
+      <div className="bg-white p-8 rounded-lg shadow-sm">
         <p className="text-red-600 mb-3">Error: {error}</p>
         <button
           onClick={fetchCategories}
@@ -59,12 +59,9 @@ export default function CatalogCategories() {
   }
 
   return (
-    <div className="p-5">
-      <div className="mb-5 flex justify-between items-center">
+    <div className="bg-white p-8 rounded-lg shadow-sm">
+      <div className="mb-5">
         <h1 className="text-3xl font-bold">Catalog Categories</h1>
-        <Link to="/" className="text-blue-600 hover:text-blue-800 transition-colors">
-          &larr; Back to Dashboard
-        </Link>
       </div>
 
       {categories.length === 0 ? (

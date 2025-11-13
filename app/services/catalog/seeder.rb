@@ -20,7 +20,7 @@ module Catalog
         items_data.each do |item_data|
           category.items.create!(
             name: item_data["name"],
-            notes: item_data["notes"],
+            description: item_data["description"],
             account: account
           )
           created_items += 1

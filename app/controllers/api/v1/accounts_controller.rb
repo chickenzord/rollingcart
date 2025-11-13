@@ -1,4 +1,4 @@
-class Api::V1::AccountsController < ApplicationController
+class Api::V1::AccountsController < Api::BaseController
   before_action :authenticate
 
   def me

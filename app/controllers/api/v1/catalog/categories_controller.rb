@@ -1,7 +1,7 @@
 module Api
   module V1
     module Catalog
-      class CategoriesController < ApplicationController
+      class CategoriesController < Api::BaseController
         before_action :authenticate
         before_action :set_category, only: [ :show, :update, :destroy, :items_index ]
 

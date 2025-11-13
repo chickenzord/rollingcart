@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_13_091434) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
   create_table "account_jwt_refresh_keys", force: :cascade do |t|
     t.integer "account_id", null: false
     t.string "key", null: false
@@ -49,11 +49,32 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_091434) do
     t.integer "account_id", null: false
     t.integer "category_id", null: false
     t.string "name", null: false
-    t.text "notes"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_catalog_items_on_account_id"
     t.index ["category_id"], name: "index_catalog_items_on_category_id"
+  end
+
+  create_table "shopping_items", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "catalog_item_id", null: false
+    t.integer "shopping_session_id"
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_shopping_items_on_account_id"
+    t.index ["catalog_item_id"], name: "index_shopping_items_on_catalog_item_id"
+    t.index ["shopping_session_id"], name: "index_shopping_items_on_shopping_session_id"
+  end
+
+  create_table "shopping_sessions", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.string "name"
+    t.boolean "active", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_shopping_sessions_on_account_id"
   end
 
   add_foreign_key "account_jwt_refresh_keys", "accounts"
@@ -62,4 +83,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_091434) do
   add_foreign_key "catalog_categories", "accounts"
   add_foreign_key "catalog_items", "accounts"
   add_foreign_key "catalog_items", "catalog_categories", column: "category_id"
+  add_foreign_key "shopping_items", "accounts"
+  add_foreign_key "shopping_items", "catalog_items"
+  add_foreign_key "shopping_items", "shopping_sessions"
+  add_foreign_key "shopping_sessions", "accounts"
 end

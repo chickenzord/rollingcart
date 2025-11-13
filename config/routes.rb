@@ -24,6 +24,23 @@ Rails.application.routes.draw do
         end
         resources :items, only: [ :index, :show, :create, :update, :destroy ]
       end
+
+      namespace :shopping do
+        resources :sessions do
+          collection do
+            get :active
+          end
+          member do
+            patch :finish
+          end
+        end
+        resources :items do
+          member do
+            patch :check
+            patch :uncheck
+          end
+        end
+      end
     end
   end
 

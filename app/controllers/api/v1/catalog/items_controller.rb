@@ -1,7 +1,7 @@
 module Api
   module V1
     module Catalog
-      class ItemsController < ApplicationController
+      class ItemsController < Api::BaseController
         before_action :authenticate
         before_action :set_item, only: [ :show, :update, :destroy ]
 
@@ -59,7 +59,7 @@ module Api
         end
 
         def item_params
-          params.require(:item).permit(:name, :notes, :category_id)
+          params.require(:item).permit(:name, :description, :category_id)
         end
 
         def include_category?
