@@ -4,6 +4,31 @@ import { Link } from 'react-router-dom'
 import Fuse from 'fuse.js'
 
 export default function Backlog() {
+  // Add glow animation styles
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes glow-pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+          background-color: rgba(59, 130, 246, 0.1);
+        }
+        50% {
+          box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.2);
+          background-color: rgba(59, 130, 246, 0.15);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+          background-color: transparent;
+        }
+      }
+      .item-glow {
+        animation: glow-pulse 2s ease-out forwards;
+      }
+    `
+    document.head.appendChild(style)
+    return () => document.head.removeChild(style)
+  }, [])
   const { token } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -521,12 +546,16 @@ export default function Backlog() {
                   <h4 className="text-sm font-semibold text-gray-700 mb-2 px-1">{categoryName}</h4>
                 )}
                 <div className="border border-gray-200 rounded-lg">
-                  {items.map((item, index) => (
+                  {items.map((item, index) => {
+                    const isNew = Date.now() - new Date(item.created_at).getTime() < 2000
+                    return (
                     <div
                       key={item.id}
                       className={`flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors ${
                         index !== items.length - 1 ? 'border-b border-gray-200' : ''
-                      } ${index === 0 ? 'rounded-t-lg' : ''} ${index === items.length - 1 ? 'rounded-b-lg' : ''}`}
+                      } ${index === 0 ? 'rounded-t-lg' : ''} ${index === items.length - 1 ? 'rounded-b-lg' : ''} ${
+                        isNew ? 'item-glow' : ''
+                      }`}
                     >
                       {activeSession && (
                         <input
@@ -591,7 +620,8 @@ export default function Backlog() {
                         )}
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             ))}
