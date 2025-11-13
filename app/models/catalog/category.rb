@@ -1,7 +1,5 @@
 module Catalog
   class Category < ApplicationRecord
-    self.table_name = "catalog_categories"
-
     belongs_to :account
     has_many :items, class_name: "Catalog::Item", foreign_key: :category_id, dependent: :restrict_with_error
 
