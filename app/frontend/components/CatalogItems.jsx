@@ -13,6 +13,7 @@ export default function CatalogItems() {
 
   useEffect(() => {
     fetchCategoryAndItems()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId])
 
   const fetchCategoryAndItems = async () => {

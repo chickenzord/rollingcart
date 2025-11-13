@@ -44,6 +44,7 @@ export default function Backlog() {
 
   useEffect(() => {
     fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchData = async () => {
@@ -499,7 +500,15 @@ export default function Backlog() {
               {catalogSuggestions.map((item, index) => (
                 <div
                   key={item.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => addItemFromCatalog(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      addItemFromCatalog(item)
+                    }
+                  }}
                   className={`px-4 py-3 cursor-pointer border-b border-gray-100 ${
                     index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
                   }`}
@@ -522,7 +531,15 @@ export default function Backlog() {
                 const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
                 return showCreateOption ? (
                   <div
+                    role="button"
+                    tabIndex={0}
                     onClick={createNewCatalogItem}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        createNewCatalogItem()
+                      }
+                    }}
                     className={`px-4 py-3 cursor-pointer ${
                       selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
                     }`}
