@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react'
+import * as authService from '../services/authService'
 
 const AuthContext = createContext(null)
 
@@ -11,19 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       // Fetch user details from API
-      fetch('/api/v1/me', {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-        .then(res => {
-          if (res.ok) {
-            return res.json()
-          }
-          throw new Error('Token invalid')
-        })
+      authService.getMe(token)
         .then(data => {
           setUser(data)
           setLoading(false)
@@ -42,61 +31,25 @@ export const AuthProvider = ({ children }) => {
   }, [token])
 
   const login = async (email, password) => {
-    const response = await fetch('/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    })
+    const { token: authToken } = await authService.login(email, password)
 
-    if (!response.ok) {
-      const error = await response.json()
-      throw new Error(error.error || 'Login failed')
-    }
+    localStorage.setItem('authToken', authToken)
+    setToken(authToken)
 
-    // Get JWT token from Authorization header
-    const authHeader = response.headers.get('Authorization')
-    if (authHeader) {
-      localStorage.setItem('authToken', authHeader)
-      setToken(authHeader)
-
-      // Fetch user details from API
-      try {
-        const meResponse = await fetch('/api/v1/me', {
-          headers: {
-            'Authorization': authHeader,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        })
-
-        if (meResponse.ok) {
-          const userData = await meResponse.json()
-          setUser(userData)
-          return userData
-        } else {
-          throw new Error('Failed to fetch user details')
-        }
-      } catch (error) {
-        console.error('Failed to fetch user details:', error)
-        throw error
-      }
-    } else {
-      throw new Error('No authorization token received')
+    // Fetch user details from API
+    try {
+      const userData = await authService.getMe(authToken)
+      setUser(userData)
+      return userData
+    } catch (error) {
+      console.error('Failed to fetch user details:', error)
+      throw error
     }
   }
 
   const logout = async () => {
     try {
-      await fetch('/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-        },
-      })
+      await authService.logout(token)
     } catch (error) {
       console.error('Logout error:', error)
     } finally {

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
 import Fuse from 'fuse.js'
+import * as catalogService from '../services/catalogService'
+import * as shoppingService from '../services/shoppingService'
+import { formatTimeAgo } from '../utils/dateUtils'
 
 export default function Backlog() {
   // Add glow animation styles
@@ -53,52 +56,17 @@ export default function Backlog() {
       setError(null)
 
       // Fetch active session
-      const sessionResponse = await fetch('/api/v1/shopping/sessions/active', {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      let session = null
-      if (sessionResponse.ok && sessionResponse.status !== 204) {
-        session = await sessionResponse.json()
-        setActiveSession(session)
-      } else {
-        setActiveSession(null)
-      }
+      const session = await shoppingService.getActiveSession(token)
+      setActiveSession(session)
 
       // Fetch unchecked items (is_done=false)
-      const uncheckedResponse = await fetch('/api/v1/shopping/items?is_done=false', {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!uncheckedResponse.ok) {
-        throw new Error('Failed to fetch unchecked items')
-      }
-
-      const uncheckedData = await uncheckedResponse.json()
+      const uncheckedData = await shoppingService.getItems({ isDone: false }, token)
       setUncheckedItems(uncheckedData)
 
       // Fetch checked items if there's an active session
       if (session) {
-        const checkedResponse = await fetch(`/api/v1/shopping/items?for_session=${session.id}`, {
-          headers: {
-            'Authorization': token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        })
-
-        if (checkedResponse.ok) {
-          const checkedData = await checkedResponse.json()
-          setCheckedItems(checkedData)
-        }
+        const checkedData = await shoppingService.getItems({ forSession: session.id }, token)
+        setCheckedItems(checkedData)
       } else {
         setCheckedItems([])
       }
@@ -111,22 +79,7 @@ export default function Backlog() {
 
   const startSession = async () => {
     try {
-      const response = await fetch('/api/v1/shopping/sessions', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          session: { active: true },
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to start session')
-      }
-
+      await shoppingService.createSession(token)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -137,19 +90,7 @@ export default function Backlog() {
     if (!activeSession) return
 
     try {
-      const response = await fetch(`/api/v1/shopping/sessions/${activeSession.id}/finish`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to finish session')
-      }
-
+      await shoppingService.finishSession(activeSession.id, token)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -162,19 +103,7 @@ export default function Backlog() {
     if (!confirm('Are you sure you want to cancel this session? This will delete the session.')) return
 
     try {
-      const response = await fetch(`/api/v1/shopping/sessions/${activeSession.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel session')
-      }
-
+      await shoppingService.deleteSession(activeSession.id, token)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -183,20 +112,11 @@ export default function Backlog() {
 
   const toggleCheck = async (item, isCurrentlyChecked) => {
     try {
-      const endpoint = isCurrentlyChecked ? 'uncheck' : 'check'
-      const response = await fetch(`/api/v1/shopping/items/${item.id}/${endpoint}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${endpoint} item`)
+      if (isCurrentlyChecked) {
+        await shoppingService.uncheckItem(item.id, token)
+      } else {
+        await shoppingService.checkItem(item.id, token)
       }
-
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -207,19 +127,7 @@ export default function Backlog() {
     if (!confirm('Are you sure you want to delete this item?')) return
 
     try {
-      const response = await fetch(`/api/v1/shopping/items/${itemId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete item')
-      }
-
+      await shoppingService.deleteItem(itemId, token)
       await fetchData()
     } catch (err) {
       alert(`Error: ${err.message}`)
@@ -228,19 +136,7 @@ export default function Backlog() {
 
   const fetchCatalogCache = async () => {
     try {
-      const response = await fetch('/api/v1/catalog/items?include_category=true', {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch catalog items')
-      }
-
-      const items = await response.json()
+      const items = await catalogService.getItems({ includeCategory: true }, token)
       setCatalogCache(items)
       return items
     } catch (err) {
@@ -321,21 +217,7 @@ export default function Backlog() {
 
   const addItemFromCatalog = async (catalogItem) => {
     try {
-      const response = await fetch('/api/v1/shopping/items', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          catalog_item_id: catalogItem.id,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to add item to backlog')
-      }
+      await shoppingService.addItem(catalogItem.id, token)
 
       setSearchQuery('')
       setShowAutocomplete(false)
@@ -349,24 +231,11 @@ export default function Backlog() {
   const createNewCatalogItem = async () => {
     try {
       // Create the catalog item with add_to_shopping flag
-      const response = await fetch('/api/v1/catalog/items?add_to_shopping=true', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          item: {
-            name: searchQuery,
-            category_id: null,
-          },
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create catalog item')
-      }
+      await catalogService.createItem(
+        { name: searchQuery, category_id: null },
+        { addToShopping: true },
+        token,
+      )
 
       // Invalidate catalog cache since we added a new item
       setCatalogCache(null)
@@ -378,18 +247,6 @@ export default function Backlog() {
     } catch (err) {
       alert(`Error: ${err.message}`)
     }
-  }
-
-  const formatTimeAgo = (dateString) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const seconds = Math.floor((now - date) / 1000)
-
-    if (seconds < 60) return 'just now'
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} ${Math.floor(seconds / 60) === 1 ? 'minute' : 'minutes'} ago`
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} ${Math.floor(seconds / 3600) === 1 ? 'hour' : 'hours'} ago`
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)} ${Math.floor(seconds / 86400) === 1 ? 'day' : 'days'} ago`
-    return `${Math.floor(seconds / 604800)} ${Math.floor(seconds / 604800) === 1 ? 'week' : 'weeks'} ago`
   }
 
   const groupItemsByCategory = (items) => {

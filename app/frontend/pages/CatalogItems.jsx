@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useParams } from 'react-router-dom'
+import * as catalogService from '../services/catalogService'
+import * as shoppingService from '../services/shoppingService'
 
 export default function CatalogItems() {
   const { categoryId } = useParams()
@@ -21,36 +23,13 @@ export default function CatalogItems() {
       setLoading(true)
       setError(null)
 
-      // Fetch category details
-      const categoryResponse = await fetch(`/api/v1/catalog/categories/${categoryId}`, {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
+      // Fetch category details and items in parallel
+      const [categoryData, itemsData] = await Promise.all([
+        catalogService.getCategory(categoryId, token),
+        catalogService.getCategoryItems(categoryId, token),
+      ])
 
-      if (!categoryResponse.ok) {
-        throw new Error('Failed to fetch category')
-      }
-
-      const categoryData = await categoryResponse.json()
       setCategory(categoryData)
-
-      // Fetch items for this specific category using nested endpoint
-      const itemsResponse = await fetch(`/api/v1/catalog/categories/${categoryId}/items`, {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!itemsResponse.ok) {
-        throw new Error('Failed to fetch items')
-      }
-
-      const itemsData = await itemsResponse.json()
       setItems(itemsData)
     } catch (err) {
       setError(err.message)
@@ -63,21 +42,7 @@ export default function CatalogItems() {
     setAddingItems(prev => new Set([...prev, catalogItemId]))
 
     try {
-      const response = await fetch('/api/v1/shopping/items', {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          catalog_item_id: catalogItemId,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to add item to backlog')
-      }
+      await shoppingService.addItem(catalogItemId, token)
 
       // Show success feedback (optional: could add toast notification)
       setTimeout(() => {

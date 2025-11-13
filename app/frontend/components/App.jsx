@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
-import Login from './Login'
-import Layout from './Layout'
-import Dashboard from './Dashboard'
-import Backlog from './Backlog'
-import CatalogCategories from './CatalogCategories'
-import CatalogItems from './CatalogItems'
+import Login from '../pages/Login'
+import Layout from '../layouts/Layout'
+import Dashboard from '../pages/Dashboard'
+import Backlog from '../pages/Backlog'
+import CatalogCategories from '../pages/CatalogCategories'
+import CatalogItems from '../pages/CatalogItems'
 import ProtectedRoute from './ProtectedRoute'
 
 function AppRoutes() {

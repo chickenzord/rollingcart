@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
+import * as catalogService from '../services/catalogService'
 
 export default function CatalogCategories() {
   const { token } = useAuth()
@@ -16,19 +17,7 @@ export default function CatalogCategories() {
   const fetchCategories = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/v1/catalog/categories', {
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories')
-      }
-
-      const data = await response.json()
+      const data = await catalogService.getCategories(token)
       setCategories(data)
     } catch (err) {
       setError(err.message)
