@@ -19,7 +19,7 @@ function AppRoutes() {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
         <div>Loading...</div>
       </div>

@@ -15,8 +15,8 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
         .then(res => {
           if (res.ok) {
@@ -46,9 +46,9 @@ export const AuthProvider = ({ children }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     })
 
     if (!response.ok) {
@@ -68,8 +68,8 @@ export const AuthProvider = ({ children }) => {
           headers: {
             'Authorization': authHeader,
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+            'Accept': 'application/json',
+          },
         })
 
         if (meResponse.ok) {
@@ -94,8 +94,8 @@ export const AuthProvider = ({ children }) => {
         method: 'POST',
         headers: {
           'Authorization': token,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       })
     } catch (error) {
       console.error('Logout error:', error)
@@ -112,7 +112,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     loading,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   }
 
   return (

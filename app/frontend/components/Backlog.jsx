@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
 import Fuse from 'fuse.js'
@@ -56,8 +56,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       let session = null
@@ -73,8 +73,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!uncheckedResponse.ok) {
@@ -90,8 +90,8 @@ export default function Backlog() {
           headers: {
             'Authorization': token,
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+            'Accept': 'application/json',
+          },
         })
 
         if (checkedResponse.ok) {
@@ -115,11 +115,11 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
-          session: { active: true }
-        })
+          session: { active: true },
+        }),
       })
 
       if (!response.ok) {
@@ -141,8 +141,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
@@ -166,8 +166,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
@@ -188,8 +188,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
@@ -211,8 +211,8 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
@@ -227,12 +227,12 @@ export default function Backlog() {
 
   const fetchCatalogCache = async () => {
     try {
-      const response = await fetch(`/api/v1/catalog/items?include_category=true`, {
+      const response = await fetch('/api/v1/catalog/items?include_category=true', {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
@@ -325,11 +325,11 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
-          catalog_item_id: catalogItem.id
-        })
+          catalog_item_id: catalogItem.id,
+        }),
       })
 
       if (!response.ok) {
@@ -353,14 +353,14 @@ export default function Backlog() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           item: {
             name: searchQuery,
-            category_id: null
-          }
-        })
+            category_id: null,
+          },
+        }),
       })
 
       if (!response.ok) {
@@ -528,7 +528,7 @@ export default function Backlog() {
                     }`}
                   >
                     <div className="text-sm text-blue-600 font-medium">
-                      + Create new catalog item <span className="font-semibold">"{searchQuery}"</span>
+                      + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
                     </div>
                   </div>
                 ) : null

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useParams } from 'react-router-dom'
 
@@ -25,8 +25,8 @@ export default function CatalogItems() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!categoryResponse.ok) {
@@ -41,8 +41,8 @@ export default function CatalogItems() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+          'Accept': 'application/json',
+        },
       })
 
       if (!itemsResponse.ok) {
@@ -67,11 +67,11 @@ export default function CatalogItems() {
         headers: {
           'Authorization': token,
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
-          catalog_item_id: catalogItemId
-        })
+          catalog_item_id: catalogItemId,
+        }),
       })
 
       if (!response.ok) {
