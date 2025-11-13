@@ -104,6 +104,7 @@ bin/rails test test/models/some_model_test.rb:10
 
 ### Code Quality
 
+**Ruby/Rails:**
 ```bash
 # Run RuboCop linter (Rails Omakase style guide)
 bin/rubocop
@@ -113,6 +114,15 @@ bin/rubocop -a
 
 # Run Brakeman security scanner
 bin/brakeman
+```
+
+**JavaScript/React:**
+```bash
+# Run ESLint on frontend code
+npm run lint
+
+# Auto-fix ESLint issues
+npm run lint:fix
 ```
 
 ### Dependency Management
@@ -159,6 +169,13 @@ npm update
 - Contexts (like AuthContext) in `app/frontend/contexts/`
 - Vite config in `vite.config.ts` and `config/vite.json`
 - React plugin enabled for JSX support
+
+### ESLint Configuration
+- **Config**: `eslint.config.js` (flat config format)
+- **Plugins**: React, React Hooks, JSX Accessibility
+- **Rules**: Modern React patterns (no React import needed), hooks best practices, accessibility warnings
+- **VSCode Integration**: Auto-fix on save enabled (see `.vscode/README.md`)
+- **Required VSCode extensions**: ESLint, Tailwind CSS IntelliSense
 
 ### React Router Setup
 - **Routes**:
