@@ -124,6 +124,31 @@ export default function Backlog() {
     }
   }
 
+  const cancelSession = async () => {
+    if (!activeSession) return
+
+    if (!confirm('Are you sure you want to cancel this session? This will delete the session.')) return
+
+    try {
+      const response = await fetch(`/api/v1/shopping/sessions/${activeSession.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel session')
+      }
+
+      await fetchData()
+    } catch (err) {
+      alert(`Error: ${err.message}`)
+    }
+  }
+
   const toggleCheck = async (item, isCurrentlyChecked) => {
     try {
       const endpoint = isCurrentlyChecked ? 'uncheck' : 'check'
@@ -181,6 +206,23 @@ export default function Backlog() {
     return `${Math.floor(seconds / 604800)} ${Math.floor(seconds / 604800) === 1 ? 'week' : 'weeks'} ago`
   }
 
+  const groupItemsByCategory = (items) => {
+    const categories = {}
+    items.forEach(item => {
+      const categoryName = item.category?.name || 'Uncategorized'
+      if (!categories[categoryName]) {
+        categories[categoryName] = []
+      }
+      categories[categoryName].push(item)
+    })
+    return categories
+  }
+
+  const shouldGroupByCategory = (items) => {
+    const uniqueCategories = new Set(items.map(item => item.category?.name || 'Uncategorized'))
+    return uniqueCategories.size > 1
+  }
+
   if (loading) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
@@ -214,7 +256,7 @@ export default function Backlog() {
       {/* Active Session Card or Start Button */}
       {activeSession ? (
         <div className="mb-6 p-6 border-2 border-blue-500 rounded-lg bg-blue-50">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start">
             <div>
               <div className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded mb-2">
                 ACTIVE SESSION
@@ -222,22 +264,21 @@ export default function Backlog() {
               <h2 className="text-2xl font-bold text-gray-900 mb-1">{activeSession.name}</h2>
               <p className="text-gray-600 text-sm">Started {formatTimeAgo(activeSession.created_at)}</p>
             </div>
-            <button
-              onClick={finishSession}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors"
-            >
-              Finish Session
-            </button>
-          </div>
-          <div className="flex gap-8">
-            <div>
-              <div className="text-3xl font-bold text-blue-600">{checkedItems.length + uncheckedItems.length}</div>
-              <div className="text-sm text-gray-600">Items in session</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-blue-600">{checkedItems.length}</div>
-              <div className="text-sm text-gray-600">Checked off</div>
-            </div>
+            {checkedItems.length > 0 ? (
+              <button
+                onClick={finishSession}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors"
+              >
+                Finish
+              </button>
+            ) : (
+              <button
+                onClick={cancelSession}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       ) : (
@@ -277,75 +318,84 @@ export default function Backlog() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-2">
-            {uncheckedItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  checked={false}
-                  onChange={() => toggleCheck(item, false)}
-                  disabled={!activeSession}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 cursor-pointer"
-                />
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900">{item.name}</div>
-                  {item.category && (
-                    <div className="text-sm text-gray-500">
-                      {item.category.name} • Added {formatTimeAgo(item.created_at)}
-                    </div>
-                  )}
-                  {item.notes && (
-                    <div className="text-sm text-gray-700 mt-1">{item.notes}</div>
-                  )}
-                </div>
-                <div className="relative">
-                  {activeSession ? (
-                    <>
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                        className="p-2 hover:bg-gray-200 rounded transition-colors"
-                      >
-                        <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                          <circle cx="12" cy="5" r="2" />
-                          <circle cx="12" cy="12" r="2" />
-                          <circle cx="12" cy="19" r="2" />
-                        </svg>
-                      </button>
-                      {openMenuId === item.id && (
-                        <div className="absolute right-0 mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                          <button
-                            onClick={() => {
-                              setOpenMenuId(null)
-                              // TODO: Implement edit functionality
-                              alert('Edit functionality coming soon!')
-                            }}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              setOpenMenuId(null)
-                              deleteItem(item.id)
-                            }}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 text-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => alert('Edit functionality coming soon!')}
-                      className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+          <div className="space-y-4">
+            {Object.entries(groupItemsByCategory(uncheckedItems)).map(([categoryName, items]) => (
+              <div key={categoryName}>
+                {shouldGroupByCategory(uncheckedItems) && (
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2 px-1">{categoryName}</h4>
+                )}
+                <div className="border border-gray-200 rounded-lg">
+                  {items.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={`flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors ${
+                        index !== items.length - 1 ? 'border-b border-gray-200' : ''
+                      } ${index === 0 ? 'rounded-t-lg' : ''} ${index === items.length - 1 ? 'rounded-b-lg' : ''}`}
                     >
-                      Edit
-                    </button>
-                  )}
+                      {activeSession && (
+                        <input
+                          type="checkbox"
+                          checked={false}
+                          onChange={() => toggleCheck(item, false)}
+                          className="w-5 h-5 rounded border-gray-300 cursor-pointer flex-shrink-0"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-gray-900">{item.name}</div>
+                        {(item.category || item.description) && (
+                          <div className="text-sm text-gray-500 mt-0.5">
+                            {shouldGroupByCategory(uncheckedItems) ? (
+                              item.description
+                            ) : (
+                              <>
+                                {item.category && item.category.name}
+                                {item.category && item.description && ' • '}
+                                {item.description}
+                              </>
+                            )}
+                          </div>
+                        )}
+                        {item.notes && (
+                          <div className="text-sm text-gray-700 mt-0.5 italic">{item.notes}</div>
+                        )}
+                      </div>
+                      <div className="relative flex-shrink-0">
+                        <button
+                          onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                          className="p-2 hover:bg-gray-200 rounded transition-colors relative z-0"
+                        >
+                          <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="5" r="2" />
+                            <circle cx="12" cy="12" r="2" />
+                            <circle cx="12" cy="19" r="2" />
+                          </svg>
+                        </button>
+                        {openMenuId === item.id && (
+                          <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                            <button
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                // TODO: Implement edit functionality
+                                alert('Edit functionality coming soon!')
+                              }}
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                            >
+                              Edit Notes
+                            </button>
+                            <button
+                              onClick={() => {
+                                setOpenMenuId(null)
+                                deleteItem(item.id)
+                              }}
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
@@ -356,47 +406,46 @@ export default function Backlog() {
       {/* Checked Items Section (only when active session) */}
       {activeSession && checkedItems.length > 0 && (
         <div>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">Checked Items</h3>
-            <span className="text-gray-500 text-sm">{checkedItems.length} items</span>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-medium text-gray-600">Checked Items</h3>
+            <span className="text-gray-400 text-xs">{checkedItems.length} items</span>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             {checkedItems.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg bg-gray-50"
+                className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 transition-colors opacity-70"
               >
                 <input
                   type="checkbox"
                   checked={true}
                   onChange={() => toggleCheck(item, true)}
-                  className="mt-1 w-5 h-5 rounded border-gray-300 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 cursor-pointer flex-shrink-0"
                 />
-                <div className="flex-1 opacity-60">
-                  <div className="font-semibold text-gray-900 line-through">{item.name}</div>
-                  {item.category && (
-                    <div className="text-sm text-gray-500">
-                      {item.category.name} • Added {formatTimeAgo(item.created_at)}
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-gray-700 line-through truncate">{item.name}</div>
+                  {(item.category || item.description) && (
+                    <div className="text-xs text-gray-400 truncate">
+                      {item.category && item.category.name}
+                      {item.category && item.description && ' • '}
+                      {item.description}
                     </div>
                   )}
-                  {item.notes && (
-                    <div className="text-sm text-gray-700 mt-1">{item.notes}</div>
-                  )}
                 </div>
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <button
                     onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                    className="p-2 hover:bg-gray-200 rounded transition-colors"
+                    className="p-1 hover:bg-gray-200 rounded transition-colors"
                   >
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                       <circle cx="12" cy="5" r="2" />
                       <circle cx="12" cy="12" r="2" />
                       <circle cx="12" cy="19" r="2" />
                     </svg>
                   </button>
                   {openMenuId === item.id && (
-                    <div className="absolute right-0 mt-1 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                    <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                       <button
                         onClick={() => {
                           setOpenMenuId(null)
@@ -404,7 +453,7 @@ export default function Backlog() {
                         }}
                         className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
                       >
-                        Edit
+                        Edit Notes
                       </button>
                       <button
                         onClick={() => {
