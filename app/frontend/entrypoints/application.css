@@ -2,3 +2,23 @@
 
 @source "../../**/*.{js,jsx,ts,tsx}";
 @source "../../views/**/*.{erb,html}";
+
+/* Shopping item glow animation for newly added items */
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.2);
+    background-color: rgba(59, 130, 246, 0.15);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    background-color: transparent;
+  }
+}
+
+.item-glow {
+  animation: glow-pulse 2s ease-out forwards;
+}
