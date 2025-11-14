@@ -1,0 +1,80 @@
+/**
+ * Custom hooks for catalog-related queries and mutations
+ * Provides reusable TanStack Query hooks for catalog operations
+ */
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import * as catalogService from '../../services/catalogService'
+
+/**
+ * Fetch all catalog categories
+ * @returns {UseQueryResult} Query result with categories array
+ */
+export function useCategories() {
+  return useQuery({
+    queryKey: ['catalog', 'categories'],
+    queryFn: catalogService.getCategories,
+  })
+}
+
+/**
+ * Fetch a single category by ID
+ * @param {string|number} categoryId - The category ID
+ * @returns {UseQueryResult} Query result with category object
+ */
+export function useCategory(categoryId) {
+  return useQuery({
+    queryKey: ['catalog', 'categories', categoryId],
+    queryFn: () => catalogService.getCategory(categoryId),
+    enabled: !!categoryId, // Only fetch if categoryId exists
+  })
+}
+
+/**
+ * Fetch items for a specific category
+ * @param {string|number} categoryId - The category ID
+ * @returns {UseQueryResult} Query result with items array
+ */
+export function useCategoryItems(categoryId) {
+  return useQuery({
+    queryKey: ['catalog', 'categories', categoryId, 'items'],
+    queryFn: () => catalogService.getCategoryItems(categoryId),
+    enabled: !!categoryId, // Only fetch if categoryId exists
+  })
+}
+
+/**
+ * Fetch all catalog items (with optional filters)
+ * @param {Object} params - Query parameters
+ * @param {boolean} params.includeCategory - Whether to include category data
+ * @returns {UseQueryResult} Query result with items array
+ */
+export function useCatalogItems(params = {}) {
+  return useQuery({
+    queryKey: ['catalog', 'items', params],
+    queryFn: () => catalogService.getItems(params),
+  })
+}
+
+/**
+ * Create a new catalog item
+ * @returns {UseMutationResult} Mutation for creating items
+ */
+export function useCreateCatalogItem() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ item, options }) => catalogService.createItem(item, options),
+    onSuccess: (data, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'items'] })
+
+      // If item has a category, invalidate that category's items too
+      if (variables.item.category_id) {
+        queryClient.invalidateQueries({
+          queryKey: ['catalog', 'categories', variables.item.category_id, 'items'],
+        })
+      }
+    },
+  })
+}

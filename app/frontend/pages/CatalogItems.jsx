@@ -1,48 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
-import * as catalogService from '../services/catalogService'
+import { useCategory, useCategoryItems } from '../hooks/queries/useCatalogQueries'
 import * as shoppingService from '../services/shoppingService'
 
 export default function CatalogItems() {
   const { categoryId } = useParams()
-  const [items, setItems] = useState([])
-  const [category, setCategory] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [addingItems, setAddingItems] = useState(new Set())
 
-  useEffect(() => {
-    fetchCategoryAndItems()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId])
+  // Fetch category details
+  const {
+    data: category,
+    isLoading: isCategoryLoading,
+    error: categoryError,
+  } = useCategory(categoryId)
 
-  const fetchCategoryAndItems = async () => {
-    try {
-      setLoading(true)
-      setError(null)
+  // Fetch category items
+  const {
+    data: items = [],
+    isLoading: isItemsLoading,
+    error: itemsError,
+    refetch,
+  } = useCategoryItems(categoryId)
 
-      // Fetch category details and items in parallel
-      const [categoryData, itemsData] = await Promise.all([
-        catalogService.getCategory(categoryId),
-        catalogService.getCategoryItems(categoryId),
-      ])
-
-      setCategory(categoryData)
-      setItems(itemsData)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const addToBacklog = async (catalogItemId) => {
-    setAddingItems(prev => new Set([...prev, catalogItemId]))
-
-    try {
-      await shoppingService.addItem(catalogItemId)
-
-      // Show success feedback (optional: could add toast notification)
+  // Mutation for adding item to backlog
+  const addToBacklogMutation = useMutation({
+    mutationFn: shoppingService.addItem,
+    onMutate: (catalogItemId) => {
+      // Optimistic update: show "Added" immediately
+      setAddingItems(prev => new Set([...prev, catalogItemId]))
+    },
+    onSuccess: (data, catalogItemId) => {
+      // Keep showing "Added" for 1 second for feedback
       setTimeout(() => {
         setAddingItems(prev => {
           const next = new Set(prev)
@@ -50,15 +39,20 @@ export default function CatalogItems() {
           return next
         })
       }, 1000)
-    } catch (err) {
-      alert(`Error: ${err.message}`)
+    },
+    onError: (err, catalogItemId) => {
+      // Remove from "adding" state on error
       setAddingItems(prev => {
         const next = new Set(prev)
         next.delete(catalogItemId)
         return next
       })
-    }
-  }
+      alert(`Error: ${err.message}`)
+    },
+  })
+
+  const loading = isCategoryLoading || isItemsLoading
+  const error = categoryError || itemsError
 
   if (loading) {
     return (
@@ -71,9 +65,9 @@ export default function CatalogItems() {
   if (error) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error}</p>
+        <p className="text-red-600 mb-3">Error: {error.message}</p>
         <button
-          onClick={fetchCategoryAndItems}
+          onClick={() => refetch()}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
         >
           Retry
@@ -120,7 +114,7 @@ export default function CatalogItems() {
                   </div>
                 </div>
                 <button
-                  onClick={() => addToBacklog(item.id)}
+                  onClick={() => addToBacklogMutation.mutate(item.id)}
                   disabled={addingItems.has(item.id)}
                   className={`ml-4 px-4 py-2 rounded font-medium transition-colors ${
                     addingItems.has(item.id)

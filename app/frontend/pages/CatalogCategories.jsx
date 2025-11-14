@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import * as catalogService from '../services/catalogService'
+import { useCategories } from '../hooks/queries/useCatalogQueries'
 
 export default function CatalogCategories() {
   const {
@@ -8,10 +7,7 @@ export default function CatalogCategories() {
     isLoading,
     error,
     refetch,
-  } = useQuery({
-    queryKey: ['catalog', 'categories'],
-    queryFn: catalogService.getCategories,
-  })
+  } = useCategories()
 
   if (isLoading) {
     return (
