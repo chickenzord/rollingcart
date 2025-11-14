@@ -441,7 +441,7 @@ export default function Backlog() {
                           type="checkbox"
                           checked={false}
                           onChange={() => toggleCheck(item, false)}
-                          className="w-5 h-5 rounded border-gray-300 cursor-pointer flex-shrink-0"
+                          className="w-5 h-5 rounded border-gray-300 cursor-pointer shrink-0"
                         />
                       )}
                       <div className="flex-1 min-w-0">
@@ -463,7 +463,7 @@ export default function Backlog() {
                           <div className="text-sm text-gray-700 mt-0.5 italic">{item.notes}</div>
                         )}
                       </div>
-                      <div className="relative flex-shrink-0">
+                      <div className="relative shrink-0">
                         <button
                           onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
                           className="p-2 hover:bg-gray-200 rounded transition-colors relative z-0"
@@ -526,7 +526,7 @@ export default function Backlog() {
                   type="checkbox"
                   checked={true}
                   onChange={() => toggleCheck(item, true)}
-                  className="w-4 h-4 rounded border-gray-300 cursor-pointer flex-shrink-0"
+                  className="w-4 h-4 rounded border-gray-300 cursor-pointer shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-gray-700 line-through truncate">{item.name}</div>
@@ -538,7 +538,7 @@ export default function Backlog() {
                     </div>
                   )}
                 </div>
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <button
                     onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
                     className="p-1 hover:bg-gray-200 rounded transition-colors"
@@ -550,7 +550,7 @@ export default function Backlog() {
                     </svg>
                   </button>
                   {openMenuId === item.id && (
-                    <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                    <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-100">
                       <button
                         onClick={() => {
                           setOpenMenuId(null)

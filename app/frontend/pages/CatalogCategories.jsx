@@ -1,29 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import * as catalogService from '../services/catalogService'
 
 export default function CatalogCategories() {
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const {
+    data: categories = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['catalog', 'categories'],
+    queryFn: catalogService.getCategories,
+  })
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true)
-      const data = await catalogService.getCategories()
-      setCategories(data)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
         <p>Loading categories...</p>
@@ -34,9 +24,9 @@ export default function CatalogCategories() {
   if (error) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error}</p>
+        <p className="text-red-600 mb-3">Error: {error.message}</p>
         <button
-          onClick={fetchCategories}
+          onClick={() => refetch()}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
         >
           Retry
