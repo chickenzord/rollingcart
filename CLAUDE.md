@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Rollingcart is a self-hostable Rails 8.0.2 + React application with JWT authentication. It's designed for single-user deployment initially (with multi-user database schema ready for future expansion). The application uses Rodauth for authentication, Vite for frontend bundling, and modern Rails features including Solid Cache, Solid Queue, and Solid Cable.
 
+Consult CONCEPT.md for more details on the business design.
+
 ## Architecture
 
 ### Backend (Rails API)

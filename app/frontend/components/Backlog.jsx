@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
+import Fuse from 'fuse.js'
 
 export default function Backlog() {
   const { token } = useAuth()
@@ -14,6 +15,7 @@ export default function Backlog() {
   const [catalogSuggestions, setCatalogSuggestions] = useState([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [catalogCache, setCatalogCache] = useState(null)
 
   useEffect(() => {
     fetchData()
@@ -198,13 +200,7 @@ export default function Backlog() {
     }
   }
 
-  const searchCatalogItems = async (query) => {
-    if (query.length < 3) {
-      setCatalogSuggestions([])
-      setShowAutocomplete(false)
-      return
-    }
-
+  const fetchCatalogCache = async () => {
     try {
       const response = await fetch(`/api/v1/catalog/items?include_category=true`, {
         headers: {
@@ -219,15 +215,42 @@ export default function Backlog() {
       }
 
       const items = await response.json()
-      const filtered = items.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-      )
-
-      setCatalogSuggestions(filtered)
-      setShowAutocomplete(true)
+      setCatalogCache(items)
+      return items
     } catch (err) {
-      console.error('Error searching catalog:', err)
+      console.error('Error fetching catalog cache:', err)
+      return []
     }
+  }
+
+  const searchCatalogItems = async (query) => {
+    if (query.length < 3) {
+      setCatalogSuggestions([])
+      setShowAutocomplete(false)
+      return
+    }
+
+    // Use cached catalog items or fetch if not cached
+    let items = catalogCache
+    if (!items) {
+      items = await fetchCatalogCache()
+    }
+
+    // Configure fuse.js for smart sorting
+    const fuse = new Fuse(items, {
+      keys: ['name'],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+      minMatchCharLength: 1,
+    })
+
+    // Search and sort by relevance
+    const results = fuse.search(query)
+    const filtered = results.map(result => result.item)
+
+    setCatalogSuggestions(filtered)
+    setShowAutocomplete(true)
   }
 
   const isItemInBacklog = (catalogItemId) => {
@@ -315,6 +338,9 @@ export default function Backlog() {
       if (!response.ok) {
         throw new Error('Failed to create catalog item')
       }
+
+      // Invalidate catalog cache since we added a new item
+      setCatalogCache(null)
 
       setSearchQuery('')
       setShowAutocomplete(false)
@@ -421,60 +447,60 @@ export default function Backlog() {
         </button>
       )}
 
-      {/* Add Item Input with Autocomplete */}
-      <div className="mb-6 relative">
-        <input
-          type="text"
-          placeholder="Add item to backlog..."
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyDown={handleSearchKeyDown}
-          onFocus={() => searchQuery.length >= 3 && setShowAutocomplete(true)}
-          onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {showAutocomplete && searchQuery.length >= 3 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {catalogSuggestions.map((item, index) => (
-              <div
-                key={item.id}
-                onClick={() => addItemFromCatalog(item)}
-                className={`px-4 py-3 cursor-pointer border-b border-gray-100 ${
-                  index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-900">{item.name}</div>
-                    {item.category && (
-                      <div className="text-xs text-gray-500 mt-0.5">{item.category.name}</div>
-                    )}
-                  </div>
-                  {isItemInBacklog(item.id) && (
-                    <div className="ml-2 text-xs text-green-600 font-medium">✓ In backlog</div>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div
-              onClick={createNewCatalogItem}
-              className={`px-4 py-3 cursor-pointer ${
-                selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
-              }`}
-            >
-              <div className="text-sm text-blue-600 font-medium">
-                + Create new catalog item <span className="font-semibold">"{searchQuery}"</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Unchecked Items Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">Unchecked Items</h3>
           <span className="text-gray-500 text-sm">{uncheckedItems.length} items</span>
+        </div>
+
+        {/* Add Item Input with Autocomplete */}
+        <div className="mb-4 relative">
+          <input
+            type="text"
+            placeholder="Add item to backlog..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onKeyDown={handleSearchKeyDown}
+            onFocus={() => searchQuery.length >= 3 && setShowAutocomplete(true)}
+            onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {showAutocomplete && searchQuery.length >= 3 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              {catalogSuggestions.map((item, index) => (
+                <div
+                  key={item.id}
+                  onClick={() => addItemFromCatalog(item)}
+                  className={`px-4 py-3 cursor-pointer border-b border-gray-100 ${
+                    index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{item.name}</div>
+                      {item.category && (
+                        <div className="text-xs text-gray-500 mt-0.5">{item.category.name}</div>
+                      )}
+                    </div>
+                    {isItemInBacklog(item.id) && (
+                      <div className="ml-2 text-xs text-green-600 font-medium">✓ In backlog</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <div
+                onClick={createNewCatalogItem}
+                className={`px-4 py-3 cursor-pointer ${
+                  selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
+                }`}
+              >
+                <div className="text-sm text-blue-600 font-medium">
+                  + Create new catalog item <span className="font-semibold">"{searchQuery}"</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {uncheckedItems.length === 0 ? (
