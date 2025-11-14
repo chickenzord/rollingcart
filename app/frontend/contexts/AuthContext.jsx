@@ -1,57 +1,43 @@
-import { createContext, useState, useContext, useEffect } from 'react'
-import * as authService from '../services/authService'
+import { createContext, useContext } from 'react'
+import { useUserQuery } from '../hooks/useUserQuery'
+import { useLoginMutation, useLogoutMutation } from '../hooks/useAuthMutations'
 import { hasValidTokens } from '../utils/tokenStorage'
 
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  // React Query handles user data fetching and caching
+  const {
+    data: user,
+    isLoading: isLoadingUser,
+  } = useUserQuery()
 
-  // Check if user is authenticated on mount
-  useEffect(() => {
-    if (hasValidTokens()) {
-      // Fetch user details from API (uses tokens internally)
-      authService.getMe()
-        .then(data => {
-          setUser(data)
-          setLoading(false)
-        })
-        .catch((error) => {
-          console.error('Token verification error:', error)
-          // Token invalid, authService will handle clearing
-          setUser(null)
-          setLoading(false)
-        })
-    } else {
-      setLoading(false)
-    }
-  }, [])
+  // Mutations for login/logout
+  const loginMutation = useLoginMutation()
+  const logoutMutation = useLogoutMutation()
+
+  // Note: We don't handle userError here
+  // api.js automatically handles token refresh on 401
+  // If refresh fails, api.js clears tokens and query will be disabled (hasValidTokens() = false)
 
   const login = async (email, password) => {
-    // authService.login handles token storage internally
-    const userData = await authService.login(email, password)
-    setUser(userData)
+    const userData = await loginMutation.mutateAsync({ email, password })
     return userData
   }
 
   const logout = async () => {
-    try {
-      // authService.logout handles token cleanup internally
-      await authService.logout()
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      setUser(null)
-    }
+    await logoutMutation.mutateAsync()
   }
 
   const value = {
-    user,
+    user: user || null,
     login,
     logout,
-    loading,
-    isAuthenticated: !!user,
+    loading: isLoadingUser,
+    isAuthenticated: !!user && hasValidTokens(),
+    // Expose mutation states for advanced usage
+    isLoggingIn: loginMutation.isPending,
+    isLoggingOut: logoutMutation.isPending,
   }
 
   return (
