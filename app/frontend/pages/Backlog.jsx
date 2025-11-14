@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Fuse from 'fuse.js'
-import * as catalogService from '../services/catalogService'
-import * as shoppingService from '../services/shoppingService'
 import { formatTimeAgo } from '../utils/dateUtils'
+import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
+import {
+  useActiveSession,
+  useShoppingItems,
+  useCreateSession,
+  useFinishSession,
+  useDeleteSession,
+  useAddItem,
+  useCheckItem,
+  useUncheckItem,
+  useDeleteItem,
+} from '../hooks/queries/useShoppingQueries'
 
 export default function Backlog() {
   // Add glow animation styles
@@ -31,132 +41,95 @@ export default function Backlog() {
     document.head.appendChild(style)
     return () => document.head.removeChild(style)
   }, [])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [activeSession, setActiveSession] = useState(null)
-  const [uncheckedItems, setUncheckedItems] = useState([])
-  const [checkedItems, setCheckedItems] = useState([])
+
+  // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [catalogSuggestions, setCatalogSuggestions] = useState([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const [catalogCache, setCatalogCache] = useState(null)
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  // Queries - fetch data with automatic caching
+  const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
+  const { data: uncheckedItems = [], isLoading: isUncheckedLoading } = useShoppingItems({ isDone: false })
+  const { data: checkedItems = [], isLoading: isCheckedLoading } = useShoppingItems(
+    activeSession ? { forSession: activeSession.id } : {},
+    { enabled: !!activeSession }, // Only fetch if there's an active session
+  )
+  const { data: catalogCache } = useCatalogItems({ includeCategory: true })
 
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
+  // Mutations - actions that modify data
+  const createSessionMutation = useCreateSession()
+  const finishSessionMutation = useFinishSession()
+  const deleteSessionMutation = useDeleteSession()
+  const addItemMutation = useAddItem()
+  const checkItemMutation = useCheckItem()
+  const uncheckItemMutation = useUncheckItem()
+  const deleteItemMutation = useDeleteItem()
+  const createCatalogItemMutation = useCreateCatalogItem()
 
-      // Fetch active session
-      const session = await shoppingService.getActiveSession()
-      setActiveSession(session)
+  // Derived loading/error state
+  const loading = isSessionLoading || isUncheckedLoading || isCheckedLoading
+  const error = sessionError
 
-      // Fetch unchecked items (is_done=false)
-      const uncheckedData = await shoppingService.getItems({ isDone: false })
-      setUncheckedItems(uncheckedData)
-
-      // Fetch checked items if there's an active session
-      if (session) {
-        const checkedData = await shoppingService.getItems({ forSession: session.id })
-        setCheckedItems(checkedData)
-      } else {
-        setCheckedItems([])
-      }
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+  const startSession = () => {
+    createSessionMutation.mutate(undefined, {
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
   }
 
-  const startSession = async () => {
-    try {
-      await shoppingService.createSession()
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
-  }
-
-  const finishSession = async () => {
+  const finishSession = () => {
     if (!activeSession) return
-
-    try {
-      await shoppingService.finishSession(activeSession.id)
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
+    finishSessionMutation.mutate(activeSession.id, {
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
   }
 
-  const cancelSession = async () => {
+  const cancelSession = () => {
     if (!activeSession) return
-
     if (!confirm('Are you sure you want to cancel this session? This will delete the session.')) return
 
-    try {
-      await shoppingService.deleteSession(activeSession.id)
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
+    deleteSessionMutation.mutate(activeSession.id, {
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
+  }
+
+  const toggleCheck = (item, isCurrentlyChecked) => {
+    if (isCurrentlyChecked) {
+      uncheckItemMutation.mutate(item.id, {
+        onError: (err) => alert(`Error: ${err.message}`),
+      })
+    } else {
+      checkItemMutation.mutate(item.id, {
+        onError: (err) => alert(`Error: ${err.message}`),
+      })
     }
   }
 
-  const toggleCheck = async (item, isCurrentlyChecked) => {
-    try {
-      if (isCurrentlyChecked) {
-        await shoppingService.uncheckItem(item.id)
-      } else {
-        await shoppingService.checkItem(item.id)
-      }
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
-  }
-
-  const deleteItem = async (itemId) => {
+  const deleteItem = (itemId) => {
     if (!confirm('Are you sure you want to delete this item?')) return
 
-    try {
-      await shoppingService.deleteItem(itemId)
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
+    deleteItemMutation.mutate(itemId, {
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
   }
 
-  const fetchCatalogCache = async () => {
-    try {
-      const items = await catalogService.getItems({ includeCategory: true })
-      setCatalogCache(items)
-      return items
-    } catch (err) {
-      console.error('Error fetching catalog cache:', err)
-      return []
-    }
-  }
-
-  const searchCatalogItems = async (query) => {
+  const searchCatalogItems = (query) => {
     if (query.length < 1) {
       setCatalogSuggestions([])
       setShowAutocomplete(false)
       return
     }
 
-    // Use cached catalog items or fetch if not cached
-    let items = catalogCache
-    if (!items) {
-      items = await fetchCatalogCache()
+    // Use cached catalog items
+    if (!catalogCache) {
+      setCatalogSuggestions([])
+      setShowAutocomplete(true)
+      return
     }
 
     // Configure fuse.js for smart sorting
-    const fuse = new Fuse(items, {
+    const fuse = new Fuse(catalogCache, {
       keys: ['name'],
       threshold: 0.4,
       includeScore: true,
@@ -172,10 +145,32 @@ export default function Backlog() {
     setShowAutocomplete(true)
   }
 
-  const isItemInBacklog = (catalogItemId) => {
-    return [...uncheckedItems, ...checkedItems].some(item => item.catalog_item_id === catalogItemId)
+  const addItemFromCatalog = (catalogItem) => {
+    addItemMutation.mutate(catalogItem.id, {
+      onSuccess: () => {
+        setSearchQuery('')
+        setShowAutocomplete(false)
+        setSelectedIndex(-1)
+      },
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
   }
 
+  const createNewCatalogItem = () => {
+    createCatalogItemMutation.mutate(
+      { item: { name: searchQuery, category_id: null }, options: { addToShopping: true } },
+      {
+        onSuccess: () => {
+          setSearchQuery('')
+          setShowAutocomplete(false)
+          setSelectedIndex(-1)
+        },
+        onError: (err) => alert(`Error: ${err.message}`),
+      },
+    )
+  }
+
+  // Helper functions for UI interactions
   const handleSearchChange = (e) => {
     const query = e.target.value
     setSearchQuery(query)
@@ -212,37 +207,8 @@ export default function Backlog() {
     }
   }
 
-  const addItemFromCatalog = async (catalogItem) => {
-    try {
-      await shoppingService.addItem(catalogItem.id)
-
-      setSearchQuery('')
-      setShowAutocomplete(false)
-      setSelectedIndex(-1)
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
-  }
-
-  const createNewCatalogItem = async () => {
-    try {
-      // Create the catalog item with add_to_shopping flag
-      await catalogService.createItem(
-        { name: searchQuery, category_id: null },
-        { addToShopping: true },
-      )
-
-      // Invalidate catalog cache since we added a new item
-      setCatalogCache(null)
-
-      setSearchQuery('')
-      setShowAutocomplete(false)
-      setSelectedIndex(-1)
-      await fetchData()
-    } catch (err) {
-      alert(`Error: ${err.message}`)
-    }
+  const isItemInBacklog = (catalogItemId) => {
+    return [...uncheckedItems, ...checkedItems].some(item => item.catalog_item_id === catalogItemId)
   }
 
   const groupItemsByCategory = (items) => {
@@ -262,6 +228,7 @@ export default function Backlog() {
     return uniqueCategories.size > 1
   }
 
+  // Loading and error states
   if (loading) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
@@ -273,9 +240,9 @@ export default function Backlog() {
   if (error) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error}</p>
+        <p className="text-red-600 mb-3">Error: {error.message}</p>
         <button
-          onClick={fetchData}
+          onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
         >
           Retry
@@ -283,6 +250,7 @@ export default function Backlog() {
       </div>
     )
   }
+
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-sm">
