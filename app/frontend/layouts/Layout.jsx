@@ -18,7 +18,14 @@ function Layout() {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-8">
             <Link to="/" className="text-2xl font-semibold text-gray-800 hover:text-gray-900 no-underline">
-              Rollingcart
+              <img
+                src="/favicon-32x32.png"
+                alt="RollingCart Logo"
+                width={32}
+                height={32}
+                className="inline-block mr-2"
+              />
+              <span className="text-red-600">Rolling</span>Cart
             </Link>
             <div className="flex gap-6">
               {navLinks.map((link) => (
