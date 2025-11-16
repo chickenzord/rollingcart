@@ -7,6 +7,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import * as shoppingService from '../../services/shoppingService'
 
 /**
+ * Fetch all shopping sessions
+ * @returns {UseQueryResult} Query result with sessions array
+ */
+export function useSessions() {
+  return useQuery({
+    queryKey: ['shopping', 'sessions'],
+    queryFn: shoppingService.getAllSessions,
+  })
+}
+
+/**
  * Fetch the active shopping session
  * @returns {UseQueryResult} Query result with active session or null
  */
@@ -58,8 +69,9 @@ export function useFinishSession() {
   return useMutation({
     mutationFn: shoppingService.finishSession,
     onSuccess: () => {
-      // Invalidate active session and items queries
+      // Invalidate active session, sessions list, and items queries
       queryClient.invalidateQueries({ queryKey: ['shopping', 'session', 'active'] })
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'sessions'] })
       queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
     },
   })
@@ -75,8 +87,9 @@ export function useDeleteSession() {
   return useMutation({
     mutationFn: shoppingService.deleteSession,
     onSuccess: () => {
-      // Invalidate active session and items queries
+      // Invalidate active session, sessions list, and items queries
       queryClient.invalidateQueries({ queryKey: ['shopping', 'session', 'active'] })
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'sessions'] })
       queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
     },
   })

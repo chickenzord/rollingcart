@@ -5,6 +5,14 @@
 import { get, post, patch, del } from './api'
 
 /**
+ * Fetch all shopping sessions
+ * @returns {Promise<Array>} All sessions (ordered by created_at desc)
+ */
+export async function getAllSessions() {
+  return get('/api/v1/shopping/sessions')
+}
+
+/**
  * Fetch active shopping session
  * @returns {Promise<Object|null>} Active session or null
  */

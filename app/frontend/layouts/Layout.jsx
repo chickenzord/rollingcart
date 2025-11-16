@@ -7,7 +7,8 @@ function Layout() {
 
   const navLinks = [
     { path: '/', label: 'Dashboard' },
-    { path: '/backlog', label: 'Shopping Backlog' },
+    { path: '/backlog', label: 'Backlog' },
+    { path: '/shopping/sessions', label: 'Sessions' },
     { path: '/catalog/categories', label: 'Categories' },
   ]
 

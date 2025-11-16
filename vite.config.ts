@@ -8,6 +8,6 @@ export default defineConfig({
     react(),
   ],
   define: {
-    'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV),
+    'import.meta.env.MODE': process.env.NODE_ENV,
   },
 })

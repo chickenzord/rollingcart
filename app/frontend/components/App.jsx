@@ -4,6 +4,7 @@ import Login from '../pages/Login'
 import Layout from '../layouts/Layout'
 import Dashboard from '../pages/Dashboard'
 import Backlog from '../pages/Backlog'
+import ShoppingSessions from '../pages/ShoppingSessions'
 import CatalogCategories from '../pages/CatalogCategories'
 import CatalogItems from '../pages/CatalogItems'
 import ProtectedRoute from './ProtectedRoute'
@@ -40,6 +41,7 @@ function AppRoutes() {
       >
         <Route path="/" element={<Dashboard />} />
         <Route path="/backlog" element={<Backlog />} />
+        <Route path="/shopping/sessions" element={<ShoppingSessions />} />
         <Route path="/catalog/categories" element={<CatalogCategories />} />
         <Route path="/catalog/categories/:categoryId/items" element={<CatalogItems />} />
       </Route>
