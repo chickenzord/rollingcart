@@ -15,10 +15,13 @@ import {
   useUncheckItem,
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
+import { ANIMATION_DURATIONS } from '../config/animations'
 
 export default function Backlog() {
   // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
+  const [transitioningOutItems, setTransitioningOutItems] = useState(new Set()) // Items fading out
+  const [transitioningInItems, setTransitioningInItems] = useState(new Set()) // Items fading in
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -68,13 +71,79 @@ export default function Backlog() {
   const toggleCheck = (item, isCurrentlyChecked) => {
     if (isCurrentlyChecked) {
       uncheckItemMutation.mutate(item.id, {
+        onSuccess: () => {
+          // Start fade-out animation from checked section
+          setTransitioningOutItems(prev => new Set(prev).add(item.id))
+
+          // After fade-out completes, start fade-in in unchecked section
+          setTimeout(() => {
+            setTransitioningOutItems(prev => {
+              const next = new Set(prev)
+              next.delete(item.id)
+              return next
+            })
+            setTransitioningInItems(prev => new Set(prev).add(item.id))
+          }, ANIMATION_DURATIONS.ITEM_FADE_OUT)
+
+          // Clear fade-in animation after it completes
+          setTimeout(() => {
+            setTransitioningInItems(prev => {
+              const next = new Set(prev)
+              next.delete(item.id)
+              return next
+            })
+          }, ANIMATION_DURATIONS.ITEM_FULL_TRANSITION)
+        },
         onError: (err) => alert(`Error: ${err.message}`),
       })
     } else {
       checkItemMutation.mutate(item.id, {
+        onSuccess: () => {
+          // Start fade-out animation from unchecked section
+          setTransitioningOutItems(prev => new Set(prev).add(item.id))
+
+          // After fade-out completes, start fade-in in checked section
+          setTimeout(() => {
+            setTransitioningOutItems(prev => {
+              const next = new Set(prev)
+              next.delete(item.id)
+              return next
+            })
+            setTransitioningInItems(prev => new Set(prev).add(item.id))
+          }, ANIMATION_DURATIONS.ITEM_FADE_OUT)
+
+          // Clear fade-in animation after it completes
+          setTimeout(() => {
+            setTransitioningInItems(prev => {
+              const next = new Set(prev)
+              next.delete(item.id)
+              return next
+            })
+          }, ANIMATION_DURATIONS.ITEM_FULL_TRANSITION)
+        },
         onError: (err) => alert(`Error: ${err.message}`),
       })
     }
+  }
+
+  // Helper to check if a specific item is being checked/unchecked
+  const isItemLoading = (itemId) => {
+    return (
+      (checkItemMutation.isPending && checkItemMutation.variables === itemId) ||
+      (uncheckItemMutation.isPending && uncheckItemMutation.variables === itemId)
+    )
+  }
+
+  // Helper to trigger arrival animation for newly added items
+  const markItemAsArrived = (itemId) => {
+    setTransitioningInItems(prev => new Set(prev).add(itemId))
+    setTimeout(() => {
+      setTransitioningInItems(prev => {
+        const next = new Set(prev)
+        next.delete(itemId)
+        return next
+      })
+    }, ANIMATION_DURATIONS.ITEM_FADE_IN)
   }
 
   const deleteItem = (itemId) => {
@@ -87,6 +156,10 @@ export default function Backlog() {
 
   const addItemFromCatalog = (catalogItem) => {
     addItemMutation.mutate(catalogItem.id, {
+      onSuccess: (newItem) => {
+        // Trigger arrival animation for newly added item
+        markItemAsArrived(newItem.id)
+      },
       onError: (err) => alert(`Error: ${err.message}`),
     })
   }
@@ -95,6 +168,10 @@ export default function Backlog() {
     createCatalogItemMutation.mutate(
       { item: { name: itemName, category_id: null }, options: { addToShopping: true } },
       {
+        onSuccess: (newItem) => {
+          // Trigger arrival animation for newly created item
+          markItemAsArrived(newItem.id)
+        },
         onError: (err) => alert(`Error: ${err.message}`),
       },
     )
@@ -210,9 +287,11 @@ export default function Backlog() {
                       showCategoryLabel={shouldGroupByCategory(uncheckedItems)}
                       openMenuId={openMenuId}
                       onMenuToggle={setOpenMenuId}
-                      isNewItem={Date.now() - new Date(item.created_at).getTime() < 2000}
                       isFirstInGroup={index === 0}
                       isLastInGroup={index === items.length - 1}
+                      isLoading={isItemLoading(item.id)}
+                      isTransitioningOut={transitioningOutItems.has(item.id)}
+                      isTransitioningIn={transitioningInItems.has(item.id)}
                     />
                   ))}
                 </div>
@@ -242,6 +321,9 @@ export default function Backlog() {
                 showCategoryLabel={false}
                 openMenuId={openMenuId}
                 onMenuToggle={setOpenMenuId}
+                isLoading={isItemLoading(item.id)}
+                isTransitioningOut={transitioningOutItems.has(item.id)}
+                isTransitioningIn={transitioningInItems.has(item.id)}
               />
             ))}
           </div>
