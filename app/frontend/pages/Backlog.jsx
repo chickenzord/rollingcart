@@ -207,10 +207,10 @@ export default function Backlog() {
   if (error) {
     return (
       <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error.message}</p>
+        <p className="text-error-600 mb-3">Error: {error.message}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded transition-colors"
         >
           Retry
         </button>
@@ -224,8 +224,8 @@ export default function Backlog() {
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <ShoppingBag width="32px" height="32px" strokeWidth={2} className="text-blue-600" />
-          <h1 className="text-3xl font-bold">Shopping List</h1>
+          <ShoppingBag width="32px" height="32px" strokeWidth={2} className="text-primary-600" />
+          <h1 className="text-3xl font-bold text-gray-900">Shopping List</h1>
         </div>
         <p className="text-gray-600 text-sm">Things you want to pick up whenever you&rsquo;re out shopping</p>
       </div>
@@ -241,7 +241,7 @@ export default function Backlog() {
       ) : (
         <button
           onClick={startSession}
-          className="w-full mb-6 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center gap-3"
+          className="w-full mb-6 px-6 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center gap-3"
         >
           <Cart width="24px" height="24px" strokeWidth={2.5} />
           Start Shopping Trip
@@ -251,8 +251,8 @@ export default function Backlog() {
       {/* Unchecked Items Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Items to Get</h3>
-          <span className="text-gray-500 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
+          <h3 className="text-xl font-semibold text-gray-900">Items to Get</h3>
+          <span className="text-gray-600 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
         </div>
 
         {/* Add Item Input with Autocomplete */}
@@ -268,7 +268,7 @@ export default function Backlog() {
             <p className="text-gray-600 mb-4">Your list is empty! Add items as you think of them.</p>
             <Link
               to="/catalog/categories"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors no-underline"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded font-medium transition-colors no-underline"
             >
               <Packages width="20px" height="20px" strokeWidth={2} />
               Browse Catalog

@@ -39,7 +39,7 @@ export default function ShoppingItem({
           {isLoading ? (
             <div className="shrink-0">
               <svg
-                className={`${isChecked ? 'w-4 h-4' : 'w-5 h-5'} animate-spin text-blue-600`}
+                className={`${isChecked ? 'w-4 h-4' : 'w-5 h-5'} animate-spin text-primary-600`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -71,12 +71,12 @@ export default function ShoppingItem({
       )}
 
       <div className="flex-1 min-w-0">
-        <div className={`${isChecked ? 'text-sm text-gray-700 line-through truncate' : 'font-semibold text-gray-900'}`}>
+        <div className={`${isChecked ? 'text-sm text-gray-600 line-through truncate' : 'font-semibold text-gray-900'}`}>
           {item.name}
         </div>
 
         {(item.category || item.description) && (
-          <div className={`${isChecked ? 'text-xs text-gray-400' : 'text-sm text-gray-500 mt-0.5'} ${isChecked ? 'truncate' : ''}`}>
+          <div className={`${isChecked ? 'text-xs text-gray-400' : 'text-sm text-gray-600 mt-0.5'} ${isChecked ? 'truncate' : ''}`}>
             {showCategoryLabel ? (
               // Show description only if category grouping is active
               item.description
@@ -92,7 +92,7 @@ export default function ShoppingItem({
         )}
 
         {item.notes && !isChecked && (
-          <div className="text-sm text-gray-700 mt-0.5 italic">{item.notes}</div>
+          <div className="text-sm text-gray-600 mt-0.5 italic">{item.notes}</div>
         )}
       </div>
 

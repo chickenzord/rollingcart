@@ -31,7 +31,7 @@ export default function SessionListItem({ session, onDelete, onViewDetails }) {
     <div
       className={`border rounded-lg p-5 ${
         isActive
-          ? 'border-blue-500 bg-blue-50'
+          ? 'border-primary-500 bg-primary-50'
           : 'border-gray-300 bg-white hover:bg-gray-50'
       } transition-colors`}
     >
@@ -39,7 +39,7 @@ export default function SessionListItem({ session, onDelete, onViewDetails }) {
         <div className="flex-1">
           {/* Session Badge */}
           {isActive && (
-            <div className="inline-block px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded mb-2">
+            <div className="inline-block px-2 py-1 bg-primary-600 text-white text-xs font-semibold rounded mb-2">
               SHOPPING NOW
             </div>
           )}

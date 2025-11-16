@@ -112,7 +112,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
         onKeyDown={handleSearchKeyDown}
         onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
         onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
       />
       {showAutocomplete && searchQuery.length >= 1 && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -129,7 +129,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                 }
               }}
               className={`px-4 py-3 cursor-pointer border-b border-gray-100 ${
-                index === selectedIndex ? 'bg-blue-50' : 'hover:bg-gray-50'
+                index === selectedIndex ? 'bg-primary-50' : 'hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -160,10 +160,10 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                   }
                 }}
                 className={`px-4 py-3 cursor-pointer ${
-                  selectedIndex === catalogSuggestions.length ? 'bg-blue-50' : 'hover:bg-gray-50'
+                  selectedIndex === catalogSuggestions.length ? 'bg-primary-50' : 'hover:bg-gray-50'
                 }`}
               >
-                <div className="text-sm text-blue-600 font-medium">
+                <div className="text-sm text-primary-600 font-medium">
                   + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
                 </div>
               </div>

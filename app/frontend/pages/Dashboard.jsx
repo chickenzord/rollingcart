@@ -15,7 +15,7 @@ function Dashboard() {
         <div className="flex gap-4">
           <Link
             to="/backlog"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors no-underline"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded font-medium transition-colors no-underline"
           >
             <Cart width="20px" height="20px" strokeWidth={2} />
             My Shopping List

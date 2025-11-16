@@ -25,7 +25,7 @@ function Layout() {
                 height={32}
                 className="inline-block mr-2"
               />
-              <span className="text-red-600">Rolling</span>Cart
+              <span className="text-accent-600">Rolling</span>Cart
             </Link>
             <div className="flex gap-6">
               {navLinks.map((link) => (
@@ -34,7 +34,7 @@ function Layout() {
                   to={link.path}
                   className={`text-sm font-medium transition-colors no-underline ${
                     location.pathname === link.path
-                      ? 'text-blue-600'
+                      ? 'text-primary-600'
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >

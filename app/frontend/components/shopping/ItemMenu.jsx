@@ -9,7 +9,7 @@ export default function ItemMenu({ isOpen, onToggle, onEdit, onDelete }) {
     <div className="relative shrink-0">
       <button
         onClick={onToggle}
-        className="p-2 hover:bg-gray-200 rounded transition-colors relative z-0"
+        className="p-2 hover:bg-gray-100 rounded transition-colors relative z-0"
         aria-label="Item menu"
       >
         <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
@@ -22,13 +22,13 @@ export default function ItemMenu({ isOpen, onToggle, onEdit, onDelete }) {
         <div className="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <button
             onClick={onEdit}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+            className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-gray-900"
           >
             Edit Notes
           </button>
           <button
             onClick={onDelete}
-            className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600 text-sm"
+            className="block w-full text-left px-4 py-2 hover:bg-gray-50 text-error-600 text-sm"
           >
             Delete
           </button>

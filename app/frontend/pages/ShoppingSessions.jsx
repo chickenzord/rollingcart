@@ -40,7 +40,7 @@ export default function ShoppingSessions() {
         <p className="text-red-600 mb-3">Error: {error.message}</p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded transition-colors"
         >
           Retry
         </button>
@@ -77,7 +77,7 @@ export default function ShoppingSessions() {
       )}
 
       {/* Summary Stats */}
-      <div className="mt-5 p-4 bg-blue-50 rounded-lg">
+      <div className="mt-5 p-4 bg-primary-50 rounded-lg">
         <p className="m-0 text-sm">
           <strong>Total trips:</strong> {sessions.length}
         </p>
