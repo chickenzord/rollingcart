@@ -78,6 +78,24 @@ export function useFinishSession() {
 }
 
 /**
+ * Reactivate a shopping session
+ * @returns {UseMutationResult} Mutation for reactivating sessions
+ */
+export function useReactivateSession() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: shoppingService.reactivateSession,
+    onSuccess: () => {
+      // Invalidate active session, sessions list, and items queries
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'session', 'active'] })
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
+    },
+  })
+}
+
+/**
  * Delete a shopping session
  * @returns {UseMutationResult} Mutation for deleting sessions
  */

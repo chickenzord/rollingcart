@@ -28,3 +28,15 @@ export function formatTimeAgo(dateString) {
   const weeks = Math.floor(seconds / 604800)
   return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
 }
+
+/**
+ * Check if a date is within the last 24 hours
+ * @param {string} dateString - ISO date string
+ * @returns {boolean} True if within 24 hours
+ */
+export function isWithin24Hours(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const hoursDiff = (now - date) / (1000 * 60 * 60) // Convert to hours
+  return hoursDiff <= 24
+}

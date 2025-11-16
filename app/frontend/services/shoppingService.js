@@ -38,6 +38,15 @@ export async function finishSession(sessionId) {
 }
 
 /**
+ * Reactivate a finished shopping session
+ * @param {string|number} sessionId
+ * @returns {Promise<Object>} Updated session
+ */
+export async function reactivateSession(sessionId) {
+  return patch(`/api/v1/shopping/sessions/${sessionId}`, { session: { active: true } })
+}
+
+/**
  * Delete/cancel a shopping session
  * @param {string|number} sessionId
  */

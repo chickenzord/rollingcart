@@ -5,8 +5,10 @@ import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
 import AutocompleteSearch from '../components/shopping/AutocompleteSearch'
 import {
   useActiveSession,
+  useSessions,
   useShoppingItems,
   useCreateSession,
+  useReactivateSession,
   useFinishSession,
   useDeleteSession,
   useAddItem,
@@ -15,7 +17,8 @@ import {
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
 import { ANIMATION_DURATIONS } from '../config/animations'
-import { Cart, ShoppingBag, CheckCircle } from 'iconoir-react'
+import { Cart, ShoppingBag, CheckCircle, Clock } from 'iconoir-react'
+import { isWithin24Hours } from '../utils/dateUtils'
 
 export default function Backlog() {
   // UI state (not data state)
@@ -25,6 +28,7 @@ export default function Backlog() {
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
+  const { data: allSessions = [] } = useSessions()
   const { data: uncheckedItems = [], isLoading: isUncheckedLoading } = useShoppingItems({ isDone: false })
   const { data: checkedItems = [], isLoading: isCheckedLoading } = useShoppingItems(
     activeSession ? { forSession: activeSession.id } : {},
@@ -34,6 +38,7 @@ export default function Backlog() {
 
   // Mutations - actions that modify data
   const createSessionMutation = useCreateSession()
+  const reactivateSessionMutation = useReactivateSession()
   const finishSessionMutation = useFinishSession()
   const deleteSessionMutation = useDeleteSession()
   const addItemMutation = useAddItem()
@@ -46,8 +51,20 @@ export default function Backlog() {
   const loading = isSessionLoading || isUncheckedLoading || isCheckedLoading
   const error = sessionError
 
+  // Find most recent finished session within 24 hours
+  const recentSession = allSessions.find(
+    session => !session.active && isWithin24Hours(session.created_at)
+  )
+
   const startSession = () => {
     createSessionMutation.mutate(undefined, {
+      onError: (err) => alert(`Error: ${err.message}`),
+    })
+  }
+
+  const continueRecentSession = () => {
+    if (!recentSession) return
+    reactivateSessionMutation.mutate(recentSession.id, {
       onError: (err) => alert(`Error: ${err.message}`),
     })
   }
@@ -253,13 +270,30 @@ export default function Backlog() {
           onCancel={cancelSession}
         />
       ) : (
-        <button
-          onClick={startSession}
-          className="w-full mb-6 px-6 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center gap-3"
-        >
-          <Cart width="24px" height="24px" strokeWidth={2.5} />
-          Start Shopping Trip
-        </button>
+        <div className="mb-6 flex gap-3 flex-wrap">
+          {/* Primary action - Start new session */}
+          <button
+            onClick={startSession}
+            className="flex-1 min-w-[200px] px-6 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center gap-3"
+          >
+            <Cart width="24px" height="24px" strokeWidth={2.5} />
+            Start Shopping Trip
+          </button>
+
+          {/* Secondary action - Continue recent session (only if available) */}
+          {recentSession && (
+            <button
+              onClick={continueRecentSession}
+              className="px-5 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <Clock width="20px" height="20px" strokeWidth={2} className="shrink-0" />
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-medium">Continue Recent</span>
+                <span className="text-xs text-gray-600">{recentSession.name}</span>
+              </div>
+            </button>
+          )}
+        </div>
       )}
 
       {/* Unchecked Items Section */}
