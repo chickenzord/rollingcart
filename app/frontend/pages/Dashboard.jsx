@@ -1,5 +1,6 @@
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
+import { Cart, Packages, Clock } from 'iconoir-react'
 
 function Dashboard() {
   const { user } = useAuth()
@@ -14,15 +15,24 @@ function Dashboard() {
         <div className="flex gap-4">
           <Link
             to="/backlog"
-            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors no-underline"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors no-underline"
           >
+            <Cart width="20px" height="20px" strokeWidth={2} />
             My Shopping List
           </Link>
           <Link
             to="/catalog/categories"
-            className="inline-block px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded font-medium transition-colors no-underline"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded font-medium transition-colors no-underline"
           >
+            <Packages width="20px" height="20px" strokeWidth={2} />
             Browse Catalog
+          </Link>
+          <Link
+            to="/shopping/sessions"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded font-medium transition-colors no-underline"
+          >
+            <Clock width="20px" height="20px" strokeWidth={2} />
+            Past Trips
           </Link>
         </div>
       </div>

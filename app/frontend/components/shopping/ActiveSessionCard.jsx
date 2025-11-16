@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { formatTimeAgo } from '../../utils/dateUtils'
+import { CheckCircle, Xmark } from 'iconoir-react'
 
 /**
  * Active session information card
@@ -19,15 +20,17 @@ export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, 
         {hasCheckedItems ? (
           <button
             onClick={onFinish}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors"
           >
+            <CheckCircle width="20px" height="20px" strokeWidth={2} />
             Done Shopping
           </button>
         ) : (
           <button
             onClick={onCancel}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors"
           >
+            <Xmark width="20px" height="20px" strokeWidth={2} />
             Cancel Trip
           </button>
         )}
