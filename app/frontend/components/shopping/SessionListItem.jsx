@@ -40,7 +40,7 @@ export default function SessionListItem({ session, onDelete, onViewDetails }) {
           {/* Session Badge */}
           {isActive && (
             <div className="inline-block px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded mb-2">
-              ACTIVE
+              SHOPPING NOW
             </div>
           )}
 

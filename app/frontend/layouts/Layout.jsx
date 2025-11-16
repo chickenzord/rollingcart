@@ -6,10 +6,10 @@ function Layout() {
   const location = useLocation()
 
   const navLinks = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/backlog', label: 'Backlog' },
-    { path: '/shopping/sessions', label: 'Sessions' },
-    { path: '/catalog/categories', label: 'Categories' },
+    { path: '/', label: 'Home' },
+    { path: '/backlog', label: 'Shopping List' },
+    { path: '/shopping/sessions', label: 'Past Trips' },
+    { path: '/catalog/categories', label: 'Catalog' },
   ]
 
   return (

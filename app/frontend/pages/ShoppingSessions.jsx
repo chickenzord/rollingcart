@@ -52,15 +52,15 @@ export default function ShoppingSessions() {
     <div className="bg-white p-8 rounded-lg shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Shopping Sessions</h1>
-        <p className="text-gray-600 text-sm">History of your completed shopping trips</p>
+        <h1 className="text-3xl font-bold mb-2">Past Shopping Trips</h1>
+        <p className="text-gray-600 text-sm">Your shopping history</p>
       </div>
 
       {sessions.length === 0 ? (
         <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <p className="text-gray-600 mb-4">No shopping sessions yet.</p>
+          <p className="text-gray-600 mb-4">No trips yet!</p>
           <p className="text-gray-500 text-sm">
-            Complete your first shopping session from the Backlog page to see it here.
+            Your completed shopping trips will show up here.
           </p>
         </div>
       ) : (
@@ -79,7 +79,7 @@ export default function ShoppingSessions() {
       {/* Summary Stats */}
       <div className="mt-5 p-4 bg-blue-50 rounded-lg">
         <p className="m-0 text-sm">
-          <strong>Total Sessions:</strong> {sessions.length}
+          <strong>Total trips:</strong> {sessions.length}
         </p>
       </div>
     </div>

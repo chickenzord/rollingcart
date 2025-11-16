@@ -222,8 +222,8 @@ export default function Backlog() {
     <div className="bg-white p-8 rounded-lg shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Shopping Backlog</h1>
-        <p className="text-gray-600 text-sm">Items waiting to be added to your next shopping trip</p>
+        <h1 className="text-3xl font-bold mb-2">Shopping List</h1>
+        <p className="text-gray-600 text-sm">Things you want to pick up whenever you&rsquo;re out shopping</p>
       </div>
 
       {/* Active Session Card or Start Button */}
@@ -239,15 +239,15 @@ export default function Backlog() {
           onClick={startSession}
           className="w-full mb-6 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition-colors"
         >
-          Start Shopping Session
+          Start Shopping Trip
         </button>
       )}
 
       {/* Unchecked Items Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Unchecked Items</h3>
-          <span className="text-gray-500 text-sm">{uncheckedItems.length} items</span>
+          <h3 className="text-xl font-semibold">Items to Get</h3>
+          <span className="text-gray-500 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
         </div>
 
         {/* Add Item Input with Autocomplete */}
@@ -260,7 +260,7 @@ export default function Backlog() {
 
         {uncheckedItems.length === 0 ? (
           <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <p className="text-gray-600 mb-4">No items in your shopping backlog yet.</p>
+            <p className="text-gray-600 mb-4">Your list is empty! Add items as you think of them.</p>
             <Link
               to="/catalog/categories"
               className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium transition-colors no-underline"
@@ -305,8 +305,8 @@ export default function Backlog() {
       {activeSession && checkedItems.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-medium text-gray-600">Checked Items</h3>
-            <span className="text-gray-400 text-xs">{checkedItems.length} items</span>
+            <h3 className="text-lg font-medium text-gray-600">In Your Cart</h3>
+            <span className="text-gray-400 text-xs">{checkedItems.length} {checkedItems.length === 1 ? 'item' : 'items'}</span>
           </div>
 
           <div className="space-y-1">
