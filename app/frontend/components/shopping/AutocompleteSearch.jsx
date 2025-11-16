@@ -11,7 +11,7 @@ import Fuse from 'fuse.js'
  * - Shows "Create new item" option when appropriate (3+ chars, no high similarity match)
  * - Indicates if item is already in backlog
  */
-export default function AutocompleteSearch({ catalogCache, existingItems, onSelectItem, onCreateNew }) {
+export default function AutocompleteSearch({ catalogCache, existingItems, onSelectItem, onCreateNew, placeholder }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [catalogSuggestions, setCatalogSuggestions] = useState([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
@@ -106,7 +106,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
     <div className="mb-4 relative">
       <input
         type="text"
-        placeholder="Add item to backlog..."
+        placeholder={placeholder}
         value={searchQuery}
         onChange={handleSearchChange}
         onKeyDown={handleSearchKeyDown}
@@ -192,8 +192,10 @@ AutocompleteSearch.propTypes = {
   ).isRequired,
   onSelectItem: PropTypes.func.isRequired,
   onCreateNew: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
 }
 
 AutocompleteSearch.defaultProps = {
   catalogCache: [],
+  placeholder: 'Add item to backlog...',
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
@@ -16,7 +15,7 @@ import {
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
 import { ANIMATION_DURATIONS } from '../config/animations'
-import { Cart, Packages, ShoppingBag } from 'iconoir-react'
+import { Cart, ShoppingBag, CheckCircle } from 'iconoir-react'
 
 export default function Backlog() {
   // UI state (not data state)
@@ -195,6 +194,21 @@ export default function Backlog() {
     return uniqueCategories.size > 1
   }
 
+  // Compute adaptive placeholder based on current state
+  const getPlaceholder = () => {
+    if (activeSession) {
+      if (uncheckedItems.length === 0 && checkedItems.length > 0) {
+        return "Need anything else while you're here?"
+      }
+      return 'Add more items as you shop...'
+    } else {
+      if (uncheckedItems.length === 0) {
+        return 'What do you need to pick up?'
+      }
+      return 'Add item to backlog...'
+    }
+  }
+
   // Loading and error states
   if (loading) {
     return (
@@ -261,18 +275,19 @@ export default function Backlog() {
           existingItems={[...uncheckedItems, ...checkedItems]}
           onSelectItem={addItemFromCatalog}
           onCreateNew={createNewCatalogItem}
+          placeholder={getPlaceholder()}
         />
 
         {uncheckedItems.length === 0 ? (
           <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <p className="text-gray-600 mb-4">Your list is empty! Add items as you think of them.</p>
-            <Link
-              to="/catalog/categories"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded font-medium transition-colors no-underline"
-            >
-              <Packages width="20px" height="20px" strokeWidth={2} />
-              Browse Catalog
-            </Link>
+            {activeSession && checkedItems.length > 0 ? (
+              <>
+                <p className="text-gray-700 mb-2">🎉 Nice! You&rsquo;ve got everything in your cart.</p>
+                <p className="text-gray-600 text-sm">Feel free to add more items or wrap up your trip when you&rsquo;re ready!</p>
+              </>
+            ) : (
+              <p className="text-gray-600">Your list is empty! Add items as you think of them.</p>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -332,6 +347,23 @@ export default function Backlog() {
                 isTransitioningIn={transitioningInItems.has(item.id)}
               />
             ))}
+          </div>
+
+          {/* Subtle Finish Session prompt */}
+          <div className="mt-3">
+            <p className="text-xs text-gray-600 mb-2 text-center italic">
+              Ready to wrap up? Finishing your trip will clear these items from your backlog.
+              {uncheckedItems.length > 0 && (
+                <> The {uncheckedItems.length} remaining {uncheckedItems.length === 1 ? 'item' : 'items'} will stay for next time.</>
+              )} 👍
+            </p>
+            <button
+              onClick={finishSession}
+              className="w-full px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded font-medium transition-colors flex items-center justify-center gap-2 text-sm"
+            >
+              <CheckCircle width="16px" height="16px" strokeWidth={2} />
+              Done Shopping
+            </button>
           </div>
         </div>
       )}
