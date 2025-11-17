@@ -3,6 +3,7 @@ import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatal
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
 import AutocompleteSearch from '../components/shopping/AutocompleteSearch'
+import CancelSessionModal from '../components/shopping/CancelSessionModal'
 import {
   useActiveSession,
   useSessions,
@@ -11,6 +12,8 @@ import {
   useReactivateSession,
   useFinishSession,
   useDeleteSession,
+  useUncheckSessionItems,
+  useDeleteSessionItems,
   useAddItem,
   useCheckItem,
   useUncheckItem,
@@ -25,6 +28,7 @@ export default function Backlog() {
   const [openMenuId, setOpenMenuId] = useState(null)
   const [transitioningOutItems, setTransitioningOutItems] = useState(new Set()) // Items fading out
   const [transitioningInItems, setTransitioningInItems] = useState(new Set()) // Items fading in
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -41,6 +45,8 @@ export default function Backlog() {
   const reactivateSessionMutation = useReactivateSession()
   const finishSessionMutation = useFinishSession()
   const deleteSessionMutation = useDeleteSession()
+  const uncheckSessionItemsMutation = useUncheckSessionItems()
+  const deleteSessionItemsMutation = useDeleteSessionItems()
   const addItemMutation = useAddItem()
   const checkItemMutation = useCheckItem()
   const uncheckItemMutation = useUncheckItem()
@@ -53,7 +59,7 @@ export default function Backlog() {
 
   // Find most recent finished session within 24 hours
   const recentSession = allSessions.find(
-    session => !session.active && isWithin24Hours(session.created_at)
+    session => !session.active && isWithin24Hours(session.created_at),
   )
 
   const startSession = () => {
@@ -78,11 +84,30 @@ export default function Backlog() {
 
   const cancelSession = () => {
     if (!activeSession) return
-    if (!confirm('Are you sure you want to cancel this session? This will delete the session.')) return
 
-    deleteSessionMutation.mutate(activeSession.id, {
-      onError: (err) => alert(`Error: ${err.message}`),
-    })
+    // If there are checked items, show modal to decide what to do with them
+    if (checkedItems.length > 0) {
+      setShowCancelModal(true)
+    } else {
+      // If no checked items, delete session immediately (nothing to decide)
+      deleteSessionMutation.mutate(activeSession.id, {
+        onError: (err) => alert(`Error: ${err.message}`),
+      })
+    }
+  }
+
+  const handleKeepItems = async (sessionId) => {
+    // First uncheck all items (return to backlog)
+    await uncheckSessionItemsMutation.mutateAsync(sessionId)
+    // Then delete the session
+    await deleteSessionMutation.mutateAsync(sessionId)
+  }
+
+  const handleRemoveItems = async (sessionId) => {
+    // First delete all items
+    await deleteSessionItemsMutation.mutateAsync(sessionId)
+    // Then delete the session
+    await deleteSessionMutation.mutateAsync(sessionId)
   }
 
   const toggleCheck = (item, isCurrentlyChecked) => {
@@ -400,6 +425,18 @@ export default function Backlog() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Cancel Session Modal */}
+      {activeSession && (
+        <CancelSessionModal
+          isOpen={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          sessionId={activeSession.id}
+          itemCount={checkedItems.length}
+          onKeepItems={handleKeepItems}
+          onRemoveItems={handleRemoveItems}
+        />
       )}
     </div>
   )

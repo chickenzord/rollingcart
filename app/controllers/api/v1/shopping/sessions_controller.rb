@@ -1,6 +1,6 @@
 class Api::V1::Shopping::SessionsController < Api::BaseController
   before_action :authenticate
-  before_action :set_session, only: [ :show, :update, :destroy, :finish ]
+  before_action :set_session, only: [ :show, :update, :destroy, :finish, :uncheck_items, :delete_items ]
 
   def index
     sessions = current_account.shopping_sessions.order(created_at: :desc)
@@ -49,6 +49,16 @@ class Api::V1::Shopping::SessionsController < Api::BaseController
 
   def destroy
     @session.destroy
+    head :no_content
+  end
+
+  def uncheck_items
+    @session.items.update_all(shopping_session_id: nil)
+    head :no_content
+  end
+
+  def delete_items
+    @session.items.destroy_all
     head :no_content
   end
 

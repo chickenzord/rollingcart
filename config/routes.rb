@@ -32,6 +32,8 @@ Rails.application.routes.draw do
           end
           member do
             patch :finish
+            post "items/uncheck", to: "sessions#uncheck_items"
+            delete :items, to: "sessions#delete_items"
           end
         end
         resources :items do

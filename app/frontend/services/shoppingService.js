@@ -55,6 +55,24 @@ export async function deleteSession(sessionId) {
 }
 
 /**
+ * Uncheck all items in a session (return to backlog)
+ * @param {string|number} sessionId
+ * @returns {Promise<void>}
+ */
+export async function uncheckSessionItems(sessionId) {
+  return post(`/api/v1/shopping/sessions/${sessionId}/items/uncheck`, null)
+}
+
+/**
+ * Delete all items in a session
+ * @param {string|number} sessionId
+ * @returns {Promise<void>}
+ */
+export async function deleteSessionItems(sessionId) {
+  return del(`/api/v1/shopping/sessions/${sessionId}/items`)
+}
+
+/**
  * Fetch shopping items
  * @param {Object} options - Query options
  * @param {boolean} options.isDone - Filter by is_done status

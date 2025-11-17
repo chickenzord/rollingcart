@@ -114,6 +114,38 @@ export function useDeleteSession() {
 }
 
 /**
+ * Uncheck all items in a session (return to backlog)
+ * @returns {UseMutationResult} Mutation for unchecking session items
+ */
+export function useUncheckSessionItems() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: shoppingService.uncheckSessionItems,
+    onSuccess: () => {
+      // Invalidate items queries to refetch
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
+    },
+  })
+}
+
+/**
+ * Delete all items in a session
+ * @returns {UseMutationResult} Mutation for deleting session items
+ */
+export function useDeleteSessionItems() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: shoppingService.deleteSessionItems,
+    onSuccess: () => {
+      // Invalidate items queries to refetch
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
+    },
+  })
+}
+
+/**
  * Add item to shopping backlog
  * @returns {UseMutationResult} Mutation for adding items
  */

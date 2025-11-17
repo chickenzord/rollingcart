@@ -40,3 +40,16 @@ export function isWithin24Hours(dateString) {
   const hoursDiff = (now - date) / (1000 * 60 * 60) // Convert to hours
   return hoursDiff <= 24
 }
+
+/**
+ * Check if a session is stale (inactive for too long)
+ * @param {string} dateString - ISO date string (created_at or updated_at)
+ * @param {number} hoursThreshold - Hours after which session is considered stale (default: 3)
+ * @returns {boolean} True if session is stale
+ */
+export function isSessionStale(dateString, hoursThreshold = 3) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const hoursDiff = (now - date) / (1000 * 60 * 60) // Convert to hours
+  return hoursDiff >= hoursThreshold
+}
