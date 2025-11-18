@@ -247,7 +247,7 @@ export default function Backlog() {
       if (uncheckedItems.length === 0) {
         return 'What do you need to pick up?'
       }
-      return 'Add item to backlog...'
+      return 'Add item to shopping list...'
     }
   }
 
@@ -355,8 +355,8 @@ export default function Backlog() {
                 {shouldGroupByCategory(uncheckedItems) && (
                   <h4 className="text-sm font-semibold text-base-content mb-2 px-1">{categoryName}</h4>
                 )}
-                <ul className="list bg-base-100 rounded-box shadow-md">
-                  {items.map((item, index) => (
+                <ul className="list bg-base-100 rounded-box border border-base-300 divide-y divide-base-300">
+                  {items.map((item, _index) => (
                     <ShoppingItem
                       key={item.id}
                       item={item}
@@ -381,7 +381,7 @@ export default function Backlog() {
 
       {/* Checked Items Section (only when active session) */}
       {activeSession && checkedItems.length > 0 && (
-        <div>
+        <div className='mt-8'>
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-medium text-base-content/70">In Your Cart</h3>
             <span className="text-base-content/50 text-xs">{checkedItems.length} {checkedItems.length === 1 ? 'item' : 'items'}</span>
@@ -409,7 +409,7 @@ export default function Backlog() {
           {/* Subtle Finish Session prompt */}
           <div className="mt-3">
             <p className="text-xs text-base-content/70 mb-2 text-center italic">
-              Ready to wrap up? Finishing your trip will clear these items from your backlog.
+              Ready to wrap up? Finishing your trip will clear these items from your shopping list.
               {uncheckedItems.length > 0 && (
                 <> The {uncheckedItems.length} remaining {uncheckedItems.length === 1 ? 'item' : 'items'} will stay for next time.</>
               )} 👍

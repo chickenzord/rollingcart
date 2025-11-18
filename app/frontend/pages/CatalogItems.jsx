@@ -125,7 +125,7 @@ export default function CatalogItems() {
                         : 'btn-success'
                     }`}
                   >
-                    {addingItems.has(item.id) ? '✓ Added' : '+ Add to Backlog'}
+                    {addingItems.has(item.id) ? '✓ Added' : '+ Add to Shopping List'}
                   </button>
                 </div>
               </div>

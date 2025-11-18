@@ -79,7 +79,7 @@ export default function CancelSessionModal({
             )}
             <div className="text-left">
               <div className="font-semibold">Keep for later</div>
-              <div className="text-xs opacity-90 normal-case font-normal">Return {itemCount === 1 ? 'this item' : 'these items'} to your backlog for your next shopping trip</div>
+              <div className="text-xs opacity-90 normal-case font-normal">Return {itemCount === 1 ? 'this item' : 'these items'} to your shopping list for your next shopping trip</div>
             </div>
           </button>
 
@@ -93,7 +93,7 @@ export default function CancelSessionModal({
             )}
             <div className="text-left">
               <div className="font-semibold">Don&rsquo;t need {itemCount === 1 ? 'it' : 'them'} anymore</div>
-              <div className="text-xs opacity-90 normal-case font-normal">Remove {itemCount === 1 ? 'this item' : 'these items'} from your backlog completely</div>
+              <div className="text-xs opacity-90 normal-case font-normal">Remove {itemCount === 1 ? 'this item' : 'these items'} from your shopping list completely</div>
             </div>
           </button>
           <div className="divider my-8">OR</div>

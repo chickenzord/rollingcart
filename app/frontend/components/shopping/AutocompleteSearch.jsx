@@ -103,7 +103,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
   }
 
   return (
-    <div className="mb-4 relative">
+    <div className={`dropdown mb-6 w-full ${showAutocomplete && searchQuery.length >= 1 ? 'dropdown-open' : ''}`}>
       <input
         type="text"
         placeholder={placeholder}
@@ -112,10 +112,12 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
         onKeyDown={handleSearchKeyDown}
         onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
         onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-        className="input input-bordered w-full"
+        className="input input-lg input-bordered w-full shadow-sm focus:shadow-md transition-shadow"
+        role="button"
+        tabIndex={0}
       />
       {showAutocomplete && searchQuery.length >= 1 && (
-        <ul className="menu bg-base-100 border border-base-300 rounded-box shadow-lg absolute w-full mt-1 max-h-60 overflow-y-auto p-0 z-10">
+        <ul className="dropdown-content menu bg-base-100 border border-base-300 rounded-box shadow-lg w-full mt-1 max-h-60 overflow-y-auto p-0 z-[1] flex-nowrap">
           {catalogSuggestions.map((item, index) => (
             <li key={item.id} className="w-full">
               <button
@@ -130,14 +132,14 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                   index === selectedIndex ? 'active' : ''
                 }`}
               >
-                <div className="flex-1 text-left">
-                  <div className="font-medium">{item.name}</div>
+                <div className="flex-1 text-left min-w-0">
+                  <div className="font-medium truncate">{item.name}</div>
                   {item.category && (
-                    <div className="text-xs opacity-60 mt-0.5">{item.category.name}</div>
+                    <div className="text-xs opacity-60 mt-0.5 truncate">{item.category.name}</div>
                   )}
                 </div>
                 {isItemInBacklog(item.id) && (
-                  <div className="badge badge-success badge-sm ml-2">✓ In backlog</div>
+                  <div className="badge badge-success badge-sm ml-2">✓ In shopping list</div>
                 )}
               </button>
             </li>
@@ -159,7 +161,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                     selectedIndex === catalogSuggestions.length ? 'active' : ''
                   }`}
                 >
-                  <div className="text-sm text-primary font-medium">
+                  <div className="text-sm text-primary font-medium truncate">
                     + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
                   </div>
                 </button>
@@ -194,5 +196,5 @@ AutocompleteSearch.propTypes = {
 
 AutocompleteSearch.defaultProps = {
   catalogCache: [],
-  placeholder: 'Add item to backlog...',
+  placeholder: 'Add item to shopping list...',
 }

@@ -18,7 +18,7 @@ export default function ShoppingItem({
   isTransitioningOut,
   isTransitioningIn,
 }) {
-  const paddingClasses = isChecked ? 'p-2' : 'p-3'
+  const paddingClasses = isChecked ? 'py-1.5 px-2' : 'py-2 px-3'
   const opacityClasses = isChecked ? 'ghost' : ''
   const loadingClasses = isLoading ? 'item-loading pointer-events-none' : ''
   const transitionOutClasses = isTransitioningOut ? 'item-transition-out' : ''
