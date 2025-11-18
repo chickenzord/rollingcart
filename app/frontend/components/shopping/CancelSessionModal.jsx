@@ -96,7 +96,7 @@ export default function CancelSessionModal({
               <div className="text-xs opacity-90 normal-case font-normal">Remove {itemCount === 1 ? 'this item' : 'these items'} from your backlog completely</div>
             </div>
           </button>
-
+          <div className="divider my-8">OR</div>
           <button
             onClick={onClose}
             disabled={isLoading}

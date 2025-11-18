@@ -1,5 +1,6 @@
 import { useSessions, useDeleteSession } from '../hooks/queries/useShoppingQueries'
 import SessionListItem from '../components/shopping/SessionListItem'
+import { Clock } from 'iconoir-react'
 
 export default function ShoppingSessions() {
   // Fetch all sessions
@@ -52,7 +53,10 @@ export default function ShoppingSessions() {
     <div className="card bg-base-100 p-8 shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Past Shopping Trips</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <Clock width="32px" height="32px" strokeWidth={2} className="text-primary" />
+          <h1 className="text-3xl font-bold">Past Shopping Trips</h1>
+        </div>
         <p className="text-base-content/70 text-sm">Your shopping history</p>
       </div>
 

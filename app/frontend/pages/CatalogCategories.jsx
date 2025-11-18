@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCategories } from '../hooks/queries/useCatalogQueries'
+import { BookStack } from 'iconoir-react'
 
 export default function CatalogCategories() {
   const {
@@ -33,8 +34,12 @@ export default function CatalogCategories() {
 
   return (
     <div className="card bg-base-100 p-8 shadow-sm">
-      <div className="mb-5">
-        <h1 className="text-3xl font-bold">Catalog Categories</h1>
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <BookStack width="32px" height="32px" strokeWidth={2} className="text-primary" />
+          <h1 className="text-3xl font-bold">Catalog Categories</h1>
+        </div>
+        <p className="text-base-content/70 text-sm">Browse items by category</p>
       </div>
 
       {categories.length === 0 ? (

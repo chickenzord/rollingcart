@@ -28,7 +28,7 @@
   --color-warning: oklch(82% 0.189 84.429);
   --color-warning-content: oklch(27% 0.077 45.635);
   --color-error: oklch(70% 0.191 22.216);
-  --color-error-content: oklch(25% 0.092 26.042);
+  --color-error-content: oklck(25% 0.092 26.042);
   --radius-selector: 2rem;
   --radius-field: 0.5rem;
   --radius-box: 0.5rem;
@@ -37,6 +37,13 @@
   --border: 1px;
   --depth: 0;
   --noise: 0;
+}
+
+/* Make active menu items more prominent */
+.menu li > .active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-content);
+  font-weight: 600;
 }
 
 
