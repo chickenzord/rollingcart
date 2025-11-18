@@ -52,14 +52,14 @@ export default function CancelSessionModal({
     <Modal isOpen={isOpen} onClose={isLoading ? () => {} : onClose} title="Cancel Shopping Trip?">
       <div className="space-y-4">
         {/* Informational Message */}
-        <div className="flex items-start gap-3 p-3 bg-info-50 border-l-4 border-info-400 rounded">
+        <div className="alert alert-info">
           <WarningCircle
             width="20px"
             height="20px"
             strokeWidth={2}
-            className="text-info-700 mt-0.5 shrink-0"
+            className="shrink-0"
           />
-          <div className="text-sm text-info-700">
+          <div className="text-sm">
             <p className="font-medium mb-2">
               You&rsquo;re about to cancel this trip. You have {itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart.
             </p>
@@ -72,39 +72,35 @@ export default function CancelSessionModal({
           <button
             onClick={handleKeepItems}
             disabled={isLoading}
-            className="w-full px-4 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 text-white rounded font-medium transition-colors text-left"
+            className="btn btn-primary w-full justify-start h-auto py-3"
           >
-            <div className="flex items-center gap-2">
-              {isLoading && activeAction === 'keep' && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-              )}
-              <div>
-                <div className="font-semibold">Keep for later</div>
-                <div className="text-xs opacity-90">Return {itemCount === 1 ? 'this item' : 'these items'} to your backlog for your next shopping trip</div>
-              </div>
+            {isLoading && activeAction === 'keep' && (
+              <span className="loading loading-spinner loading-sm"></span>
+            )}
+            <div className="text-left">
+              <div className="font-semibold">Keep for later</div>
+              <div className="text-xs opacity-90 normal-case font-normal">Return {itemCount === 1 ? 'this item' : 'these items'} to your backlog for your next shopping trip</div>
             </div>
           </button>
 
           <button
             onClick={handleRemoveItems}
             disabled={isLoading}
-            className="w-full px-4 py-3 bg-error-600 hover:bg-error-700 disabled:bg-gray-300 text-white rounded font-medium transition-colors text-left"
+            className="btn btn-error w-full justify-start h-auto py-3"
           >
-            <div className="flex items-center gap-2">
-              {isLoading && activeAction === 'remove' && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-              )}
-              <div>
-                <div className="font-semibold">Don&rsquo;t need {itemCount === 1 ? 'it' : 'them'} anymore</div>
-                <div className="text-xs opacity-90">Remove {itemCount === 1 ? 'this item' : 'these items'} from your backlog completely</div>
-              </div>
+            {isLoading && activeAction === 'remove' && (
+              <span className="loading loading-spinner loading-sm"></span>
+            )}
+            <div className="text-left">
+              <div className="font-semibold">Don&rsquo;t need {itemCount === 1 ? 'it' : 'them'} anymore</div>
+              <div className="text-xs opacity-90 normal-case font-normal">Remove {itemCount === 1 ? 'this item' : 'these items'} from your backlog completely</div>
             </div>
           </button>
 
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="w-full px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-700 rounded font-medium transition-colors"
+            className="btn btn-ghost w-full"
           >
             Keep Shopping
           </button>

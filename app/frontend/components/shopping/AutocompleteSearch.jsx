@@ -112,64 +112,61 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
         onKeyDown={handleSearchKeyDown}
         onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
         onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="input input-bordered w-full"
       />
       {showAutocomplete && searchQuery.length >= 1 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <ul className="menu bg-base-100 border border-base-300 rounded-box shadow-lg absolute w-full mt-1 max-h-60 overflow-y-auto p-0 z-10">
           {catalogSuggestions.map((item, index) => (
-            <div
-              key={item.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => handleSelectItem(item)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  handleSelectItem(item)
-                }
-              }}
-              className={`px-4 py-3 cursor-pointer border-b border-gray-100 ${
-                index === selectedIndex ? 'bg-primary-50' : 'hover:bg-gray-50'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">{item.name}</div>
+            <li key={item.id} className="w-full">
+              <button
+                onClick={() => handleSelectItem(item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleSelectItem(item)
+                  }
+                }}
+                className={`px-4 py-3 flex items-center justify-between w-full rounded-none ${
+                  index === selectedIndex ? 'active' : ''
+                }`}
+              >
+                <div className="flex-1 text-left">
+                  <div className="font-medium">{item.name}</div>
                   {item.category && (
-                    <div className="text-xs text-gray-500 mt-0.5">{item.category.name}</div>
+                    <div className="text-xs opacity-60 mt-0.5">{item.category.name}</div>
                   )}
                 </div>
                 {isItemInBacklog(item.id) && (
-                  <div className="ml-2 text-xs text-green-600 font-medium">✓ In backlog</div>
+                  <div className="badge badge-success badge-sm ml-2">✓ In backlog</div>
                 )}
-              </div>
-            </div>
+              </button>
+            </li>
           ))}
           {(() => {
             const hasHighSimilarityMatch = catalogSuggestions.some(item => item.score <= 0.05)
             const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
             return showCreateOption ? (
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={handleCreateNew}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handleCreateNew()
-                  }
-                }}
-                className={`px-4 py-3 cursor-pointer ${
-                  selectedIndex === catalogSuggestions.length ? 'bg-primary-50' : 'hover:bg-gray-50'
-                }`}
-              >
-                <div className="text-sm text-primary-600 font-medium">
-                  + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
-                </div>
-              </div>
+              <li className="w-full">
+                <button
+                  onClick={handleCreateNew}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleCreateNew()
+                    }
+                  }}
+                  className={`px-4 py-3 w-full text-left rounded-none ${
+                    selectedIndex === catalogSuggestions.length ? 'active' : ''
+                  }`}
+                >
+                  <div className="text-sm text-primary font-medium">
+                    + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
+                  </div>
+                </button>
+              </li>
             ) : null
           })()}
-        </div>
+        </ul>
       )}
     </div>
   )

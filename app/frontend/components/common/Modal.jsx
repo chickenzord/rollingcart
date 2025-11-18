@@ -40,27 +40,23 @@ export default function Modal({ isOpen, onClose, title, children }) {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm"
+      className="modal modal-open"
       onClick={onClose}
     >
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <div
-        className="relative w-full max-w-md bg-white rounded-lg shadow-xl animate-fade-in"
+        className="modal-box"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         {/* Modal Header */}
         {title && (
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-          </div>
+          <h2 className="text-xl font-bold mb-4">{title}</h2>
         )}
 
         {/* Modal Body */}
-        <div className="px-6 py-4">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   )

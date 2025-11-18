@@ -11,7 +11,7 @@ export default function CatalogCategories() {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
+      <div className="card bg-base-100 p-8 shadow-sm">
         <p>Loading categories...</p>
       </div>
     )
@@ -19,11 +19,11 @@ export default function CatalogCategories() {
 
   if (error) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error.message}</p>
+      <div className="card bg-base-100 p-8 shadow-sm">
+        <p className="text-error mb-3">Error: {error.message}</p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+          className="btn btn-primary"
         >
           Retry
         </button>
@@ -32,42 +32,47 @@ export default function CatalogCategories() {
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
+    <div className="card bg-base-100 p-8 shadow-sm">
       <div className="mb-5">
         <h1 className="text-3xl font-bold">Catalog Categories</h1>
       </div>
 
       {categories.length === 0 ? (
-        <p className="text-gray-600">No categories found. Run the seed task to populate default categories.</p>
+        <div className="alert alert-warning">
+          <span>No categories found. Run the seed task to populate default categories.</span>
+        </div>
       ) : (
         <div className="grid gap-4">
           {categories.map((category) => (
             <Link
               key={category.id}
               to={`/catalog/categories/${category.id}/items`}
-              className="border border-gray-300 rounded-lg p-5 bg-gray-50 hover:bg-blue-50 hover:border-blue-500 transition-all block"
+              className="card bg-base-200 border border-base-300 hover:bg-primary/10 hover:border-primary transition-all"
             >
-              <h3 className="m-0 mb-2 text-xl font-semibold text-gray-800">
-                {category.name}
-              </h3>
-              <p className="m-0 text-gray-600 text-sm">
-                ID: {category.id}
-              </p>
-              <p className="mt-1 text-gray-600 text-sm">
-                Created: {new Date(category.created_at).toLocaleDateString()}
-              </p>
-              <p className="mt-2 text-blue-600 text-sm font-medium">
-                View items &rarr;
-              </p>
+              <div className="card-body">
+                <h3 className="card-title">
+                  {category.name}
+                </h3>
+                <p className="text-base-content/70 text-sm">
+                  ID: {category.id}
+                </p>
+                <p className="text-base-content/70 text-sm">
+                  Created: {new Date(category.created_at).toLocaleDateString()}
+                </p>
+                <p className="mt-2 text-primary text-sm font-medium">
+                  View items &rarr;
+                </p>
+              </div>
             </Link>
           ))}
         </div>
       )}
 
-      <div className="mt-5 p-4 bg-blue-50 rounded-lg">
-        <p className="m-0 text-sm">
-          <strong>Total Categories:</strong> {categories.length}
-        </p>
+      <div className="mt-5 stats shadow bg-primary/10">
+        <div className="stat">
+          <div className="stat-title">Total Categories</div>
+          <div className="stat-value text-primary">{categories.length}</div>
+        </div>
       </div>
     </div>
   )

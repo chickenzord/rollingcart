@@ -28,7 +28,7 @@ export default function ShoppingSessions() {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
+      <div className="card bg-base-100 p-8 shadow-sm">
         <p>Loading sessions...</p>
       </div>
     )
@@ -36,11 +36,11 @@ export default function ShoppingSessions() {
 
   if (error) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-red-600 mb-3">Error: {error.message}</p>
+      <div className="card bg-base-100 p-8 shadow-sm">
+        <p className="text-error mb-3">Error: {error.message}</p>
         <button
           onClick={() => refetch()}
-          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded transition-colors"
+          className="btn btn-primary"
         >
           Retry
         </button>
@@ -49,17 +49,17 @@ export default function ShoppingSessions() {
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
+    <div className="card bg-base-100 p-8 shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Past Shopping Trips</h1>
-        <p className="text-gray-600 text-sm">Your shopping history</p>
+        <p className="text-base-content/70 text-sm">Your shopping history</p>
       </div>
 
       {sessions.length === 0 ? (
-        <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <p className="text-gray-600 mb-4">No trips yet!</p>
-          <p className="text-gray-500 text-sm">
+        <div className="p-8 text-center bg-base-200 rounded-lg border-2 border-dashed border-base-300">
+          <p className="text-base-content mb-4">No trips yet!</p>
+          <p className="text-base-content/70 text-sm">
             Your completed shopping trips will show up here.
           </p>
         </div>
@@ -77,10 +77,11 @@ export default function ShoppingSessions() {
       )}
 
       {/* Summary Stats */}
-      <div className="mt-5 p-4 bg-primary-50 rounded-lg">
-        <p className="m-0 text-sm">
-          <strong>Total trips:</strong> {sessions.length}
-        </p>
+      <div className="mt-5 stats shadow bg-primary/10">
+        <div className="stat">
+          <div className="stat-title">Total trips</div>
+          <div className="stat-value text-primary">{sessions.length}</div>
+        </div>
       </div>
     </div>
   )

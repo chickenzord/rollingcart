@@ -26,61 +26,64 @@ function Login() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-sm w-full max-w-md">
-        <h2 className="mt-0 mb-6 text-2xl font-bold text-center">
-          Login to Rollingcart
-        </h2>
+    <div className="flex justify-center items-center min-h-screen bg-base-200">
+      <div className="card bg-base-100 shadow-xl w-full max-w-md">
+        <div className="card-body">
+          <h2 className="card-title text-2xl justify-center mb-4">
+            Login to Rollingcart
+          </h2>
 
-        {error && (
-          <div className="p-3 mb-4 bg-red-50 border border-red-200 rounded text-red-700">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="alert alert-error mb-4">
+              <span>{error}</span>
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block mb-2 font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+          <form onSubmit={handleSubmit}>
+            <div className="form-control mb-4">
+              <label htmlFor="email" className="label">
+                <span className="label-text">Email</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <div className="form-control mb-6">
+              <label htmlFor="password" className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                className="input input-bordered w-full"
+              />
+            </div>
+
+            <button
+              type="submit"
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100"
-            />
-          </div>
+              className="btn btn-primary w-full"
+            >
+              {loading && <span className="loading loading-spinner"></span>}
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
 
-          <div className="mb-6">
-            <label htmlFor="password" className="block mb-2 font-medium">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white rounded font-medium transition-colors disabled:cursor-not-allowed"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Contact your administrator to create an account
-        </p>
+          <p className="mt-4 text-center text-sm text-base-content/70">
+            Contact your administrator to create an account
+          </p>
+        </div>
       </div>
     </div>
   )

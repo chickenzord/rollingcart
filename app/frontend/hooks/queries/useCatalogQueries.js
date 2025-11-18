@@ -75,6 +75,11 @@ export function useCreateCatalogItem() {
           queryKey: ['catalog', 'categories', variables.item.category_id, 'items'],
         })
       }
+
+      // If addToShopping option was used, also invalidate shopping items
+      if (variables.options?.addToShopping) {
+        queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
+      }
     },
   })
 }

@@ -254,7 +254,7 @@ export default function Backlog() {
   // Loading and error states
   if (loading) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
+      <div className="card bg-base-100 p-8 shadow-sm">
         <p>Loading shopping items...</p>
       </div>
     )
@@ -262,11 +262,11 @@ export default function Backlog() {
 
   if (error) {
     return (
-      <div className="bg-white p-8 rounded-lg shadow-sm">
-        <p className="text-error-600 mb-3">Error: {error.message}</p>
+      <div className="card bg-base-100 p-8 shadow-sm">
+        <p className="text-error mb-3">Error: {error.message}</p>
         <button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded transition-colors"
+          className="btn btn-primary"
         >
           Retry
         </button>
@@ -276,14 +276,14 @@ export default function Backlog() {
 
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm">
+    <div className="card bg-base-100 p-8 shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <ShoppingBag width="32px" height="32px" strokeWidth={2} className="text-primary-600" />
-          <h1 className="text-3xl font-bold text-gray-900">Shopping List</h1>
+          <ShoppingBag width="32px" height="32px" strokeWidth={2} className="text-primary" />
+          <h1 className="text-3xl font-bold">Shopping List</h1>
         </div>
-        <p className="text-gray-600 text-sm">Things you want to pick up whenever you&rsquo;re out shopping</p>
+        <p className="text-base-content/70 text-sm">Things you want to pick up whenever you&rsquo;re out shopping</p>
       </div>
 
       {/* Active Session Card or Start Button */}
@@ -299,9 +299,9 @@ export default function Backlog() {
           {/* Primary action - Start new session */}
           <button
             onClick={startSession}
-            className="flex-1 min-w-[200px] px-6 py-4 bg-accent-600 hover:bg-accent-700 text-white rounded-lg font-semibold text-lg transition-colors flex items-center justify-center gap-3"
+            className="flex-1 min-w-[200px] btn btn-primary gap-3"
           >
-            <Cart width="24px" height="24px" strokeWidth={2.5} />
+            <Cart width="24px" height="24px" strokeWidth={2} />
             Start Shopping Trip
           </button>
 
@@ -309,12 +309,12 @@ export default function Backlog() {
           {recentSession && (
             <button
               onClick={continueRecentSession}
-              className="px-5 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+              className="btn btn-secondary gap-2 h-auto"
             >
               <Clock width="20px" height="20px" strokeWidth={2} className="shrink-0" />
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-medium">Continue Recent</span>
-                <span className="text-xs text-gray-600">{recentSession.name}</span>
+              <div className="flex flex-col items-start text-left">
+                <span className="text-sm font-medium normal-case">Continue Recent</span>
+                <span className="text-xs font-light normal-case">{recentSession.name}</span>
               </div>
             </button>
           )}
@@ -324,8 +324,8 @@ export default function Backlog() {
       {/* Unchecked Items Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold text-gray-900">Items to Get</h3>
-          <span className="text-gray-600 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
+          <h3 className="text-xl font-semibold">Items to Get</h3>
+          <span className="text-base-content/70 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
         </div>
 
         {/* Add Item Input with Autocomplete */}
@@ -338,14 +338,14 @@ export default function Backlog() {
         />
 
         {uncheckedItems.length === 0 ? (
-          <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+          <div className="p-8 text-center bg-base-200 rounded-lg border-2 border-dashed border-base-300">
             {activeSession && checkedItems.length > 0 ? (
               <>
-                <p className="text-gray-700 mb-2">🎉 Nice! You&rsquo;ve got everything in your cart.</p>
-                <p className="text-gray-600 text-sm">Feel free to add more items or wrap up your trip when you&rsquo;re ready!</p>
+                <p className="text-base-content mb-2">🎉 Nice! You&rsquo;ve got everything in your cart.</p>
+                <p className="text-base-content/70 text-sm">Feel free to add more items or wrap up your trip when you&rsquo;re ready!</p>
               </>
             ) : (
-              <p className="text-gray-600">Your list is empty! Add items as you think of them.</p>
+              <p className="text-base-content/70">Your list is empty! Add items as you think of them.</p>
             )}
           </div>
         ) : (
@@ -353,9 +353,9 @@ export default function Backlog() {
             {Object.entries(groupItemsByCategory(uncheckedItems)).map(([categoryName, items]) => (
               <div key={categoryName}>
                 {shouldGroupByCategory(uncheckedItems) && (
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2 px-1">{categoryName}</h4>
+                  <h4 className="text-sm font-semibold text-base-content mb-2 px-1">{categoryName}</h4>
                 )}
-                <div className="border border-gray-200 rounded-lg">
+                <ul className="list bg-base-100 rounded-box shadow-md">
                   {items.map((item, index) => (
                     <ShoppingItem
                       key={item.id}
@@ -367,14 +367,12 @@ export default function Backlog() {
                       showCategoryLabel={shouldGroupByCategory(uncheckedItems)}
                       openMenuId={openMenuId}
                       onMenuToggle={setOpenMenuId}
-                      isFirstInGroup={index === 0}
-                      isLastInGroup={index === items.length - 1}
                       isLoading={isItemLoading(item.id)}
                       isTransitioningOut={transitioningOutItems.has(item.id)}
                       isTransitioningIn={transitioningInItems.has(item.id)}
                     />
                   ))}
-                </div>
+                </ul>
               </div>
             ))}
           </div>
@@ -385,8 +383,8 @@ export default function Backlog() {
       {activeSession && checkedItems.length > 0 && (
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-medium text-gray-600">In Your Cart</h3>
-            <span className="text-gray-400 text-xs">{checkedItems.length} {checkedItems.length === 1 ? 'item' : 'items'}</span>
+            <h3 className="text-lg font-medium text-base-content/70">In Your Cart</h3>
+            <span className="text-base-content/50 text-xs">{checkedItems.length} {checkedItems.length === 1 ? 'item' : 'items'}</span>
           </div>
 
           <div className="space-y-1">
@@ -410,7 +408,7 @@ export default function Backlog() {
 
           {/* Subtle Finish Session prompt */}
           <div className="mt-3">
-            <p className="text-xs text-gray-600 mb-2 text-center italic">
+            <p className="text-xs text-base-content/70 mb-2 text-center italic">
               Ready to wrap up? Finishing your trip will clear these items from your backlog.
               {uncheckedItems.length > 0 && (
                 <> The {uncheckedItems.length} remaining {uncheckedItems.length === 1 ? 'item' : 'items'} will stay for next time.</>
@@ -418,7 +416,7 @@ export default function Backlog() {
             </p>
             <button
               onClick={finishSession}
-              className="w-full px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded font-medium transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full btn btn-secondary btn-sm gap-2"
             >
               <CheckCircle width="16px" height="16px" strokeWidth={2} />
               Done Shopping

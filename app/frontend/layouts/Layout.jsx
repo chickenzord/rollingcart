@@ -13,45 +13,39 @@ function Layout() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white px-8 py-4 shadow-sm">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="text-2xl font-semibold text-gray-800 hover:text-gray-900 no-underline">
-              <img
-                src="/favicon-32x32.png"
-                alt="RollingCart Logo"
-                width={32}
-                height={32}
-                className="inline-block mr-2"
-              />
-              <span className="text-accent-600">Rolling</span>Cart
-            </Link>
-            <div className="flex gap-6">
-              {navLinks.map((link) => (
+    <div className="min-h-screen bg-base-200">
+      <nav className="navbar bg-base-100 shadow-sm px-8">
+        <div className="navbar-start">
+          <Link to="/" className="flex flex-row items-center text-xl normal-case">
+            <img
+              src="/favicon-32x32.png"
+              alt="RollingCart Logo"
+              width={32}
+              height={32}
+            />
+            <span className="text-accent">Rolling</span><span>Cart</span>
+          </Link>
+          <ul className="menu menu-horizontal px-1">
+            {navLinks.map((link) => (
+              <li key={link.path}>
                 <Link
-                  key={link.path}
                   to={link.path}
-                  className={`text-sm font-medium transition-colors no-underline ${
-                    location.pathname === link.path
-                      ? 'text-primary-600'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                  className={location.pathname === link.path ? 'active' : ''}
                 >
                   {link.label}
                 </Link>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-600 text-sm">{user?.email || 'Loading...'}</span>
-            <button
-              onClick={logout}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded font-medium transition-colors"
-            >
-              Logout
-            </button>
-          </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="navbar-end gap-2">
+          <span className="text-base-content text-sm opacity-70">{user?.email || 'Loading...'}</span>
+          <button
+            onClick={logout}
+            className="btn btn-error btn-sm"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
