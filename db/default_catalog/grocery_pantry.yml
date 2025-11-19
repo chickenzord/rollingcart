@@ -1,0 +1,69 @@
+# Grocery - Pantry & Frozen
+categories:
+  - name: Dry Goods and Pasta
+    description: Grains, pasta, rice, flour
+    items:
+      - name: All-purpose flour
+      - name: Barley
+      - name: Bread flour
+      - name: Cake flour
+      - name: Egg noodle
+      - name: Fettuccine
+      - name: Instant noodle
+      - name: Jasmine rice
+      - name: Macaroni
+      - name: Oat
+      - name: Penne
+      - name: Rice noodle
+      - name: Spaghetti
+      - name: Tapioca flour
+      - name: Vermicelli
+        description: Bihun
+      - name: Wheat flour
+      - name: White rice
+      - name: Whole wheat flour
+
+  - name: Canned and Jarred
+    description: Canned and preserved foods
+    items:
+      - name: Canned bean
+      - name: Canned chickpea
+      - name: Canned coconut milk
+      - name: Canned corn
+      - name: Canned mushroom
+      - name: Canned pea
+      - name: Canned pineapple
+      - name: Canned salmon
+      - name: Canned sardine
+      - name: Canned tomato
+      - name: Canned tuna
+      - name: Jam
+      - name: Pasta sauce
+      - name: Peanut
+      - name: Pickle
+
+  - name: Frozen Foods
+    items:
+      - name: Chicken nugget
+      - name: Dimsum
+      - name: Fish fillet
+      - name: French fries
+      - name: Frozen berry
+      - name: Frozen broccoli
+      - name: Frozen carrot
+      - name: Frozen corn
+      - name: Frozen green bean
+      - name: Frozen mango
+      - name: Frozen mixed vegetable
+      - name: Frozen pea
+      - name: Frozen shrimp
+      - name: Frozen spinach
+      - name: Hash brown
+      - name: Ice cream
+      - name: Meatball
+        description: Bakso
+      - name: Pizza
+      - name: Sausage
+      - name: Spring roll
+        description: Lumpia
+      - name: Waffle

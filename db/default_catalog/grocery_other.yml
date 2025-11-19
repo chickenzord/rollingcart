@@ -1,0 +1,132 @@
+# Grocery - Other Categories
+categories:
+  - name: Beverages
+    description: Drinks, juices, soft drinks
+    items:
+      - name: Bottled water
+        description: Air mineral
+      - name: Coffee
+        description: Kopi
+      - name: Energy drink
+      - name: Iced tea
+        description: Teh botol
+      - name: Juice
+      - name: Soda
+      - name: Sports drink
+      - name: Tea
+        description: Teh
+      - name: Tea bag
+      - name: Instant coffee
+        description: Kopi instan
+
+  - name: Breakfast and Cereal
+    description: Cereal, oatmeal, breakfast items
+    items:
+      - name: Cereal
+      - name: Granola
+      - name: Instant oatmeal
+      - name: Muesli
+      - name: Oatmeal
+      - name: Pancake mix
+
+  - name: Snacks and Sweets
+    description: Chips, candy, cookies
+    items:
+      - name: Candy
+        description: Permen
+      - name: Chocolate
+        description: Cokelat
+      - name: Chocolate bar
+      - name: Cookie
+        description: Biskuit
+      - name: Cracker
+      - name: Dried fruit
+      - name: Gum
+        description: Permen karet
+      - name: Nut
+        description: Kacang
+      - name: Potato chip
+        description: Keripik kentang
+      - name: Wafer
+
+  - name: Personal Care
+    description: Soap, shampoo, toiletries
+    items:
+      - name: Bar soap
+        description: Sabun batang
+      - name: Body lotion
+      - name: Body wash
+        description: Sabun mandi cair
+      - name: Conditioner
+      - name: Cotton bud
+        description: Korek kuping
+      - name: Cotton pad
+      - name: Deodorant
+      - name: Face wash
+        description: Sabun muka
+      - name: Facial tissue
+      - name: Hair gel
+      - name: Hand sanitizer
+      - name: Hand soap
+        description: Sabun cuci tangan
+      - name: Lip balm
+      - name: Lotion
+      - name: Mouthwash
+      - name: Razor
+        description: Pisau cukur
+      - name: Sanitary pad
+        description: Pembalut
+      - name: Shampoo
+      - name: Shaving cream
+        description: Krim cukur
+      - name: Sunscreen
+        description: Tabir surya
+      - name: Tissue
+      - name: Toilet paper
+        description: Tisu toilet
+      - name: Toothbrush
+        description: Sikat gigi
+      - name: Toothpaste
+        description: Pasta gigi
+      - name: Wet wipe
+        description: Tisu basah
+
+  - name: Health and Medicine
+    description: Vitamins, first aid, OTC medicine
+    items:
+      - name: Adhesive bandage
+        description: Plester luka
+      - name: Antacid
+        description: Obat maag
+      - name: Antiseptic
+        description: Antiseptik
+      - name: Cough syrup
+        description: Obat batuk
+      - name: Eye drop
+        description: Obat tetes mata
+      - name: Fever medicine
+        description: Obat demam
+      - name: First aid kit
+      - name: Multivitamin
+      - name: Pain reliever
+        description: Obat sakit
+      - name: Thermometer
+
+  - name: Baby and Pet
+    description: Baby products and pet supplies
+    items:
+      - name: Baby food
+        description: Makanan bayi
+      - name: Baby formula
+        description: Susu formula
+      - name: Baby wipe
+        description: Tisu bayi
+      - name: Cat food
+        description: Makanan kucing
+      - name: Diaper
+        description: Popok
+      - name: Dog food
+        description: Makanan anjing
+      - name: Pet food
+        description: Makanan hewan
+      - name: Pet shampoo

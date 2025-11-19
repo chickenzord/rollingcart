@@ -1,0 +1,85 @@
+# Hardware Store Categories and Items
+categories:
+  - name: Tools and Hardware
+    description: Hand tools, power tools, screws, nails, fasteners
+    items:
+      - name: Drill bit
+        description: Mata bor
+      - name: Hammer
+        description: Palu
+      - name: Nail
+        description: Paku
+      - name: Pliers
+        description: Tang
+      - name: Screw
+        description: Sekrup
+      - name: Screwdriver
+        description: Obeng
+      - name: Super glue
+        description: Lem super
+      - name: Tape measure
+        description: Meteran
+      - name: Wrench
+        description: Kunci pas
+
+  - name: Paint and Electrical
+    description: Paint, brushes, wires, switches, outlets
+    items:
+      - name: Cable
+        description: Kabel
+      - name: Electrical tape
+        description: Isolasi listrik
+      - name: Extension cord
+        description: Kabel roll
+      - name: Fuse
+        description: Sekring
+      - name: Light switch
+        description: Saklar lampu
+      - name: Paint
+        description: Cat
+      - name: Paint brush
+        description: Kuas cat
+      - name: Plug
+        description: Colokan
+      - name: Socket
+        description: Stop kontak
+      - name: Wire
+        description: Kawat
+
+  - name: Plumbing and Building
+    description: Pipes, fittings, lumber, building materials
+    items:
+      - name: Cement
+        description: Semen
+      - name: Glue
+        description: Lem
+      - name: Hose
+        description: Selang
+      - name: PVC pipe
+        description: Pipa PVC
+      - name: Sand
+        description: Pasir
+      - name: Sandpaper
+        description: Kertas amplas
+      - name: Duct tape
+        description: Lakban
+      - name: Wood glue
+        description: Lem kayu
+
+  - name: Garden and Automotive
+    description: Outdoor and car maintenance supplies
+    items:
+      - name: Car wash soap
+        description: Sabun cuci mobil
+      - name: Fertilizer
+        description: Pupuk
+      - name: Garden hose
+        description: Selang taman
+      - name: Motor oil
+        description: Oli mesin
+      - name: Plant pot
+        description: Pot tanaman
+      - name: Soil
+        description: Tanah
+      - name: Watering can
+        description: Kaleng penyiram

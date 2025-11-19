@@ -1,0 +1,166 @@
+# Grocery - Fresh Foods
+categories:
+  - name: Fresh Produce
+    description: Fruits and vegetables
+    items:
+      - name: Apple
+      - name: Avocado
+      - name: Banana
+      - name: Bell pepper
+      - name: Blackberry
+      - name: Blueberry
+      - name: Bok choy
+        description: Pakcoy
+      - name: Broccoli
+      - name: Button mushroom
+        description: Jamur kancing
+      - name: Cabbage
+        description: Kubis
+      - name: Carrot
+      - name: Cauliflower
+      - name: Celery
+      - name: Chayote
+        description: Labu siam
+      - name: Cherry
+      - name: Chinese cabbage
+        description: Sawi putih
+      - name: Corn
+      - name: Cucumber
+      - name: Eggplant
+        description: Terung
+      - name: Enoki mushroom
+        description: Jamur enoki
+      - name: Garlic
+      - name: Ginger
+      - name: Grape
+      - name: Grapefruit
+      - name: Green bean
+      - name: Green mustard
+        description: Sawi hijau
+      - name: Honeydew
+      - name: Kangkung
+        description: Water spinach
+      - name: Kiwi
+      - name: Leek
+        description: Daun bawang prei
+      - name: Lemon
+      - name: Lettuce
+      - name: Lime
+      - name: Long bean
+        description: Kacang panjang
+      - name: Mango
+      - name: Oyster mushroom
+        description: Jamur tiram
+      - name: Onion
+      - name: Orange
+      - name: Peach
+      - name: Pear
+      - name: Pineapple
+      - name: Plum
+      - name: Potato
+      - name: Radish
+        description: Lobak
+      - name: Raspberry
+      - name: Red cabbage
+        description: Kubis merah
+      - name: Shiitake mushroom
+        description: Jamur shiitake
+      - name: Spinach
+      - name: Straw mushroom
+        description: Jamur merang
+      - name: Strawberry
+      - name: Sweet potato
+        description: Ubi jalar
+      - name: Taro
+        description: Talas
+      - name: Tomato
+      - name: Watermelon
+      - name: Wood ear mushroom
+        description: Jamur kuping
+      - name: Yam
+        description: Ubi
+      - name: Zucchini
+
+  - name: Meat and Seafood
+    items:
+      - name: Bacon
+      - name: Beef
+      - name: Beef brisket
+      - name: Beef liver
+      - name: Beef short rib
+      - name: Beef tenderloin
+      - name: Catfish
+        description: Ikan lele
+      - name: Chicken breast
+      - name: Chicken drumstick
+      - name: Chicken gizzard
+        description: Ampela ayam
+      - name: Chicken leg quarter
+      - name: Chicken liver
+      - name: Chicken tender
+      - name: Chicken thigh
+      - name: Chicken wing
+      - name: Chuck roast
+      - name: Clam
+      - name: Crab
+      - name: Duck
+        description: Bebek
+      - name: Goat
+        description: Kambing
+      - name: Ground beef
+      - name: Ground chicken
+      - name: Ham
+      - name: Lamb
+      - name: Mackerel
+        description: Ikan kembung
+      - name: Milkfish
+        description: Ikan bandeng
+      - name: Mussel
+      - name: Octopus
+      - name: Oxtail
+        description: Buntut sapi
+      - name: Oyster
+      - name: Pork
+      - name: Pork belly
+      - name: Pork chop
+      - name: Ribeye steak
+      - name: Salmon
+      - name: Sardine
+      - name: Scallop
+      - name: Shrimp
+      - name: Sirloin steak
+      - name: Squid
+        description: Cumi-cumi
+      - name: T-bone steak
+      - name: Tilapia
+        description: Ikan nila
+      - name: Tuna
+      - name: Turkey
+      - name: Whole chicken
+
+  - name: Dairy and Eggs
+    items:
+      - name: Butter
+      - name: Cheddar cheese
+      - name: Condensed milk
+        description: Susu kental manis
+      - name: Cream cheese
+      - name: Egg
+      - name: Evaporated milk
+      - name: Margarine
+      - name: Milk
+      - name: Processed cheese
+      - name: UHT milk
+      - name: Yogurt
+      - name: Yogurt drink
+
+  - name: Bakery and Bread
+    items:
+      - name: Baguette
+      - name: Breadcrumb
+      - name: Hamburger bun
+      - name: Sliced bread
+        description: Roti tawar
+      - name: Sweet bread
+        description: Roti manis
+      - name: Tortilla

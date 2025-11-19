@@ -1,0 +1,122 @@
+# Grocery - Seasonings & Condiments
+categories:
+  - name: Condiments and Sauces
+    description: Ketchup, mayo, cooking oils, vinegars
+    items:
+      - name: Apple cider vinegar
+      - name: Balsamic vinegar
+      - name: BBQ sauce
+      - name: Canola oil
+      - name: Chili oil
+      - name: Chili sauce
+        description: Sambal
+      - name: Coconut oil
+      - name: Fish sauce
+      - name: Honey
+      - name: Hot sauce
+      - name: Ketchup
+      - name: Mayonnaise
+      - name: Mustard
+      - name: Olive oil
+      - name: Oyster sauce
+      - name: Peanut butter
+      - name: Rice vinegar
+      - name: Salad dressing
+      - name: Sesame oil
+      - name: Soy sauce
+      - name: Sweet soy sauce
+        description: Kecap manis
+      - name: Teriyaki sauce
+      - name: Tomato paste
+      - name: Tomato sauce
+      - name: Vegetable oil
+      - name: Vinegar
+      - name: White vinegar
+      - name: Worcestershire sauce
+
+  - name: Spices and Baking
+    description: Seasonings, baking supplies, extracts
+    items:
+      - name: Basil
+        description: Daun kemangi
+      - name: Bay leaf
+        description: Daun salam
+      - name: Black pepper
+      - name: Candlenut
+        description: Kemiri
+      - name: Cardamom
+        description: Kapulaga
+      - name: Chili pepper
+        description: Cabe
+      - name: Cilantro
+        description: Daun ketumbar
+      - name: Cinnamon
+      - name: Clove
+        description: Cengkeh
+      - name: Coriander
+        description: Ketumbar
+      - name: Cumin
+        description: Jinten
+      - name: Curry leaf
+        description: Daun kari
+      - name: Fennel
+        description: Adas
+      - name: Galangal
+        description: Lengkuas
+      - name: Indonesian bay leaf
+        description: Daun salam
+      - name: Kaffir lime leaf
+        description: Daun jeruk
+      - name: Lemon basil
+        description: Kemangi
+      - name: Lemongrass
+        description: Serai
+      - name: Lesser galangal
+        description: Kencur
+      - name: Mint
+      - name: Nutmeg
+        description: Pala
+      - name: Oregano
+      - name: Palm sugar
+        description: Gula merah
+      - name: Pandan leaf
+        description: Daun pandan
+      - name: Parsley
+      - name: Rosemary
+      - name: Sage
+      - name: Scallion
+        description: Daun bawang
+      - name: Shallot
+        description: Bawang merah
+      - name: Shrimp paste
+        description: Terasi
+      - name: Star anise
+        description: Bunga lawang
+      - name: Tamarind
+        description: Asam jawa
+      - name: Thai basil
+      - name: Thyme
+      - name: Torch ginger flower
+        description: Kecombrang
+      - name: Turmeric
+        description: Kunyit
+      - name: Vanilla
+      - name: White pepper
+      - name: Baking powder
+      - name: Baking soda
+        description: Soda kue
+      - name: Brown sugar
+      - name: Cocoa powder
+        description: Bubuk kakao
+      - name: Cornstarch
+        description: Tepung maizena
+      - name: Food coloring
+        description: Pewarna makanan
+      - name: Granulated sugar
+        description: Gula pasir
+      - name: Icing sugar
+        description: Gula halus
+      - name: Vanilla extract
+        description: Ekstrak vanila
+      - name: Yeast
+        description: Ragi

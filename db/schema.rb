@@ -10,37 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_19_035130) do
   create_table "account_jwt_refresh_keys", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.string "key", null: false
     t.datetime "deadline", null: false
+    t.string "key", null: false
     t.index ["account_id"], name: "index_account_jwt_refresh_keys_on_account_id"
   end
 
   create_table "account_login_change_keys", force: :cascade do |t|
+    t.datetime "deadline", null: false
     t.string "key", null: false
     t.string "login", null: false
-    t.datetime "deadline", null: false
   end
 
   create_table "account_password_reset_keys", force: :cascade do |t|
-    t.string "key", null: false
     t.datetime "deadline", null: false
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "key", null: false
   end
 
   create_table "accounts", force: :cascade do |t|
-    t.integer "status", default: 1, null: false
     t.string "email", null: false
     t.string "password_hash"
+    t.integer "status", default: 1, null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true, where: "status IN (1, 2)"
   end
 
   create_table "catalog_categories", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.string "name", null: false
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_catalog_categories_on_account_id"
   end
@@ -48,9 +49,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
   create_table "catalog_items", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "category_id"
-    t.string "name", null: false
-    t.text "description"
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_catalog_items_on_account_id"
     t.index ["category_id"], name: "index_catalog_items_on_category_id"
@@ -59,9 +60,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
   create_table "shopping_items", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "catalog_item_id", null: false
-    t.integer "shopping_session_id"
-    t.string "notes"
     t.datetime "created_at", null: false
+    t.string "notes"
+    t.integer "shopping_session_id"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_shopping_items_on_account_id"
     t.index ["catalog_item_id"], name: "index_shopping_items_on_catalog_item_id"
@@ -70,9 +71,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_114243) do
 
   create_table "shopping_sessions", force: :cascade do |t|
     t.integer "account_id", null: false
-    t.string "name"
     t.boolean "active", default: false
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_shopping_sessions_on_account_id"
   end

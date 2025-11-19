@@ -1,0 +1,68 @@
+# Stationery & Office Categories and Items
+categories:
+  - name: Writing & Paper
+    description: Pens, pencils, notebooks, paper
+    items:
+      - name: Ballpoint pen
+        description: Pulpen
+      - name: Envelope
+        description: Amplop
+      - name: Eraser
+        description: Penghapus
+      - name: Highlighter
+      - name: Marker
+        description: Spidol
+      - name: Notebook
+        description: Buku tulis
+      - name: Paper
+        description: Kertas
+      - name: Pencil
+        description: Pensil
+      - name: Ruler
+        description: Penggaris
+      - name: Sharpener
+        description: Rautan
+
+  - name: Office Supplies
+    description: Folders, organizers, desk accessories, tape, staplers
+    items:
+      - name: Binder clip
+        description: Klip binder
+      - name: Correction fluid
+        description: Tipe-x
+      - name: File folder
+        description: Map
+      - name: Paper clip
+        description: Klip kertas
+      - name: Rubber band
+        description: Karet gelang
+      - name: Scissors
+        description: Gunting
+      - name: Stapler
+        description: Staples
+      - name: Staples
+        description: Isi staples
+      - name: Sticky note
+        description: Post-it
+      - name: Tape
+        description: Selotip
+
+  - name: Art & School
+    description: Art supplies, school supplies, craft materials
+    items:
+      - name: Colored pencil
+        description: Pensil warna
+      - name: Construction paper
+        description: Kertas warna
+      - name: Crayon
+        description: Krayon
+      - name: Craft glue
+        description: Lem kertas
+      - name: Drawing book
+        description: Buku gambar
+      - name: Glue stick
+        description: Lem batang
+      - name: Oil pastel
+        description: Krayon minyak
+      - name: Watercolor
+        description: Cat air

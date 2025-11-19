@@ -1,0 +1,90 @@
+# Kitchen and  Household Categories and Items
+categories:
+  - name: Kitchenware
+    description: Cookware, tools, utensils, food storage
+    items:
+      - name: Aluminum foil
+      - name: Bowl
+        description: Mangkuk
+      - name: Chopstick
+        description: Sumpit
+      - name: Cup
+        description: Cangkir
+      - name: Dish sponge
+        description: Spons cuci piring
+      - name: Fork
+        description: Garpu
+      - name: Glass
+        description: Gelas
+      - name: Knife
+        description: Pisau
+      - name: Napkin
+        description: Serbet
+      - name: Paper cup
+      - name: Paper plate
+      - name: Plastic wrap
+      - name: Plate
+        description: Piring
+      - name: Spoon
+        description: Sendok
+      - name: Storage container
+      - name: Straw
+        description: Sedotan
+      - name: Toothpick
+        description: Tusuk gigi
+      - name: Ziplock bag
+
+  - name: Cleaning and Laundry
+    description: Detergents, cleaners, laundry supplies
+    items:
+      - name: All-purpose cleaner
+        description: Pembersih serbaguna
+      - name: Bleach
+        description: Pemutih
+      - name: Broom
+        description: Sapu
+      - name: Dish soap
+        description: Sabun cuci piring
+      - name: Fabric softener
+        description: Pelembut pakaian
+      - name: Floor cleaner
+        description: Pembersih lantai
+      - name: Laundry detergent
+        description: Deterjen
+      - name: Mop
+        description: Pel
+      - name: Sponge
+        description: Spons
+      - name: Trash bag
+        description: Kantong sampah
+
+  - name: Paper and Disposables
+    description: Paper towels, tissues, trash bags, foil
+    items:
+      - name: Kitchen towel
+        description: Lap dapur
+      - name: Paper napkin
+      - name: Paper towel
+      - name: Tissue box
+
+  - name: Home Essentials
+    description: Batteries, light bulbs, bathroom supplies
+    items:
+      - name: AA battery
+        description: Baterai AA
+      - name: AAA battery
+        description: Baterai AAA
+      - name: Air freshener
+        description: Pengharum ruangan
+      - name: Candle
+        description: Lilin
+      - name: Insect repellent
+        description: Obat nyamuk
+      - name: LED bulb
+        description: Lampu LED
+      - name: Light bulb
+        description: Lampu
+      - name: Matches
+        description: Korek api
+      - name: Mosquito coil
+        description: Obat nyamuk bakar
