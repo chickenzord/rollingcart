@@ -25,7 +25,8 @@ Consult CONCEPT.md for more details on the business design.
 - **Entrypoint**: `app/frontend/entrypoints/application.jsx`
 - **Vite dev server**: Port 3036 (development) / 3037 (test)
 - **Routing**: React Router handles all frontend routes, Rails serves the app for non-API paths
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS v4 + DaisyUI components
+- **Design Philosophy**: Clean, shadowless design with subtle borders for visual hierarchy
 - **Search**: Fuse.js for fuzzy search in autocomplete
 
 #### Frontend Code Structure
@@ -42,11 +43,11 @@ app/frontend/
 ├── layouts/         # Layout components
 │   └── Layout.jsx        # Main app layout (nav, content)
 ├── pages/           # Page-level components
-│   ├── Backlog.jsx           # Shopping backlog management
+│   ├── Backlog.jsx           # Shopping list management (main page)
 │   ├── CatalogCategories.jsx # Catalog category browser
 │   ├── CatalogItems.jsx      # Category items view
-│   ├── Dashboard.jsx         # Welcome/home page
-│   └── Login.jsx             # Login page
+│   ├── Login.jsx             # Login page
+│   └── ShoppingSessions.jsx  # Past shopping trips history
 ├── services/        # API service layer
 │   ├── api.js              # Base API utilities (get, post, patch, del)
 │   ├── authService.js      # Auth endpoints (login, logout, getMe)
@@ -62,6 +63,12 @@ app/frontend/
 - Easier testing - services can be mocked independently
 - Consistent error handling - APIError class for standardized errors
 - Type safety ready - easy to add TypeScript types later
+
+**Terminology**:
+- **Backlog** (code) = **Shopping List** (UI) = Shopping items with no session assigned
+- **Shopping Session** (code) = **Shopping Trip** (UI)
+- User-facing text consistently uses "Shopping List" and "Shopping Trip"
+- Code/variables/APIs use "backlog" and "session" for technical accuracy
 
 ### Authentication Flow
 - **JWT-based**: Stateless authentication using Rodauth JWT feature
@@ -204,8 +211,8 @@ npm update
   - `GET /api/v1/me` - Get current user details (requires JWT)
   - `/api/v1/catalog/categories` - Catalog category management
   - `/api/v1/catalog/items` - Catalog item management
-  - `/api/v1/shopping/sessions` - Shopping session management
-  - `/api/v1/shopping/items` - Shopping backlog item management
+  - `/api/v1/shopping/sessions` - Shopping session (trip) management
+  - `/api/v1/shopping/items` - Shopping item management (backlog/shopping list)
 
 ### CORS Configuration
 - **Config**: `config/initializers/cors.rb`
@@ -221,13 +228,21 @@ npm update
 - React plugin enabled for JSX support
 
 ### Frontend Features
-- **Smart Autocomplete**: Fuzzy search with Fuse.js, starts at first character, catalog caching
+- **Smart Autocomplete**:
+  - Fuzzy search with Fuse.js, starts at first character, catalog caching
+  - DaisyUI dropdown component for dropdown UI
+  - Prominent input field (large size, subtle shadow) to emphasize primary action
+- **Visual Design**:
+  - Clean, shadowless design with subtle borders for visual hierarchy
+  - Dense vertical spacing for efficient use of space
+  - Visual separators between content sections
 - **Visual Feedback**: 2-second glow animation for newly added items (CSS-based, no state management)
 - **Accessibility**: Keyboard navigation support, proper ARIA roles, form label associations
 - **UX Optimizations**:
   - "Create new item" only shows when query is 3+ chars and no 95%+ similarity matches
   - Items grouped by category when multiple categories present
   - Session-based shopping workflow
+  - Adaptive placeholders based on current state
 
 ### ESLint Configuration
 - **Config**: `eslint.config.js` (modern flat config format)
@@ -241,8 +256,11 @@ npm update
 
 ### React Router Setup
 - **Routes**:
-  - `/` → Dashboard (protected)
+  - `/` → Shopping List / Backlog (protected, main page)
   - `/login` → Login page (public, redirects if authenticated)
+  - `/shopping/sessions` → Past shopping trips (protected)
+  - `/catalog/categories` → Catalog categories (protected)
+  - `/catalog/categories/:categoryId/items` → Category items (protected)
 - **Protected routes**: Use `<ProtectedRoute>` wrapper component
 - **Auth context**: `useAuth()` hook provides user, token, login, logout, isAuthenticated
 
