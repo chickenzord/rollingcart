@@ -55,7 +55,7 @@ function Layout() {
               width={32}
               height={32}
             />
-            <span className="text-accent">Rolling</span><span>Cart</span>
+            <img src="/rollingcart_text.png" alt="RollingCart" className="h-6 ml-2" />
           </Link>
 
           {/* Desktop Menu */}
