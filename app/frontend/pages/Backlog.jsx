@@ -294,7 +294,7 @@ export default function Backlog() {
           onFinish={finishSession}
           onCancel={cancelSession}
         />
-      ) : (
+      ) : uncheckedItems.length > 0 && (
         <div className="mb-6 flex gap-3 flex-wrap">
           {/* Primary action - Start new session */}
           <button

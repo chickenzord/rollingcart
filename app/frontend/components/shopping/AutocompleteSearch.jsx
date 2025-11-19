@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Fuse from 'fuse.js'
 
@@ -8,7 +8,7 @@ import Fuse from 'fuse.js'
  * - Fuzzy search with Fuse.js
  * - Keyboard navigation (Arrow keys, Enter, Escape)
  * - Shows existing catalog items with category info
- * - Shows "Create new item" option when appropriate (3+ chars, no high similarity match)
+ * - Shows "Create new item" option when appropriate (3+ chars, no exact match)
  * - Indicates if item is already in backlog
  */
 export default function AutocompleteSearch({ catalogCache, existingItems, onSelectItem, onCreateNew, placeholder }) {
@@ -16,6 +16,17 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
   const [catalogSuggestions, setCatalogSuggestions] = useState([])
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const selectedItemRef = useRef(null)
+
+  // Scroll selected item into view when navigating with keyboard
+  useEffect(() => {
+    if (selectedItemRef.current) {
+      selectedItemRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    }
+  }, [selectedIndex])
 
   const searchCatalogItems = (query) => {
     if (query.length < 1) {
@@ -58,9 +69,11 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
   const handleSearchKeyDown = (e) => {
     if (!showAutocomplete) return
 
-    // Show "Create new item" only if query is 3+ chars and no high-similarity matches (95%+)
-    const hasHighSimilarityMatch = catalogSuggestions.some(item => item.score <= 0.05)
-    const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
+    // Show "Create new item" if query is 3+ chars and no exact match exists (case insensitive, trimmed)
+    const hasExactMatch = catalogSuggestions.some(item =>
+      item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase()
+    )
+    const showCreateOption = searchQuery.trim().length >= 3 && !hasExactMatch
     const totalOptions = catalogSuggestions.length + (showCreateOption ? 1 : 0)
 
     if (e.key === 'ArrowDown') {
@@ -119,7 +132,11 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
       {showAutocomplete && searchQuery.length >= 1 && (
         <ul className="dropdown-content menu bg-base-100 border border-base-300 rounded-box shadow-lg w-full mt-1 max-h-60 overflow-y-auto p-0 z-[1] flex-nowrap">
           {catalogSuggestions.map((item, index) => (
-            <li key={item.id} className="w-full">
+            <li
+              key={item.id}
+              className="w-full"
+              ref={index === selectedIndex ? selectedItemRef : null}
+            >
               <button
                 onClick={() => handleSelectItem(item)}
                 onKeyDown={(e) => {
@@ -145,10 +162,15 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
             </li>
           ))}
           {(() => {
-            const hasHighSimilarityMatch = catalogSuggestions.some(item => item.score <= 0.05)
-            const showCreateOption = searchQuery.length >= 3 && !hasHighSimilarityMatch
+            const hasExactMatch = catalogSuggestions.some(item =>
+              item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase()
+            )
+            const showCreateOption = searchQuery.trim().length >= 3 && !hasExactMatch
             return showCreateOption ? (
-              <li className="w-full">
+              <li
+                className="w-full"
+                ref={selectedIndex === catalogSuggestions.length ? selectedItemRef : null}
+              >
                 <button
                   onClick={handleCreateNew}
                   onKeyDown={(e) => {
@@ -161,7 +183,9 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                     selectedIndex === catalogSuggestions.length ? 'active' : ''
                   }`}
                 >
-                  <div className="text-sm text-primary font-medium truncate">
+                  <div className={`text-sm font-medium truncate ${
+                    selectedIndex === catalogSuggestions.length ? 'text-primary-content' : 'text-primary'
+                  }`}>
                     + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
                   </div>
                 </button>
