@@ -28,22 +28,40 @@ ENV RAILS_ENV="production" \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Install packages needed to build gems and Node.js for Vite
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config curl && \
+    curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
+    apt-get install --no-install-recommends -y nodejs && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+# Create rails user and group for build
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails /rails
+
+# Switch to rails user for all build operations
+USER 1000:1000
+
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY --chown=rails:rails Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
+# Install JavaScript dependencies
+COPY --chown=rails:rails package.json package-lock.json ./
+RUN npm ci --omit=dev && \
+    rm -rf ~/.npm
+
 # Copy application code
-COPY . .
+COPY --chown=rails:rails . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
+
+# Build Vite frontend (React app)
+RUN bin/vite build
 
 
 
@@ -51,14 +69,15 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Final stage for app image
 FROM base
 
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
-
-# Run and own only the runtime files as a non-root user for security
+# Create rails user and group
 RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
+
+# Copy built artifacts: gems, application (already owned by rails:rails from build stage)
+COPY --from=build --chown=rails:rails "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --from=build --chown=rails:rails /rails /rails
+
+# Switch to rails user
 USER 1000:1000
 
 # Entrypoint prepares the database.

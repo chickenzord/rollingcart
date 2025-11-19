@@ -23,19 +23,61 @@ test:
 
 # Store production database in the storage/ directory, which by default
 # is mounted as a persistent Docker volume in config/deploy.yml.
+#
+# Supports both SQLite (default) and PostgreSQL via DATABASE_URL environment variable.
+# Examples:
+#   - SQLite: No DATABASE_URL needed (uses default paths below)
+#   - PostgreSQL: DATABASE_URL=postgresql://user:pass@localhost/dbname
 production:
-  primary:
-    <<: *default
-    database: storage/production.sqlite3
+  primary: &production_primary
+    <% if ENV["DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>
+    <% else %>
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    database: <%= ENV.fetch("DATABASE_PATH") { "storage/production.sqlite3" } %>
+    <% end %>
   cache:
-    <<: *default
-    database: storage/production_cache.sqlite3
+    <% if ENV["CACHE_DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["CACHE_DATABASE_URL"] %>
+    <% elsif ENV["DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>_cache
+    <% else %>
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    database: <%= ENV.fetch("CACHE_DATABASE_PATH") { "storage/production_cache.sqlite3" } %>
+    <% end %>
     migrations_paths: db/cache_migrate
   queue:
-    <<: *default
-    database: storage/production_queue.sqlite3
+    <% if ENV["QUEUE_DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["QUEUE_DATABASE_URL"] %>
+    <% elsif ENV["DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>_queue
+    <% else %>
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    database: <%= ENV.fetch("QUEUE_DATABASE_PATH") { "storage/production_queue.sqlite3" } %>
+    <% end %>
     migrations_paths: db/queue_migrate
   cable:
-    <<: *default
-    database: storage/production_cable.sqlite3
+    <% if ENV["CABLE_DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["CABLE_DATABASE_URL"] %>
+    <% elsif ENV["DATABASE_URL"].present? %>
+    adapter: postgresql
+    url: <%= ENV["DATABASE_URL"] %>_cable
+    <% else %>
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    database: <%= ENV.fetch("CABLE_DATABASE_PATH") { "storage/production_cable.sqlite3" } %>
+    <% end %>
     migrations_paths: db/cable_migrate

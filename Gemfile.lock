@@ -140,7 +140,7 @@ GEM
       net-smtp
     marcel (1.1.0)
     mini_mime (1.1.5)
-    minitest (5.26.1)
+    minitest (5.26.2)
     msgpack (1.8.0)
     mutex_m (0.3.0)
     net-imap (0.5.12)
@@ -177,6 +177,12 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -366,6 +372,7 @@ DEPENDENCIES
   debug
   jwt (~> 3.1)
   kamal
+  pg (~> 1.6)
   puma (>= 5.0)
   rack-cors (~> 3.0)
   rails (~> 8.1.1)

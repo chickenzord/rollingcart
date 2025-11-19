@@ -31,12 +31,54 @@ A self-hostable shopping list application with session-based workflow and GTD-in
 
 ## Quick Start
 
-### Prerequisites
+### Option 1: Docker Compose (Recommended)
+
+**Prerequisites:**
+- Docker
+- Docker Compose
+
+**Steps:**
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/rollingcart.git
+cd rollingcart
+```
+
+2. Create `.env` file:
+```bash
+cp .env.example .env
+```
+
+3. Edit `.env` and set your `RAILS_MASTER_KEY`:
+```bash
+RAILS_MASTER_KEY=<content-of-config/master.key>
+DB_PASSWORD=your-secure-password
+```
+
+4. Start the application:
+```bash
+docker-compose up -d
+```
+
+5. Create your first user and seed catalog:
+```bash
+docker-compose exec app bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
+docker-compose exec app bin/rails catalog:seed EMAIL=you@example.com
+```
+
+6. Open http://localhost:3000 and login with your credentials.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment options.
+
+### Option 2: Local Development
+
+**Prerequisites:**
 - Ruby 3.3+
 - Node.js 18+
 - SQLite 3
 
-### Installation
+**Steps:**
 
 1. Clone the repository:
 ```bash
