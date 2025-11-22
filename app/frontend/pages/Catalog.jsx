@@ -199,7 +199,6 @@ export default function Catalog() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Description</th>
                   <th>Category</th>
                   <th className="w-12"></th>
                 </tr>
@@ -209,12 +208,14 @@ export default function Catalog() {
                   const item = row.original
                   return (
                     <tr key={row.id}>
-                      <td className="font-medium">{item.name}</td>
-                      <td className="text-base-content/60 text-sm">{item.description || '—'}</td>
                       <td>
-                        {item.category && (
-                          <span className="badge badge-ghost badge-sm">{item.category.name}</span>
+                        <div className="font-medium">{item.name}</div>
+                        {item.description && (
+                          <div className="text-base-content/50 text-xs">{item.description}</div>
                         )}
+                      </td>
+                      <td className="text-base-content/70 text-sm">
+                        {item.category?.name || 'Uncategorized'}
                       </td>
                       <td>
                         <div className="dropdown dropdown-end dropdown-left">
