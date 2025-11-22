@@ -19,6 +19,7 @@ export default function CategoryModal({ isOpen, onClose, category, onSuccess }) 
   useEffect(() => {
     if (isOpen && category) {
       // Edit mode - populate form with category data
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(category.name || '')
       setDescription(category.description || '')
     } else if (isOpen) {

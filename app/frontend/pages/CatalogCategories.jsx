@@ -24,7 +24,7 @@ export default function CatalogCategories() {
 
   // Sort categories by name
   const categories = [...categoriesData].sort((a, b) =>
-    a.name.localeCompare(b.name)
+    a.name.localeCompare(b.name),
   )
 
   const handleDeleteClick = (category) => {
