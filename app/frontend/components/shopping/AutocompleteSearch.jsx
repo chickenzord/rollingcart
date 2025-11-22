@@ -84,9 +84,11 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
       setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1))
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      if (selectedIndex >= 0) {
-        if (selectedIndex < catalogSuggestions.length) {
-          handleSelectItem(catalogSuggestions[selectedIndex])
+      // If nothing selected, act on first item
+      const effectiveIndex = selectedIndex >= 0 ? selectedIndex : 0
+      if (totalOptions > 0) {
+        if (effectiveIndex < catalogSuggestions.length) {
+          handleSelectItem(catalogSuggestions[effectiveIndex])
         } else {
           handleCreateNew()
         }
@@ -155,9 +157,14 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                     <div className="text-xs opacity-60 mt-0.5 truncate">{item.category.name}</div>
                   )}
                 </div>
-                {isItemInBacklog(item.id) && (
-                  <div className="badge badge-success badge-sm ml-2">✓ In shopping list</div>
-                )}
+                <div className="flex items-center gap-2 ml-2">
+                  {isItemInBacklog(item.id) && (
+                    <div className="badge badge-success badge-sm">✓ In list</div>
+                  )}
+                  {(selectedIndex === index || (selectedIndex === -1 && index === 0)) && (
+                    <span className="text-base-content/30 text-sm">&crarr;</span>
+                  )}
+                </div>
               </button>
             </li>
           ))}
@@ -179,7 +186,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                       handleCreateNew()
                     }
                   }}
-                  className={`px-4 py-3 w-full text-left rounded-none ${
+                  className={`px-4 py-3 w-full text-left rounded-none flex items-center justify-between ${
                     selectedIndex === catalogSuggestions.length ? 'active' : ''
                   }`}
                 >
@@ -188,6 +195,9 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
                   }`}>
                     + Create new catalog item <span className="font-semibold">&quot;{searchQuery}&quot;</span>
                   </div>
+                  {(selectedIndex === catalogSuggestions.length || (selectedIndex === -1 && catalogSuggestions.length === 0)) && (
+                    <span className="text-base-content/30 text-sm">&crarr;</span>
+                  )}
                 </button>
               </li>
             ) : null
