@@ -6,7 +6,7 @@ import { CheckCircle, Xmark, Clock } from 'iconoir-react'
  * Active session information card
  * Displays session name, start time, stale warning (if applicable), and action buttons (Finish/Cancel)
  */
-export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, onCancel }) {
+export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, onCancel, doneButtonRef }) {
   const isStale = isSessionStale(session.created_at)
 
   return (
@@ -38,6 +38,7 @@ export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, 
       <div className="flex mt-2 justify-end">
         <div className="join">
           <button
+            ref={doneButtonRef}
             onClick={onFinish}
             disabled={!hasCheckedItems}
             className="btn btn-primary btn-xs gap-1 join-item"
@@ -67,4 +68,5 @@ ActiveSessionCard.propTypes = {
   hasCheckedItems: PropTypes.bool.isRequired,
   onFinish: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  doneButtonRef: PropTypes.object,
 }

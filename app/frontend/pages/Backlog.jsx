@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
@@ -29,6 +29,10 @@ export default function Backlog() {
   const [transitioningOutItems, setTransitioningOutItems] = useState(new Set()) // Items fading out
   const [transitioningInItems, setTransitioningInItems] = useState(new Set()) // Items fading in
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [isDoneButtonVisible, setIsDoneButtonVisible] = useState(false)
+
+  // Ref for tracking Done button visibility
+  const doneButtonRef = useRef(null)
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -39,6 +43,22 @@ export default function Backlog() {
     { enabled: !!activeSession }, // Only fetch if there's an active session
   )
   const { data: catalogCache } = useCatalogItems({ includeCategory: true })
+
+  // Track Done button visibility with Intersection Observer
+  useEffect(() => {
+    const button = doneButtonRef.current
+    if (!button) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsDoneButtonVisible(entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+
+    observer.observe(button)
+    return () => observer.disconnect()
+  }, [activeSession])
 
   // Mutations - actions that modify data
   const createSessionMutation = useCreateSession()
@@ -293,6 +313,7 @@ export default function Backlog() {
           hasCheckedItems={checkedItems.length > 0}
           onFinish={finishSession}
           onCancel={cancelSession}
+          doneButtonRef={doneButtonRef}
         />
       ) : uncheckedItems.length > 0 && (
         <div className="mb-6 flex gap-3 flex-wrap items-center">
@@ -419,7 +440,11 @@ export default function Backlog() {
             </p>
             <button
               onClick={finishSession}
-              className="w-full btn btn-secondary btn-sm gap-2"
+              className={`w-full btn btn-secondary btn-sm gap-2 transition-all duration-300 ease-in-out ${
+                isDoneButtonVisible
+                  ? 'opacity-0 max-h-0 py-0 min-h-0 overflow-hidden'
+                  : 'opacity-100 max-h-12'
+              }`}
             >
               <CheckCircle width="16px" height="16px" strokeWidth={2} />
               Done Shopping
