@@ -1,3 +1,5 @@
+![RollingCart Icon](public/favicon.ico)
+
 # RollingCart
 
 A self-hostable shopping list app designed for recurring grocery runs. Opinionated: one list, one workflow, minimum complexity.
@@ -6,7 +8,7 @@ A self-hostable shopping list app designed for recurring grocery runs. Opinionat
 
 Most shopping apps let you create multiple lists. RollingCart takes a different approach: **one shopping list, always**. Your catalog organizes items by category. Sessions handle timing. No list management overhead.
 
-- **One source of truth**: Everything lives in one place. No more "did I put eggs on the supermarket list or the weekly list?"
+- **One source of truth**: Everything lives in one list. No more "did I put eggs on the grocery list or the weekly list?"
 - **Catalog as memory**: Items you've bought before are always a quick search away
 - **Session-based workflow**: Start a trip, check off items, finish. Unchecked items roll over to next time.
 
@@ -87,24 +89,24 @@ Seeding is optional. You can start with zero catalog items and build your own fr
 
 **Rails environment variables:**
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `RAILS_MASTER_KEY` | Rails credentials key | Required |
-| `DATABASE_URL` | PostgreSQL connection URL | (uses SQLite if not set) |
-| `DATABASE_PATH` | SQLite database file path | `storage/production.sqlite3` |
-| `APP_HOST` | Application hostname | `localhost` |
-| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
-| `RAILS_LOG_LEVEL` | Log verbosity | `info` |
+| Variable           | Description               | Default                      |
+| ------------------ | ------------------------- | ---------------------------- |
+| `RAILS_MASTER_KEY` | Rails credentials key     | Required                     |
+| `DATABASE_URL`     | PostgreSQL connection URL | (uses SQLite if not set)     |
+| `DATABASE_PATH`    | SQLite database file path | `storage/production.sqlite3` |
+| `APP_HOST`         | Application hostname      | `localhost`                  |
+| `CORS_ORIGINS`     | Allowed CORS origins      | `http://localhost:3000`      |
+| `RAILS_LOG_LEVEL`  | Log verbosity             | `info`                       |
 
 **Docker Compose convenience variables** (used to construct `DATABASE_URL`):
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DB_HOST` | PostgreSQL host | `db` |
-| `DB_PORT` | PostgreSQL port | `5432` |
-| `DB_USERNAME` | PostgreSQL username | `rollingcart` |
-| `DB_PASSWORD` | PostgreSQL password | `changeme` |
-| `DB_NAME` | PostgreSQL database name | `rollingcart` |
+| Variable      | Description              | Default       |
+| ------------- | ------------------------ | ------------- |
+| `DB_HOST`     | PostgreSQL host          | `db`          |
+| `DB_PORT`     | PostgreSQL port          | `5432`        |
+| `DB_USERNAME` | PostgreSQL username      | `rollingcart` |
+| `DB_PASSWORD` | PostgreSQL password      | `changeme`    |
+| `DB_NAME`     | PostgreSQL database name | `rollingcart` |
 
 **Database selection**: If `DATABASE_URL` is set, PostgreSQL is used. Otherwise, SQLite is used with the path from `DATABASE_PATH`.
 
