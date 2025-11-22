@@ -9,6 +9,7 @@ import {
 import { useCatalogItems, useDeleteCatalogItem } from '../hooks/queries/useCatalogQueries'
 import { useFlash } from '../contexts/FlashContext'
 import CatalogItemModal from '../components/catalog/CatalogItemModal'
+import CatalogItemDetailsModal from '../components/catalog/CatalogItemDetailsModal'
 import { Box, Search, NavArrowLeft, NavArrowRight, MoreVert, EditPencil, Trash, Plus } from 'iconoir-react'
 
 export default function Catalog() {
@@ -16,6 +17,8 @@ export default function Catalog() {
   const [itemToDelete, setItemToDelete] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [itemToEdit, setItemToEdit] = useState(null)
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false)
+  const [itemToView, setItemToView] = useState(null)
   const { flash } = useFlash()
 
   // Fetch all catalog items with category data - shares cache with Autocomplete
@@ -27,6 +30,16 @@ export default function Catalog() {
   const handleNewItem = () => {
     setItemToEdit(null)
     setModalOpen(true)
+  }
+
+  const handleViewDetails = (item) => {
+    setItemToView(item)
+    setDetailsModalOpen(true)
+  }
+
+  const handleDetailsModalClose = () => {
+    setDetailsModalOpen(false)
+    setItemToView(null)
   }
 
   const handleEdit = (item) => {
@@ -207,7 +220,11 @@ export default function Catalog() {
                 {table.getRowModel().rows.map((row) => {
                   const item = row.original
                   return (
-                    <tr key={row.id}>
+                    <tr
+                      key={row.id}
+                      className="cursor-pointer hover"
+                      onClick={() => handleViewDetails(item)}
+                    >
                       <td>
                         <div className="font-medium">{item.name}</div>
                         {item.description && (
@@ -217,7 +234,7 @@ export default function Catalog() {
                       <td className="text-base-content/70 text-sm">
                         {item.category?.name || 'Uncategorized'}
                       </td>
-                      <td>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <div className="dropdown dropdown-end dropdown-left">
                           <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle">
                             <MoreVert width="16px" height="16px" strokeWidth={2} />
@@ -316,6 +333,13 @@ export default function Catalog() {
         onClose={handleModalClose}
         item={itemToEdit}
         onSuccess={handleModalSuccess}
+      />
+
+      {/* Item Details Modal */}
+      <CatalogItemDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={handleDetailsModalClose}
+        item={itemToView}
       />
     </div>
   )

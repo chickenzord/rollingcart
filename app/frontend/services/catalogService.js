@@ -90,3 +90,12 @@ export async function updateItem(itemId, itemData) {
 export async function deleteItem(itemId) {
   return del(`/api/v1/catalog/items/${itemId}`)
 }
+
+/**
+ * Get shopping sessions that contain a catalog item
+ * @param {number} itemId - Item ID
+ * @returns {Promise<Array>} Shopping sessions
+ */
+export async function getItemShoppingSessions(itemId) {
+  return get(`/api/v1/catalog/items/${itemId}/shopping_sessions`)
+}

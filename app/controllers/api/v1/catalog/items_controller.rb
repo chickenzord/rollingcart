@@ -3,7 +3,7 @@ module Api
     module Catalog
       class ItemsController < Api::BaseController
         before_action :authenticate
-        before_action :set_item, only: [ :show, :update, :destroy ]
+        before_action :set_item, only: [ :show, :update, :destroy, :shopping_sessions ]
 
         def index
           items = current_account.catalog_items
@@ -63,6 +63,21 @@ module Api
           @item.soft_delete
 
           head :no_content
+        end
+
+        def shopping_sessions
+          # Find all shopping sessions that contain this catalog item
+          session_ids = ::Shopping::Item
+            .where(catalog_item_id: @item.id)
+            .where.not(shopping_session_id: nil)
+            .select(:shopping_session_id)
+            .distinct
+
+          sessions = current_account.shopping_sessions
+            .where(id: session_ids)
+            .order(created_at: :desc)
+
+          render json: sessions
         end
 
         private

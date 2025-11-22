@@ -22,7 +22,11 @@ Rails.application.routes.draw do
         resources :categories, only: [ :index, :show, :create, :update, :destroy ] do
           get "items", to: "categories#items_index"
         end
-        resources :items, only: [ :index, :show, :create, :update, :destroy ]
+        resources :items, only: [ :index, :show, :create, :update, :destroy ] do
+          member do
+            get :shopping_sessions
+          end
+        end
       end
 
       namespace :shopping do

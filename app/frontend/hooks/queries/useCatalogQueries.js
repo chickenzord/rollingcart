@@ -102,6 +102,19 @@ export function useUpdateCatalogItem() {
 }
 
 /**
+ * Fetch shopping sessions that contain a catalog item
+ * @param {string|number} itemId - The catalog item ID
+ * @returns {UseQueryResult} Query result with sessions array
+ */
+export function useItemShoppingSessions(itemId) {
+  return useQuery({
+    queryKey: ['catalog', 'items', itemId, 'shopping_sessions'],
+    queryFn: () => catalogService.getItemShoppingSessions(itemId),
+    enabled: !!itemId,
+  })
+}
+
+/**
  * Delete a catalog item
  * @returns {UseMutationResult} Mutation for deleting items
  */
