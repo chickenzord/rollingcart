@@ -49,9 +49,9 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-# Install JavaScript dependencies
+# Install JavaScript dependencies (including dev for build tools)
 COPY --chown=rails:rails package.json package-lock.json ./
-RUN npm ci --omit=dev && \
+RUN npm ci && \
     rm -rf ~/.npm
 
 # Copy application code
