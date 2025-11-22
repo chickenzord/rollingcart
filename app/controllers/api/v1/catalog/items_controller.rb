@@ -58,7 +58,10 @@ module Api
         end
 
         def destroy
+          # Soft delete and remove associated shopping items that are not done
+          ::Shopping::Item.where(catalog_item_id: @item.id, shopping_session_id: nil).destroy_all
           @item.soft_delete
+
           head :no_content
         end
 

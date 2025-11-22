@@ -114,6 +114,8 @@ export function useDeleteCatalogItem() {
       // Invalidate all catalog item queries
       queryClient.invalidateQueries({ queryKey: ['catalog', 'items'] })
       queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
+      // Invalidate all shopping items queries (they reference catalog items)
+      queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
     },
   })
 }
