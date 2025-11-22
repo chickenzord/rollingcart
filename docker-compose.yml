@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-rollingcart}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: ${DB_NAME:-rollingcart}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rollingcart"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      SECRET_KEY_BASE: ${RAILS_MASTER_KEY}
+      # PostgreSQL: Set DATABASE_URL to use the db service
+      # SQLite: Remove DATABASE_URL and set DATABASE_PATH instead (e.g., /rails/storage/production.sqlite3)
+      DATABASE_URL: postgresql://${DB_USERNAME:-rollingcart}:${DB_PASSWORD:-changeme}@${DB_HOST:-db}:${DB_PORT:-5432}/${DB_NAME:-rollingcart}
+      APP_HOST: ${APP_HOST:-localhost}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
+    volumes:
+      - storage:/rails/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  storage:

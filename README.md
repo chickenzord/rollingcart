@@ -1,240 +1,131 @@
-# RollingCart 🛒
+# RollingCart
 
-A self-hostable shopping list application with session-based workflow and GTD-inspired backlog system. Designed for frictionless capture and flexible shopping workflows.
+A self-hostable shopping list app designed for recurring grocery runs. Opinionated: one list, one workflow, minimum complexity.
+
+## Why RollingCart?
+
+Most shopping apps let you create multiple lists. RollingCart takes a different approach: **one shopping list, always**. Your catalog organizes items by category. Sessions handle timing. No list management overhead.
+
+- **One source of truth**: Everything lives in one place. No more "did I put eggs on the supermarket list or the weekly list?"
+- **Catalog as memory**: Items you've bought before are always a quick search away
+- **Session-based workflow**: Start a trip, check off items, finish. Unchecked items roll over to next time.
+
+Read the [User Guide](USER_GUIDE.md) to understand the full workflow and design philosophy.
+
+**Live demo coming soon.**
 
 ## Features
 
-- **Smart Shopping Lists**: Add items as you think of them, organize them into shopping trips
-- **Session-Based Workflow**: Start a shopping trip to track what you've picked up
-- **Rich Catalog**: Pre-seeded with common items across grocery, kitchen, hardware, and stationery categories
-- **Fuzzy Search**: Fast autocomplete with Fuse.js finds items even with typos
-- **Category Grouping**: Items auto-organize by category for efficient in-store navigation
-- **Adaptive UI**: Context-aware placeholders and prompts guide you through the workflow
-- **SQLite Database**: Production-ready for single-user deployments
+- **Fuzzy search**: Find items quickly even with typos
+- **Catalog system**: Organize items by category, reuse them anytime
+- **Shopping trips**: Track what you bought, review past trips
+- **Pre-seeded catalog**: Common grocery items ready to use
+- **Mobile-friendly**: Responsive design for on-the-go use
 
-## Tech Stack
+## Quick Setup
 
-### Backend
-- **Rails 8.0.2** - API + serves React app
-- **Rodauth** - JWT-based authentication
-- **SQLite3** - Production-ready database
-- **Solid Stack** - Solid Cache, Solid Queue, Solid Cable
+RollingCart is built with **Ruby on Rails** and supports both **SQLite** (default) and **PostgreSQL**.
 
-### Frontend
-- **React 19.2** - UI framework
-- **React Router** - Client-side routing
-- **TanStack Query** - Server state management
-- **Vite** - Fast build tool
-- **Tailwind CSS v4** - Styling
-- **DaisyUI** - Component library
-- **Fuse.js** - Fuzzy search
+### Docker Compose
 
-## Quick Start
+**Prerequisites:** Docker and Docker Compose
 
-### Option 1: Docker Compose (Recommended)
-
-**Prerequisites:**
-- Docker
-- Docker Compose
-
-**Steps:**
-
-1. Clone the repository:
+1. Clone and configure:
 ```bash
-git clone https://github.com/yourusername/rollingcart.git
+git clone https://github.com/chickenzord/rollingcart.git
 cd rollingcart
-```
-
-2. Create `.env` file:
-```bash
 cp .env.example .env
 ```
 
-3. Edit `.env` and set your `RAILS_MASTER_KEY`:
+2. Edit `.env`:
 ```bash
 RAILS_MASTER_KEY=<content-of-config/master.key>
 DB_PASSWORD=your-secure-password
 ```
 
-4. Start the application:
+3. Start:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-5. Create your first user and seed catalog:
+4. Create user and seed catalog:
 ```bash
-docker-compose exec app bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
-docker-compose exec app bin/rails catalog:seed EMAIL=you@example.com
+docker compose exec app bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
+docker compose exec app bin/rails catalog:seed EMAIL=you@example.com
 ```
 
-6. Open http://localhost:3000 and login with your credentials.
+5. Open http://localhost:3000
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment options.
-
-### Option 2: Local Development
-
-**Prerequisites:**
-- Ruby 3.3+
-- Node.js 18+
-- SQLite 3
-
-**Steps:**
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/rollingcart.git
-cd rollingcart
-```
-
-2. Install dependencies:
-```bash
-bundle install
-npm install
-```
-
-3. Setup database:
-```bash
-bin/rails db:setup
-```
-
-4. Create your first user:
-```bash
-bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
-```
-
-5. Seed catalog items:
-```bash
-bin/rails catalog:seed EMAIL=you@example.com
-```
-
-6. Start the development server:
-```bash
-bin/dev
-```
-
-This starts both Rails (port 3000) and Vite dev server (port 3036).
-
-7. Open http://localhost:3000 and login with your credentials.
-
-## Catalog Seed System
-
-RollingCart comes with a comprehensive catalog of common items organized by store type.
-
-### Rake Tasks
-
-**Seed all catalogs for a user:**
-```bash
-bin/rails catalog:seed EMAIL=user@example.com
-```
-
-**Seed specific catalogs only:**
-```bash
-bin/rails catalog:seed EMAIL=user@example.com FILES=grocery_fresh.yml,grocery_pantry.yml
-```
-
-**List all seed items and find duplicates:**
-```bash
-bin/rails catalog:seed:list_items
-bin/rails catalog:seed:list_items VERBOSE=true  # Show all items
-```
-
-**Idempotency**: The seeding process is idempotent - you can run it multiple times safely. It uses `find_or_create_by` to skip existing records.
-
-### Customizing Catalog Data
-
-Catalog files are located in `db/default_catalog/` with YAML format:
-
-```yaml
-categories:
-  - name: Category Name
-    description: Optional description
-    items:
-      - name: Item Name
-        description: Optional description (for disambiguation)
-      - name: Another Item
-```
-
-**Naming conventions**:
-- Use singular form (e.g., "Apple" not "Apples")
-- Add Indonesian translations in description field when applicable
-- No description needed if name is self-explanatory
-
-## User Management
-
-Since registration is disabled for single-user setup, use rake tasks:
+### User Management
 
 ```bash
 # Create user
-bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
+docker compose exec app bin/rails user:create EMAIL=you@example.com PASSWORD=yourpassword
 
 # List users
-bin/rails user:list
+docker compose exec app bin/rails user:list
 
 # Delete user
-bin/rails user:delete EMAIL=you@example.com
+docker compose exec app bin/rails user:delete EMAIL=you@example.com
 ```
+
+### Catalog Seeding
+
+```bash
+# Seed all default catalogs
+docker compose exec app bin/rails catalog:seed EMAIL=you@example.com
+
+# Seed specific catalogs only
+docker compose exec app bin/rails catalog:seed EMAIL=you@example.com FILES=grocery_fresh.yml,grocery_pantry.yml
+```
+
+Seeding is idempotent. Run it multiple times safely.
+
+## Configuration
+
+### Environment Variables
+
+**Rails environment variables:**
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RAILS_MASTER_KEY` | Rails credentials key | Required |
+| `DATABASE_URL` | PostgreSQL connection URL | (uses SQLite if not set) |
+| `DATABASE_PATH` | SQLite database file path | `storage/production.sqlite3` |
+| `APP_HOST` | Application hostname | `localhost` |
+| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:3000` |
+| `RAILS_LOG_LEVEL` | Log verbosity | `info` |
+
+**Docker Compose convenience variables** (used to construct `DATABASE_URL`):
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DB_HOST` | PostgreSQL host | `db` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_USERNAME` | PostgreSQL username | `rollingcart` |
+| `DB_PASSWORD` | PostgreSQL password | `changeme` |
+| `DB_NAME` | PostgreSQL database name | `rollingcart` |
+
+**Database selection**: If `DATABASE_URL` is set, PostgreSQL is used. Otherwise, SQLite is used with the path from `DATABASE_PATH`.
 
 ## Development
 
-### Running Tests
+See [CLAUDE.md](CLAUDE.md) for development setup, architecture details, and contribution guidelines.
+
 ```bash
-bin/rails test                                    # All tests
-bin/rails test test/models/some_model_test.rb   # Specific file
+# Quick start for development
+bundle install && npm install
+bin/rails db:setup
+bin/rails user:create EMAIL=dev@example.com PASSWORD=password
+bin/dev  # Starts Rails + Vite
 ```
 
-### Code Quality
-```bash
-# Ruby linting (Rails Omakase style)
-bin/rubocop
-bin/rubocop -a  # Auto-fix
+## Tech Stack
 
-# Security scanning
-bin/brakeman
-
-# JavaScript linting
-npm run lint
-npm run lint:fix
-```
-
-### Database Operations
-```bash
-bin/rails db:migrate        # Run migrations
-bin/rails db:reset          # Reset database (WARNING: destroys data)
-bin/rails db:seed           # Seed default data
-```
-
-## API Endpoints
-
-All API endpoints are under `/api/v1/`:
-
-**Authentication** (via Rodauth):
-- `POST /auth/login` - Login with email/password
-- `POST /auth/logout` - Logout
-- `POST /auth/jwt-refresh` - Refresh JWT token
-
-**Catalog**:
-- `GET /api/v1/catalog/categories` - List categories
-- `GET /api/v1/catalog/items?include_category=true` - List all items
-
-**Shopping**:
-- `GET /api/v1/shopping/sessions` - List sessions
-- `GET /api/v1/shopping/items` - List shopping list items
-
-## Terminology
-
-- **User-facing**: "Shopping List" and "Shopping Trip"
-- **Code/API**: "backlog" and "session"
-- Shopping List = Unchecked items (no session)
-- Shopping Trip = Active or completed session
-
-## Project Status
-
-✅ **MVP Complete** - Core features implemented and tested
+- **Backend**: Rails 8, Rodauth (JWT auth), SQLite/PostgreSQL
+- **Frontend**: React 19, Vite, Tailwind CSS, DaisyUI
+- **Search**: Fuse.js
 
 ## License
 
-[Your License Here]
-
-## Contributing
-
-[Your Contributing Guidelines Here]
+MIT
