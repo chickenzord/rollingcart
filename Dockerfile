@@ -58,10 +58,10 @@ RUN npm ci --omit=dev && \
 COPY --chown=rails:rails . .
 
 # Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec bootsnap precompile app/ lib/
 
 # Build Vite frontend (React app)
-RUN bin/vite build
+RUN SECRET_KEY_BASE_DUMMY=1 bin/vite build
 
 
 
