@@ -30,7 +30,7 @@ function Login() {
       <div className="card bg-base-100 shadow-xl w-full max-w-md">
         <div className="card-body">
           <h2 className="card-title text-2xl justify-center mb-4">
-            Login to Rollingcart
+            <img src="/rollingcart_text.png" alt="Rollingcart Logo" className="mx-auto h-10" />
           </h2>
 
           {error && (
