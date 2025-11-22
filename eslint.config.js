@@ -51,6 +51,7 @@ export default [
 
       // React Hooks Rules
       ...reactHooks.configs.recommended.rules,
+      'react-hooks/incompatible-library': 'off', // Not using React Compiler
 
       // Accessibility Rules
       ...jsxA11y.configs.recommended.rules,

@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useSessions, useDeleteSession } from '../hooks/queries/useShoppingQueries'
 import SessionListItem from '../components/shopping/SessionListItem'
 import SessionDetailsModal from '../components/shopping/SessionDetailsModal'
 import { Clock } from 'iconoir-react'
 
 export default function ShoppingSessions() {
-  const navigate = useNavigate()
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [selectedSession, setSelectedSession] = useState(null)
 

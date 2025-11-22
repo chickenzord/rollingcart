@@ -224,6 +224,8 @@ export default function Catalog() {
                       key={row.id}
                       className="cursor-pointer hover"
                       onClick={() => handleViewDetails(item)}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleViewDetails(item)}
+                      tabIndex={0}
                     >
                       <td>
                         <div className="font-medium">{item.name}</div>
@@ -323,7 +325,14 @@ export default function Catalog() {
               </button>
             </div>
           </div>
-          <div className="modal-backdrop" onClick={handleDeleteCancel}></div>
+          <div
+            className="modal-backdrop"
+            onClick={handleDeleteCancel}
+            onKeyDown={(e) => e.key === 'Escape' && handleDeleteCancel()}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+          ></div>
         </div>
       )}
 

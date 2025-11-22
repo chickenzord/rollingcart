@@ -28,7 +28,13 @@ export default function SessionListItem({ session, onDelete, onEdit }) {
       {/* Content */}
       <div className="flex-1 pb-6">
         <div className="flex justify-between items-start">
-          <div className="flex-1 cursor-pointer" onClick={handleEdit}>
+          <div
+            className="flex-1 cursor-pointer"
+            onClick={handleEdit}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleEdit()}
+            role="button"
+            tabIndex={0}
+          >
             {/* Session Badge */}
             {isActive && (
               <div className="badge badge-primary badge-sm mb-1">

@@ -46,6 +46,7 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
   useEffect(() => {
     if (isOpen && item) {
       // Edit mode - populate form with item data
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(item.name || '')
       setDescription(item.description || '')
       setCategoryId(item.category_id || item.category?.id || '')
@@ -74,7 +75,7 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
             onSuccess?.('updated', data.id || item.id, itemData.name)
             onClose()
           },
-        }
+        },
       )
     } else {
       createMutation.mutate(
@@ -84,7 +85,7 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
             onSuccess?.('created', data.id, itemData.name)
             onClose()
           },
-        }
+        },
       )
     }
   }
@@ -185,7 +186,14 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
           </div>
         </form>
       </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
+      <div
+        className="modal-backdrop"
+        onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={0}
+        aria-label="Close modal"
+      ></div>
     </div>
   )
 }

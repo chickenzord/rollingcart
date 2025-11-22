@@ -64,7 +64,14 @@ export default function SessionDetailsModal({ isOpen, onClose, session }) {
           </button>
         </div>
       </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
+      <div
+        className="modal-backdrop"
+        onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={0}
+        aria-label="Close modal"
+      ></div>
     </div>
   )
 }

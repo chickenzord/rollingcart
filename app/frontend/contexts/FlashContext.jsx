@@ -18,7 +18,7 @@ export function FlashProvider({ children }) {
   const removeFlash = useCallback((id) => {
     // First mark as dismissing to trigger exit animation
     setMessages(prev => prev.map(msg =>
-      msg.id === id ? { ...msg, dismissing: true } : msg
+      msg.id === id ? { ...msg, dismissing: true } : msg,
     ))
 
     // Then remove after animation completes (200ms)

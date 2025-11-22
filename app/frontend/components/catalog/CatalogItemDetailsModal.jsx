@@ -38,12 +38,12 @@ export default function CatalogItemDetailsModal({ isOpen, onClose, item }) {
             <p className="text-base-content/50 text-sm">Loading...</p>
           ) : sessions.length === 0 ? (
             <p className="text-base-content/50 text-sm">
-              You haven't picked this up yet. Add it to your list!
+              You haven&apos;t picked this up yet. Add it to your list!
             </p>
           ) : (
             <div className="space-y-1">
               <p className="text-base-content/60 text-xs mb-2">
-                You've grabbed this {sessions.length} {sessions.length === 1 ? 'time' : 'times'}:
+                You&apos;ve grabbed this {sessions.length} {sessions.length === 1 ? 'time' : 'times'}:
               </p>
               <ul className="space-y-1 max-h-40 overflow-y-auto">
                 {sessions.map((session) => (
@@ -65,7 +65,14 @@ export default function CatalogItemDetailsModal({ isOpen, onClose, item }) {
           </button>
         </div>
       </div>
-      <div className="modal-backdrop" onClick={onClose}></div>
+      <div
+        className="modal-backdrop"
+        onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={0}
+        aria-label="Close modal"
+      ></div>
     </div>
   )
 }
