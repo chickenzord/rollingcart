@@ -27,7 +27,7 @@ function Login() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-200">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-base-200">
       <div className="card bg-base-100 shadow-xl w-full max-w-md">
         <div className="card-body">
           <h2 className="card-title text-2xl justify-center mb-4">
@@ -106,6 +106,9 @@ function Login() {
           </p>
         </div>
       </div>
+      <footer className="mt-8 text-center text-xs text-base-content/30">
+        Made with ❤️ in Indonesia
+      </footer>
     </div>
   )
 }
