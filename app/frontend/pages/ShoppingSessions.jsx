@@ -1,8 +1,15 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSessions, useDeleteSession } from '../hooks/queries/useShoppingQueries'
 import SessionListItem from '../components/shopping/SessionListItem'
+import SessionDetailsModal from '../components/shopping/SessionDetailsModal'
 import { Clock } from 'iconoir-react'
 
 export default function ShoppingSessions() {
+  const navigate = useNavigate()
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false)
+  const [selectedSession, setSelectedSession] = useState(null)
+
   // Fetch all sessions
   const {
     data: sessions = [],
@@ -22,9 +29,15 @@ export default function ShoppingSessions() {
     })
   }
 
-  const handleViewDetails = (_sessionId) => {
-    // TODO: Navigate to session details page
-    alert('Session details view coming soon!')
+  const handleEdit = (session) => {
+    // Show details modal for all sessions
+    setSelectedSession(session)
+    setDetailsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setDetailsModalOpen(false)
+    setSelectedSession(null)
   }
 
   if (isLoading) {
@@ -68,13 +81,13 @@ export default function ShoppingSessions() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div>
           {sessions.map((session) => (
             <SessionListItem
               key={session.id}
               session={session}
               onDelete={deleteSession}
-              onViewDetails={handleViewDetails}
+              onEdit={handleEdit}
             />
           ))}
         </div>
@@ -87,6 +100,13 @@ export default function ShoppingSessions() {
           <div className="stat-value text-primary">{sessions.length}</div>
         </div>
       </div>
+
+      {/* Session Details Modal */}
+      <SessionDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={handleModalClose}
+        session={selectedSession}
+      />
     </div>
   )
 }

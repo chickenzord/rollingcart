@@ -1,20 +1,10 @@
 import { useState } from 'react'
 import { formatTimeAgo } from '../../utils/dateUtils'
+import { EditPencil, Trash } from 'iconoir-react'
 
-export default function SessionListItem({ session, onDelete, onViewDetails }) {
+export default function SessionListItem({ session, onDelete, onEdit }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Calculate session statistics
-  const getSessionStats = (session) => {
-    // TODO: This will need actual item data from the API
-    // For now, showing placeholder
-    return {
-      itemCount: session.item_count || 0,
-      duration: session.duration || 'N/A',
-    }
-  }
-
-  const stats = getSessionStats(session)
   const isActive = session.active
 
   const handleDelete = () => {
@@ -22,89 +12,72 @@ export default function SessionListItem({ session, onDelete, onViewDetails }) {
     onDelete(session.id)
   }
 
-  const handleViewDetails = () => {
+  const handleEdit = () => {
     setIsMenuOpen(false)
-    onViewDetails(session.id)
+    onEdit(session)
   }
 
   return (
-    <div
-      className={`card border ${
-        isActive
-          ? 'border-primary bg-primary/10'
-          : 'border-base-300 bg-base-100 hover:bg-base-200'
-      } transition-colors`}
-    >
-      <div className="card-body">
+    <div className="flex gap-4">
+      {/* Timeline indicator */}
+      <div className="flex flex-col items-center">
+        <div className={`w-3 h-3 rounded-full ${isActive ? 'bg-primary' : 'bg-base-300'}`}></div>
+        <div className="w-0.5 flex-1 bg-base-300"></div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 pb-6">
         <div className="flex justify-between items-start">
-          <div className="flex-1">
+          <div className="flex-1 cursor-pointer" onClick={handleEdit}>
             {/* Session Badge */}
             {isActive && (
-              <div className="badge badge-primary mb-2">
+              <div className="badge badge-primary badge-sm mb-1">
                 SHOPPING NOW
               </div>
             )}
 
             {/* Session Name */}
-            <h3 className="card-title text-xl mb-2">
+            <h3 className="font-medium text-base mb-1">
               {session.name}
             </h3>
 
             {/* Session Metadata */}
-            <div className="flex gap-4 text-sm text-base-content/70 mb-3">
-              <span>Created {formatTimeAgo(session.created_at)}</span>
-              {!isActive && session.finished_at && (
-                <span>• Finished {formatTimeAgo(session.finished_at)}</span>
-              )}
+            <div className="text-xs text-base-content/50">
+              {formatTimeAgo(session.created_at)}
             </div>
-
-            {/* Session Stats */}
-            <div className="flex gap-4 text-sm text-base-content">
-              <span>
-                <strong>{stats.itemCount}</strong> items
-              </span>
-              {stats.duration !== 'N/A' && (
-                <span>
-                  • Duration: <strong>{stats.duration}</strong>
-                </span>
-              )}
-            </div>
-
-            {/* TODO: Add item list preview */}
-            {/* <div className="mt-3 text-sm text-base-content/70">
-              Items: milk, eggs, bread...
-            </div> */}
           </div>
 
           {/* Actions Menu */}
           <div className="dropdown dropdown-end shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="btn btn-ghost btn-sm btn-circle"
+              className="btn btn-ghost btn-xs btn-circle"
               aria-label="Session menu"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <circle cx="12" cy="5" r="2" />
                 <circle cx="12" cy="12" r="2" />
                 <circle cx="12" cy="19" r="2" />
               </svg>
             </button>
             {isMenuOpen && (
-              <ul className="dropdown-content menu bg-base-100 rounded-box w-36 p-2 shadow-lg border border-base-300">
+              <ul className="dropdown-content menu bg-base-100 rounded-box w-36 p-2 shadow-lg border border-base-300 z-50">
                 <li>
                   <button
-                    onClick={handleViewDetails}
-                    className="text-sm"
+                    onClick={handleEdit}
+                    className="text-sm gap-2"
                   >
-                    View Details
+                    <EditPencil width="14px" height="14px" strokeWidth={2} />
+                    Edit
                   </button>
                 </li>
                 {!isActive && (
                   <li>
                     <button
                       onClick={handleDelete}
-                      className="text-sm text-error"
+                      className="text-sm text-error gap-2"
                     >
+                      <Trash width="14px" height="14px" strokeWidth={2} />
                       Delete
                     </button>
                   </li>
