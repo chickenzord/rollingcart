@@ -62,6 +62,7 @@ function Layout() {
                   <Link
                     to={link.path}
                     className={location.pathname === link.path ? 'active' : ''}
+                    onClick={() => document.activeElement?.blur()}
                   >
                     {link.label}
                   </Link>
