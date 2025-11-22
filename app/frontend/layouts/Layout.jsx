@@ -73,14 +73,41 @@ function Layout() {
           </ul>
         </div>
 
-        <div className="navbar-end gap-2">
-          <span className="text-base-content text-sm opacity-70 hidden sm:inline">{user?.email || 'Loading...'}</span>
-          <button
-            onClick={logout}
-            className="btn btn-error btn-sm"
-          >
-            Logout
-          </button>
+        <div className="navbar-end">
+          <div className="dropdown dropdown-end">
+            <button tabIndex={0} className="btn btn-ghost btn-sm gap-2">
+              <div className="avatar">
+                <div className="w-6 rounded-full">
+                  <img
+                    src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${encodeURIComponent(user?.email || 'default')}`}
+                    alt="Avatar"
+                  />
+                </div>
+              </div>
+              <span className="text-sm hidden sm:inline">{user?.email || 'Loading...'}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+              <li>
+                <button onClick={logout} className="text-error">
+                  Logout
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </nav>
 
