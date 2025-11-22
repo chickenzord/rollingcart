@@ -71,7 +71,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
 
     // Show "Create new item" if query is 3+ chars and no exact match exists (case insensitive, trimmed)
     const hasExactMatch = catalogSuggestions.some(item =>
-      item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase()
+      item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase(),
     )
     const showCreateOption = searchQuery.trim().length >= 3 && !hasExactMatch
     const totalOptions = catalogSuggestions.length + (showCreateOption ? 1 : 0)
@@ -163,7 +163,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
           ))}
           {(() => {
             const hasExactMatch = catalogSuggestions.some(item =>
-              item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase()
+              item.name.trim().toLowerCase() === searchQuery.trim().toLowerCase(),
             )
             const showCreateOption = searchQuery.trim().length >= 3 && !hasExactMatch
             return showCreateOption ? (

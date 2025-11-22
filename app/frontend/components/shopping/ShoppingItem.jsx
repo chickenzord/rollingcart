@@ -34,13 +34,22 @@ export default function ShoppingItem({
             <div className="shrink-0">
               <span className={`loading loading-spinner ${isChecked ? 'loading-xs' : 'loading-sm'} text-primary`}></span>
             </div>
-          ) : (
+          ) : onToggleCheck ? (
             <input
               type="checkbox"
               checked={isChecked}
               onChange={onToggleCheck}
               className={`checkbox ${isChecked ? 'checkbox-xs' : 'checkbox-sm'} checkbox-primary shrink-0`}
             />
+          ) : (
+            <div className="tooltip tooltip-right shrink-0" data-tip="Start a shopping trip to check off items">
+              <input
+                type="checkbox"
+                checked={isChecked}
+                disabled
+                className={`checkbox ${isChecked ? 'checkbox-xs' : 'checkbox-sm'} checkbox-primary opacity-30`}
+              />
+            </div>
           )}
         </>
       )}

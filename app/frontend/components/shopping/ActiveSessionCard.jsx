@@ -10,47 +10,49 @@ export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, 
   const isStale = isSessionStale(session.created_at)
 
   return (
-    <div className="mb-6 card bg-primary/10 border border-primary/30">
-      <div className="card-body">
-        <div className="flex justify-between items-start">
-          <div>
-            <div className="badge badge-primary mb-2">
-              SHOPPING NOW
-            </div>
-            <h2 className="card-title text-2xl mb-1">{session.name}</h2>
-            <p className="text-base-content/70 text-sm">Started {formatTimeAgo(session.created_at)}</p>
-          </div>
-          <div className="flex gap-2">
-            {hasCheckedItems && (
-              <button
-                onClick={onFinish}
-                className="btn btn-primary gap-2"
-              >
-                <CheckCircle width="20px" height="20px" strokeWidth={2} />
-                Done Shopping
-              </button>
-            )}
-            <button
-              onClick={onCancel}
-              className="btn btn-ghost gap-2"
-            >
-              <Xmark width="20px" height="20px" strokeWidth={2} />
-              Cancel Trip
-            </button>
-          </div>
+    <div className="mb-4 card bg-primary/10 border border-primary/30">
+      <div className="card-body p-3 sm:p-4">
+        {/* Header row - badge, title, time */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="badge badge-primary badge-sm">SHOPPING NOW</span>
+          <h2 className="font-semibold text-base sm:text-lg truncate flex-1 min-w-0">{session.name}</h2>
+          <span className="text-base-content/60 text-xs whitespace-nowrap">
+            {formatTimeAgo(session.created_at)}
+          </span>
         </div>
 
-        {/* Stale session warning - gentle nudge */}
+        {/* Action buttons */}
+        <div className="flex gap-2 mt-2">
+          {hasCheckedItems && (
+            <button
+              onClick={onFinish}
+              className="btn btn-primary btn-sm flex-1 gap-1"
+            >
+              <CheckCircle width="16px" height="16px" strokeWidth={2} />
+              <span className="hidden xs:inline">Done</span>
+              <span className="xs:hidden">Done</span>
+            </button>
+          )}
+          <button
+            onClick={onCancel}
+            className="btn btn-ghost btn-sm gap-1"
+          >
+            <Xmark width="16px" height="16px" strokeWidth={2} />
+            <span>Cancel</span>
+          </button>
+        </div>
+
+        {/* Stale session warning - compact */}
         {isStale && (
-          <div className="mt-4 alert alert-warning">
+          <div className="mt-2 flex items-start gap-2 text-warning text-xs">
             <Clock
-              width="18px"
-              height="18px"
+              width="14px"
+              height="14px"
               strokeWidth={2}
-              className="shrink-0"
+              className="shrink-0 mt-0.5"
             />
-            <span className="text-sm">
-              Heads up: This shopping trip has been running for a while. Consider marking this trip as done before starting a new one!
+            <span>
+              This trip has been running for a while. Consider finishing it before starting a new one.
             </span>
           </div>
         )}

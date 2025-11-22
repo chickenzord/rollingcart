@@ -295,28 +295,31 @@ export default function Backlog() {
           onCancel={cancelSession}
         />
       ) : uncheckedItems.length > 0 && (
-        <div className="mb-6 flex gap-3 flex-wrap">
+        <div className="mb-6 flex gap-3 flex-wrap items-center">
           {/* Primary action - Start new session */}
           <button
             onClick={startSession}
             className="flex-1 min-w-[200px] btn btn-primary gap-3"
           >
             <Cart width="24px" height="24px" strokeWidth={2} />
-            Start Shopping Trip
+            {recentSession ? 'Start a New Shopping Trip' : 'Start Shopping Trip'}
           </button>
 
           {/* Secondary action - Continue recent session (only if available) */}
           {recentSession && (
-            <button
-              onClick={continueRecentSession}
-              className="btn btn-secondary gap-2 h-auto"
-            >
-              <Clock width="20px" height="20px" strokeWidth={2} className="shrink-0" />
-              <div className="flex flex-col items-start text-left">
-                <span className="text-sm font-medium normal-case">Continue Recent</span>
-                <span className="text-xs font-light normal-case">{recentSession.name}</span>
-              </div>
-            </button>
+            <>
+              <span className="text-base-content/50 text-sm font-medium">OR</span>
+              <button
+                onClick={continueRecentSession}
+                className="btn btn-secondary gap-2 h-auto"
+              >
+                <Clock width="20px" height="20px" strokeWidth={2} className="shrink-0" />
+                <div className="flex flex-col items-start text-left">
+                  <span className="text-sm font-medium normal-case">Continue Recent</span>
+                  <span className="text-xs font-light normal-case">{recentSession.name}</span>
+                </div>
+              </button>
+            </>
           )}
         </div>
       )}
@@ -361,8 +364,8 @@ export default function Backlog() {
                       key={item.id}
                       item={item}
                       isChecked={false}
-                      showCheckbox={!!activeSession}
-                      onToggleCheck={() => toggleCheck(item, false)}
+                      showCheckbox={true}
+                      onToggleCheck={activeSession ? () => toggleCheck(item, false) : undefined}
                       onDelete={deleteItem}
                       showCategoryLabel={shouldGroupByCategory(uncheckedItems)}
                       openMenuId={openMenuId}
