@@ -7,7 +7,9 @@ module Api
 
         def index
           categories = current_account.catalog_categories.order(:name)
-          render json: categories
+          render json: categories.map { |c|
+            c.as_json.merge(items_count: c.items.count)
+          }
         end
 
         def show
@@ -65,7 +67,7 @@ module Api
         end
 
         def category_params
-          params.require(:category).permit(:name)
+          params.require(:category).permit(:name, :description)
         end
 
         def include_category?

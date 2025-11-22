@@ -10,7 +10,8 @@ import { useCatalogItems, useDeleteCatalogItem } from '../hooks/queries/useCatal
 import { useFlash } from '../contexts/FlashContext'
 import CatalogItemModal from '../components/catalog/CatalogItemModal'
 import CatalogItemDetailsModal from '../components/catalog/CatalogItemDetailsModal'
-import { Box, Search, NavArrowLeft, NavArrowRight, MoreVert, EditPencil, Trash, Plus } from 'iconoir-react'
+import { Link } from 'react-router-dom'
+import { Box, Search, NavArrowLeft, NavArrowRight, MoreVert, EditPencil, Trash, Plus, Settings } from 'iconoir-react'
 
 export default function Catalog() {
   const [globalFilter, setGlobalFilter] = useState('')
@@ -156,10 +157,16 @@ export default function Catalog() {
             <Box width="32px" height="32px" strokeWidth={2} className="text-primary" />
             <h1 className="text-3xl font-bold">Catalog</h1>
           </div>
-          <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-2">
-            <Plus width="16px" height="16px" strokeWidth={2} />
-            New Item
-          </button>
+          <div className="flex gap-2">
+            <Link to="/catalog/categories" className="btn btn-ghost btn-sm gap-2">
+              <Settings width="16px" height="16px" strokeWidth={2} />
+              Categories
+            </Link>
+            <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-2">
+              <Plus width="16px" height="16px" strokeWidth={2} />
+              New Item
+            </button>
+          </div>
         </div>
         <p className="text-base-content/70 text-sm">All items available for your shopping list</p>
       </div>

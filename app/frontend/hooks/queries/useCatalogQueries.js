@@ -31,6 +31,38 @@ export function useCategory(categoryId) {
 }
 
 /**
+ * Create a new catalog category
+ * @returns {UseMutationResult} Mutation for creating categories
+ */
+export function useCreateCategory() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (category) => catalogService.createCategory(category),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
+    },
+  })
+}
+
+/**
+ * Update a catalog category
+ * @returns {UseMutationResult} Mutation for updating categories
+ */
+export function useUpdateCategory() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ categoryId, category }) => catalogService.updateCategory(categoryId, category),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
+      // Also invalidate items since they reference categories
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'items'] })
+    },
+  })
+}
+
+/**
  * Fetch items for a specific category
  * @param {string|number} categoryId - The category ID
  * @returns {UseQueryResult} Query result with items array
@@ -129,6 +161,24 @@ export function useDeleteCatalogItem() {
       queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
       // Invalidate all shopping items queries (they reference catalog items)
       queryClient.invalidateQueries({ queryKey: ['shopping', 'items'] })
+    },
+  })
+}
+
+/**
+ * Delete a catalog category
+ * @returns {UseMutationResult} Mutation for deleting categories
+ */
+export function useDeleteCategory() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (categoryId) => catalogService.deleteCategory(categoryId),
+    onSuccess: () => {
+      // Invalidate all category queries
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
+      // Also invalidate items since they reference categories
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'items'] })
     },
   })
 }

@@ -22,6 +22,27 @@ export async function getCategory(categoryId) {
 }
 
 /**
+ * Create a new catalog category
+ * @param {Object} categoryData - Category data
+ * @param {string} categoryData.name - Category name
+ * @param {string} categoryData.description - Description (optional)
+ * @returns {Promise<Object>} Created category
+ */
+export async function createCategory(categoryData) {
+  return post('/api/v1/catalog/categories', { category: categoryData })
+}
+
+/**
+ * Update a catalog category
+ * @param {number} categoryId - Category ID to update
+ * @param {Object} categoryData - Category data to update
+ * @returns {Promise<Object>} Updated category
+ */
+export async function updateCategory(categoryId, categoryData) {
+  return patch(`/api/v1/catalog/categories/${categoryId}`, { category: categoryData })
+}
+
+/**
  * Fetch items for a specific category
  * @param {string|number} categoryId
  * @returns {Promise<Array>} Items
@@ -98,4 +119,13 @@ export async function deleteItem(itemId) {
  */
 export async function getItemShoppingSessions(itemId) {
   return get(`/api/v1/catalog/items/${itemId}/shopping_sessions`)
+}
+
+/**
+ * Delete a catalog category
+ * @param {number} categoryId - Category ID to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteCategory(categoryId) {
+  return del(`/api/v1/catalog/categories/${categoryId}`)
 }

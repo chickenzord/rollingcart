@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useCategory, useCategoryItems } from '../hooks/queries/useCatalogQueries'
 import * as shoppingService from '../services/shoppingService'
+import Breadcrumb from '../components/common/Breadcrumb'
 import { Package } from 'iconoir-react'
 
 export default function CatalogItems() {
@@ -79,14 +80,17 @@ export default function CatalogItems() {
 
   return (
     <div className="card bg-base-100 p-8 shadow-sm">
+      <Breadcrumb items={[
+        { label: 'Catalog', path: '/catalog' },
+        { label: 'Categories', path: '/catalog/categories' },
+        { label: category?.name || 'Category' },
+      ]} />
+
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <Package width="32px" height="32px" strokeWidth={2} className="text-primary" />
           <h1 className="m-0 text-3xl font-bold">{category?.name || 'Category'}</h1>
         </div>
-        <Link to="/catalog/categories" className="link link-primary text-sm inline-block">
-          &larr; Back to Categories
-        </Link>
       </div>
 
       {items.length === 0 ? (
