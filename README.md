@@ -79,7 +79,7 @@ docker compose exec app bin/rails catalog:seed EMAIL=you@example.com
 docker compose exec app bin/rails catalog:seed EMAIL=you@example.com FILES=grocery_fresh.yml,grocery_pantry.yml
 ```
 
-Seeding is idempotent. Run it multiple times safely.
+Seeding is optional. You can start with zero catalog items and build your own from scratch.
 
 ## Configuration
 
