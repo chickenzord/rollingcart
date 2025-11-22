@@ -2,7 +2,7 @@
  * Catalog API service
  * All functions automatically use stored auth token
  */
-import { get, post, del } from './api'
+import { get, post, patch, del } from './api'
 
 /**
  * Fetch all catalog categories
@@ -70,6 +70,16 @@ export async function createItem(itemData, options = {}) {
     : '/api/v1/catalog/items'
 
   return post(url, { item: itemData })
+}
+
+/**
+ * Update a catalog item
+ * @param {number} itemId - Item ID to update
+ * @param {Object} itemData - Item data to update
+ * @returns {Promise<Object>} Updated item
+ */
+export async function updateItem(itemId, itemData) {
+  return patch(`/api/v1/catalog/items/${itemId}`, { item: itemData })
 }
 
 /**

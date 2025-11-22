@@ -142,7 +142,11 @@ function Layout() {
               {messages.map((msg) => {
                 const Icon = flashIcons[msg.type] || InfoCircle
                 return (
-                  <div key={msg.id} role="alert" className={`alert ${flashColors[msg.type] || 'alert-info'}`}>
+                  <div
+                    key={msg.id}
+                    role="alert"
+                    className={`alert ${flashColors[msg.type] || 'alert-info'} ${msg.dismissing ? 'animate-slide-up' : 'animate-slide-down'}`}
+                  >
                     <Icon width="20px" height="20px" strokeWidth={2} />
                     <span>{msg.message}</span>
                     <button

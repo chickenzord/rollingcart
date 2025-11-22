@@ -8,11 +8,14 @@ import {
 } from '@tanstack/react-table'
 import { useCatalogItems, useDeleteCatalogItem } from '../hooks/queries/useCatalogQueries'
 import { useFlash } from '../contexts/FlashContext'
-import { Box, Search, NavArrowLeft, NavArrowRight, MoreVert, EditPencil, Trash } from 'iconoir-react'
+import CatalogItemModal from '../components/catalog/CatalogItemModal'
+import { Box, Search, NavArrowLeft, NavArrowRight, MoreVert, EditPencil, Trash, Plus } from 'iconoir-react'
 
 export default function Catalog() {
   const [globalFilter, setGlobalFilter] = useState('')
   const [itemToDelete, setItemToDelete] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [itemToEdit, setItemToEdit] = useState(null)
   const { flash } = useFlash()
 
   // Fetch all catalog items with category data - shares cache with Autocomplete
@@ -21,9 +24,27 @@ export default function Catalog() {
   // Delete mutation
   const deleteMutation = useDeleteCatalogItem()
 
+  const handleNewItem = () => {
+    setItemToEdit(null)
+    setModalOpen(true)
+  }
+
   const handleEdit = (item) => {
-    // TODO: Implement edit functionality
-    alert(`Edit functionality coming soon for: ${item.name}`)
+    setItemToEdit(item)
+    setModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false)
+    setItemToEdit(null)
+  }
+
+  const handleModalSuccess = (action, itemId, itemName) => {
+    if (action === 'created') {
+      flash.success(`"${itemName}" created successfully`)
+    } else if (action === 'updated') {
+      flash.success(`"${itemName}" updated successfully`)
+    }
   }
 
   const handleDeleteClick = (item) => {
@@ -117,9 +138,15 @@ export default function Catalog() {
     <div className="card bg-base-100 p-8 shadow-sm">
       {/* Page Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Box width="32px" height="32px" strokeWidth={2} className="text-primary" />
-          <h1 className="text-3xl font-bold">Catalog</h1>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <Box width="32px" height="32px" strokeWidth={2} className="text-primary" />
+            <h1 className="text-3xl font-bold">Catalog</h1>
+          </div>
+          <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-2">
+            <Plus width="16px" height="16px" strokeWidth={2} />
+            New Item
+          </button>
         </div>
         <p className="text-base-content/70 text-sm">All items available for your shopping list</p>
       </div>
@@ -281,6 +308,14 @@ export default function Catalog() {
           <div className="modal-backdrop" onClick={handleDeleteCancel}></div>
         </div>
       )}
+
+      {/* Create/Edit Item Modal */}
+      <CatalogItemModal
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        item={itemToEdit}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 }

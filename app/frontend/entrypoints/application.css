@@ -98,3 +98,34 @@
 .item-transition-in {
   animation: fade-in 250ms ease-out forwards;
 }
+
+/* Flash message slide down animation */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 200ms ease-out forwards;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 200ms ease-out forwards;
+}

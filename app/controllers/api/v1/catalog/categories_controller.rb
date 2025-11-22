@@ -6,7 +6,7 @@ module Api
         before_action :set_category, only: [ :show, :update, :destroy, :items_index ]
 
         def index
-          categories = current_account.catalog_categories
+          categories = current_account.catalog_categories.order(:name)
           render json: categories
         end
 
