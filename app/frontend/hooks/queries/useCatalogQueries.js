@@ -83,3 +83,20 @@ export function useCreateCatalogItem() {
     },
   })
 }
+
+/**
+ * Delete a catalog item
+ * @returns {UseMutationResult} Mutation for deleting items
+ */
+export function useDeleteCatalogItem() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (itemId) => catalogService.deleteItem(itemId),
+    onSuccess: () => {
+      // Invalidate all catalog item queries
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'items'] })
+      queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
+    },
+  })
+}

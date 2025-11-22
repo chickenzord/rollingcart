@@ -1,14 +1,37 @@
+import { useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useFlash } from '../contexts/FlashContext'
+import { Xmark, InfoCircle, CheckCircle, WarningTriangle, WarningCircle } from 'iconoir-react'
+
+const flashIcons = {
+  info: InfoCircle,
+  success: CheckCircle,
+  warning: WarningTriangle,
+  error: WarningCircle,
+}
+
+const flashColors = {
+  info: 'alert-info',
+  success: 'alert-success',
+  warning: 'alert-warning',
+  error: 'alert-error',
+}
 
 function Layout() {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const { messages, removeFlash, clearAll } = useFlash()
+
+  // Clear flash messages on navigation
+  useEffect(() => {
+    clearAll()
+  }, [location.pathname, clearAll])
 
   const navLinks = [
     { path: '/', label: 'Shopping List' },
     { path: '/shopping/sessions', label: 'Past Trips' },
-    { path: '/catalog/categories', label: 'Catalog' },
+    { path: '/catalog', label: 'Catalog' },
   ]
 
   return (
@@ -113,6 +136,26 @@ function Layout() {
 
       <main className="p-4 sm:p-8">
         <div className="max-w-6xl mx-auto">
+          {/* Flash Messages */}
+          {messages.length > 0 && (
+            <div className="mb-4 space-y-2">
+              {messages.map((msg) => {
+                const Icon = flashIcons[msg.type] || InfoCircle
+                return (
+                  <div key={msg.id} role="alert" className={`alert ${flashColors[msg.type] || 'alert-info'}`}>
+                    <Icon width="20px" height="20px" strokeWidth={2} />
+                    <span>{msg.message}</span>
+                    <button
+                      onClick={() => removeFlash(msg.id)}
+                      className="btn btn-sm btn-circle btn-ghost"
+                    >
+                      <Xmark width="16px" height="16px" strokeWidth={2} />
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          )}
           <Outlet />
         </div>
       </main>

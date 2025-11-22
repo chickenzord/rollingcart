@@ -2,7 +2,7 @@
  * Catalog API service
  * All functions automatically use stored auth token
  */
-import { get, post } from './api'
+import { get, post, del } from './api'
 
 /**
  * Fetch all catalog categories
@@ -70,4 +70,13 @@ export async function createItem(itemData, options = {}) {
     : '/api/v1/catalog/items'
 
   return post(url, { item: itemData })
+}
+
+/**
+ * Delete a catalog item
+ * @param {number} itemId - Item ID to delete
+ * @returns {Promise<void>}
+ */
+export async function deleteItem(itemId) {
+  return del(`/api/v1/catalog/items/${itemId}`)
 }

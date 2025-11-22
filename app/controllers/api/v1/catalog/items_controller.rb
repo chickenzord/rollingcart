@@ -58,7 +58,7 @@ module Api
         end
 
         def destroy
-          @item.destroy
+          @item.soft_delete
           head :no_content
         end
 
