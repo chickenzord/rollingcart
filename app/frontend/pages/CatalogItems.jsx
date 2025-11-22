@@ -1,14 +1,22 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { useCategory, useCategoryItems } from '../hooks/queries/useCatalogQueries'
-import * as shoppingService from '../services/shoppingService'
+import { useCategory, useCategoryItems, useDeleteCatalogItem } from '../hooks/queries/useCatalogQueries'
+import { useFlash } from '../contexts/FlashContext'
 import Breadcrumb from '../components/common/Breadcrumb'
-import { Package } from 'iconoir-react'
+import CatalogItemModal from '../components/catalog/CatalogItemModal'
+import CatalogItemDetailsModal from '../components/catalog/CatalogItemDetailsModal'
+import { Package, Plus, MoreVert, EditPencil, Trash } from 'iconoir-react'
 
 export default function CatalogItems() {
   const { categoryId } = useParams()
-  const [addingItems, setAddingItems] = useState(new Set())
+  const [modalOpen, setModalOpen] = useState(false)
+  const [itemToEdit, setItemToEdit] = useState(null)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false)
+  const [itemToView, setItemToView] = useState(null)
+  const { flash } = useFlash()
+  const queryClient = useQueryClient()
 
   // Fetch category details
   const {
@@ -25,36 +33,69 @@ export default function CatalogItems() {
     refetch,
   } = useCategoryItems(categoryId)
 
-  // Mutation for adding item to backlog
-  const addToBacklogMutation = useMutation({
-    mutationFn: shoppingService.addItem,
-    onMutate: (catalogItemId) => {
-      // Optimistic update: show "Added" immediately
-      setAddingItems(prev => new Set([...prev, catalogItemId]))
-    },
-    onSuccess: (data, catalogItemId) => {
-      // Keep showing "Added" for 1 second for feedback
-      setTimeout(() => {
-        setAddingItems(prev => {
-          const next = new Set(prev)
-          next.delete(catalogItemId)
-          return next
-        })
-      }, 1000)
-    },
-    onError: (err, catalogItemId) => {
-      // Remove from "adding" state on error
-      setAddingItems(prev => {
-        const next = new Set(prev)
-        next.delete(catalogItemId)
-        return next
-      })
-      alert(`Error: ${err.message}`)
-    },
-  })
+  // Delete mutation
+  const deleteMutation = useDeleteCatalogItem()
 
   const loading = isCategoryLoading || isItemsLoading
   const error = categoryError || itemsError
+
+  const handleNewItem = () => {
+    setItemToEdit(null)
+    setModalOpen(true)
+  }
+
+  const handleEdit = (item) => {
+    setItemToEdit(item)
+    setModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false)
+    setItemToEdit(null)
+  }
+
+  const handleModalSuccess = (action, itemId, itemName) => {
+    if (action === 'created') {
+      flash.success(`"${itemName}" created successfully`)
+    } else if (action === 'updated') {
+      flash.success(`"${itemName}" updated successfully`)
+    }
+    // Invalidate category items to refresh the list
+    queryClient.invalidateQueries({ queryKey: ['catalog', 'categories', categoryId, 'items'] })
+  }
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (itemToDelete) {
+      const itemName = itemToDelete.name
+      deleteMutation.mutate(itemToDelete.id, {
+        onSuccess: () => {
+          setItemToDelete(null)
+          flash.success(`"${itemName}" has been deleted`)
+        },
+        onError: (err) => {
+          flash.error(`Error deleting item: ${err.message}`)
+        },
+      })
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setItemToDelete(null)
+  }
+
+  const handleViewDetails = (item) => {
+    setItemToView(item)
+    setDetailsModalOpen(true)
+  }
+
+  const handleDetailsModalClose = () => {
+    setDetailsModalOpen(false)
+    setItemToView(null)
+  }
 
   if (loading) {
     return (
@@ -87,9 +128,15 @@ export default function CatalogItems() {
       ]} />
 
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Package width="32px" height="32px" strokeWidth={2} className="text-primary" />
-          <h1 className="m-0 text-3xl font-bold">{category?.name || 'Category'}</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Package width="32px" height="32px" strokeWidth={2} className="text-primary" />
+            <h1 className="m-0 text-3xl font-bold">{category?.name || 'Category'}</h1>
+          </div>
+          <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-2">
+            <Plus width="16px" height="16px" strokeWidth={2} />
+            New Item
+          </button>
         </div>
       </div>
 
@@ -98,43 +145,48 @@ export default function CatalogItems() {
           <span>No items found in this category. Items will appear here once added.</span>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="card bg-base-100 border border-base-300 shadow-sm"
-            >
-              <div className="card-body">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h3 className="card-title mb-2">
-                      {item.name}
-                    </h3>
+        <div className="rounded-box border border-base-300">
+          <table className="table">
+            <tbody>
+              {items.map((item) => (
+                <tr
+                  key={item.id}
+                  className="cursor-pointer hover"
+                  onClick={() => handleViewDetails(item)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleViewDetails(item)}
+                  tabIndex={0}
+                >
+                  <td>
+                    <div className="font-medium">{item.name}</div>
                     {item.description && (
-                      <p className="text-base-content/70 text-sm leading-relaxed mb-2">
-                        {item.description}
-                      </p>
+                      <div className="text-base-content/50 text-xs">{item.description}</div>
                     )}
-                    <div className="flex gap-4 text-xs text-base-content/50 border-t border-base-300 pt-2 mt-2">
-                      <span>ID: {item.id}</span>
-                      <span>Created: {new Date(item.created_at).toLocaleDateString()}</span>
+                  </td>
+                  <td className="w-12" onClick={(e) => e.stopPropagation()}>
+                    <div className="dropdown dropdown-end dropdown-left">
+                      <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle">
+                        <MoreVert width="16px" height="16px" strokeWidth={2} />
+                      </button>
+                      <ul className="dropdown-content menu bg-base-100 rounded-box z-50 w-40 p-2 shadow">
+                        <li>
+                          <button onClick={() => handleEdit(item)} className="gap-2">
+                            <EditPencil width="14px" height="14px" strokeWidth={2} />
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button onClick={() => handleDeleteClick(item)} className="gap-2 text-error">
+                            <Trash width="14px" height="14px" strokeWidth={2} />
+                            Delete
+                          </button>
+                        </li>
+                      </ul>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => addToBacklogMutation.mutate(item.id)}
-                    disabled={addingItems.has(item.id)}
-                    className={`ml-4 btn ${
-                      addingItems.has(item.id)
-                        ? 'btn-success'
-                        : 'btn-success'
-                    }`}
-                  >
-                    {addingItems.has(item.id) ? '✓ Added' : '+ Add to Shopping List'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -142,11 +194,67 @@ export default function CatalogItems() {
         <div className="stat">
           <div className="stat-title">Total Items</div>
           <div className="stat-value text-primary">{items.length}</div>
-          {category && (
-            <div className="stat-desc">Category ID: {category.id}</div>
-          )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {itemToDelete && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Delete Item</h3>
+            <p className="py-4">
+              Are you sure you want to delete <strong>{itemToDelete.name}</strong>? This action cannot be undone.
+            </p>
+            <div className="modal-action">
+              <button
+                onClick={handleDeleteCancel}
+                className="btn btn-ghost"
+                disabled={deleteMutation.isPending}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="btn btn-error"
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop"
+            onClick={handleDeleteCancel}
+            onKeyDown={(e) => e.key === 'Escape' && handleDeleteCancel()}
+            role="button"
+            tabIndex={0}
+            aria-label="Close modal"
+          ></div>
+        </div>
+      )}
+
+      {/* Create/Edit Item Modal */}
+      <CatalogItemModal
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        item={itemToEdit}
+        onSuccess={handleModalSuccess}
+        fixedCategory={category ? { id: category.id, name: category.name } : undefined}
+      />
+
+      {/* Item Details Modal */}
+      <CatalogItemDetailsModal
+        isOpen={detailsModalOpen}
+        onClose={handleDetailsModalClose}
+        item={itemToView}
+      />
     </div>
   )
 }

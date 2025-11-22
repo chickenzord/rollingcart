@@ -5,8 +5,9 @@ import { useCategories, useCatalogItems, useCreateCatalogItem, useUpdateCatalogI
 
 /**
  * Modal for creating or editing a catalog item
+ * @param {Object} fixedCategory - If provided, category is fixed and shown as static text
  */
-export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
+export default function CatalogItemModal({ isOpen, onClose, item, onSuccess, fixedCategory }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [categoryId, setCategoryId] = useState('')
@@ -18,6 +19,7 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
 
   const isEditMode = !!item
   const isPending = createMutation.isPending || updateMutation.isPending
+  const hasFixedCategory = !!fixedCategory
 
   // Find similar items using Fuse.js
   const similarItems = useMemo(() => {
@@ -54,9 +56,9 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
       // Create mode - reset form
       setName('')
       setDescription('')
-      setCategoryId('')
+      setCategoryId(fixedCategory?.id || '')
     }
-  }, [isOpen, item])
+  }, [isOpen, item, fixedCategory])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -143,20 +145,26 @@ export default function CatalogItemModal({ isOpen, onClose, item, onSuccess }) {
             <label className="label" htmlFor="item-category">
               <span className="label-text">Which category?</span>
             </label>
-            <select
-              id="item-category"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="select select-bordered w-full"
-              disabled={isPending}
-            >
-              <option value="">None</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            {hasFixedCategory ? (
+              <div className="input input-bordered w-full flex items-center bg-base-200 text-base-content/70">
+                {fixedCategory.name}
+              </div>
+            ) : (
+              <select
+                id="item-category"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="select select-bordered w-full"
+                disabled={isPending}
+              >
+                <option value="">None</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Actions */}
@@ -212,4 +220,8 @@ CatalogItemModal.propTypes = {
     }),
   }),
   onSuccess: PropTypes.func,
+  fixedCategory: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+  }),
 }
