@@ -47,7 +47,7 @@ class RodauthMain < Rodauth::Rails::Auth
     prefix "/auth"
 
     # JWT configuration
-    jwt_secret Rails.application.credentials.secret_key_base
+    jwt_secret Rails.application.secret_key_base
     jwt_access_token_period 7200 # 2 hours
     allow_refresh_with_expired_jwt_access_token? true
     expired_jwt_access_token_status 401
