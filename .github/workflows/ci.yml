@@ -3,20 +3,16 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  commitlint:
+  conventional-commits:
+    name: conventional-commits
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Lint commits
-        uses: wagoid/commitlint-github-action@v6
+      - uses: actions/checkout@v6
+      - uses: webiny/action-conventional-commits@v1.3.0
 
   scan_ruby:
     runs-on: ubuntu-latest
