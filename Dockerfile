@@ -49,19 +49,19 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-# Install JavaScript dependencies
+# Install JavaScript dependencies (including dev for build tools)
 COPY --chown=rails:rails package.json package-lock.json ./
-RUN npm ci --omit=dev && \
+RUN npm ci && \
     rm -rf ~/.npm
 
 # Copy application code
 COPY --chown=rails:rails . .
 
 # Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+RUN SECRET_KEY_BASE_DUMMY=1 bundle exec bootsnap precompile app/ lib/
 
 # Build Vite frontend (React app)
-RUN bin/vite build
+RUN SECRET_KEY_BASE_DUMMY=1 bin/vite build
 
 
 
