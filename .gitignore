@@ -40,5 +40,4 @@ node_modules
 *.local
 
 # Vite PWA development files
-/app/frontend/dev-dist
-
+/app/frontend/dev-dist/

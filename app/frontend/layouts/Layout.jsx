@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useFlash } from '../contexts/FlashContext'
+import { useOnlineStatus } from '../hooks/useOnlineStatus'
 import { Xmark, InfoCircle, CheckCircle, WarningTriangle, WarningCircle, ShoppingBag, Clock, BookStack, Settings } from 'iconoir-react'
 
 const flashIcons = {
@@ -20,6 +21,7 @@ const flashColors = {
 function Layout() {
   const location = useLocation()
   const { messages, removeFlash, clearAll } = useFlash()
+  const isOnline = useOnlineStatus()
 
   // Clear flash messages on navigation
   useEffect(() => {
@@ -35,6 +37,13 @@ function Layout() {
 
   return (
     <div className="min-h-screen bg-base-100 flex flex-col">
+      {/* Offline indicator */}
+      {!isOnline && (
+        <div className="bg-warning text-warning-content p-2 text-center text-sm">
+          You are offline. Some features may be limited.
+        </div>
+      )}
+
       {/* Mobile-first bottom navigation */}
       <nav className="order-2 lg:order-1 sticky bottom-0 lg:static bg-base-100 border-t lg:border-b border-base-300 lg:shadow-sm z-20">
         {/* Desktop navbar */}

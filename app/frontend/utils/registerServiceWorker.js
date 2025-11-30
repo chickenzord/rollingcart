@@ -20,7 +20,7 @@ export async function registerSW() {
       type: import.meta.env.DEV ? 'module' : 'classic',
     })
 
-    // Handle updates
+    // Handle updates - silently activate new service worker
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing
 
@@ -28,11 +28,8 @@ export async function registerSW() {
 
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          // Optionally notify user about update
-          if (window.confirm('New version available! Refresh to update?')) {
-            newWorker.postMessage({ type: 'SKIP_WAITING' })
-            window.location.reload()
-          }
+          // Auto-activate without user prompt
+          newWorker.postMessage({ type: 'SKIP_WAITING' })
         }
       })
     })
