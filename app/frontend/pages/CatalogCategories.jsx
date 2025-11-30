@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCategories, useDeleteCategory } from '../hooks/queries/useCatalogQueries'
 import { useFlash } from '../contexts/FlashContext'
-import Breadcrumb from '../components/common/Breadcrumb'
 import CategoryModal from '../components/catalog/CategoryModal'
-import { BookStack, MoreVert, EditPencil, Trash, Plus } from 'iconoir-react'
+import { MoreVert, EditPencil, Trash, Plus, NavArrowLeft } from 'iconoir-react'
 
 export default function CatalogCategories() {
   const [categoryToDelete, setCategoryToDelete] = useState(null)
@@ -55,7 +54,8 @@ export default function CatalogCategories() {
     setModalOpen(true)
   }
 
-  const handleEdit = (category) => {
+  const handleEdit = (category, e) => {
+    e.stopPropagation()
     setCategoryToEdit(category)
     setModalOpen(true)
   }
@@ -75,99 +75,113 @@ export default function CatalogCategories() {
 
   if (isLoading) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p>Loading categories...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p className="text-error mb-3">Error: {error.message}</p>
-        <button
-          onClick={() => refetch()}
-          className="btn btn-primary"
-        >
-          Retry
-        </button>
+      <div className="p-4">
+        <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+          <p className="text-error font-medium mb-3">Error: {error.message}</p>
+          <button
+            onClick={() => refetch()}
+            className="btn btn-primary btn-sm"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="card bg-base-100 p-8 shadow-sm">
-      <Breadcrumb items={[
-        { label: 'Catalog', path: '/catalog' },
-        { label: 'Categories' },
-      ]} />
-
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BookStack width="32px" height="32px" strokeWidth={2} className="text-primary" />
-            <h1 className="text-3xl font-bold">Categories</h1>
-          </div>
-          <button onClick={handleNewCategory} className="btn btn-primary btn-sm gap-2">
-            <Plus width="16px" height="16px" strokeWidth={2} />
-            New Category
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
+      {/* Header - Sticky */}
+      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <button
+            onClick={() => navigate('/catalog')}
+            className="btn btn-ghost btn-sm btn-circle"
+          >
+            <NavArrowLeft width="20px" height="20px" strokeWidth={2} />
+          </button>
+          <h1 className="text-xl font-bold flex-1">Categories</h1>
+          <button onClick={handleNewCategory} className="btn btn-primary btn-sm gap-1">
+            <Plus width="18px" height="18px" strokeWidth={2} />
+            <span className="hidden sm:inline">New</span>
           </button>
         </div>
       </div>
 
+      {/* Results info */}
+      <div className="p-4 pb-0">
+        <p className="text-sm text-base-content/60">
+          {categories.length === 0 ? 'No categories found' : `${categories.length} ${categories.length === 1 ? 'category' : 'categories'}`}
+        </p>
+      </div>
+
+      {/* Categories List */}
       {categories.length === 0 ? (
-        <div className="alert alert-warning">
-          <span>No categories found. Run the seed task to populate default categories.</span>
+        <div className="p-4">
+          <div className="py-16 text-center">
+            <div className="text-5xl mb-4">📂</div>
+            <p className="text-base-content font-medium mb-2">No categories yet</p>
+            <p className="text-base-content/60 text-sm">Add your first category to organize items</p>
+          </div>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-box border border-base-300">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th className="w-12"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category) => (
-                <tr
-                  key={category.id}
-                  className="cursor-pointer hover"
+        <div className="p-4 pt-2">
+          <ul className="space-y-0 divide-y divide-base-300 border-y border-base-300">
+            {categories.map((category) => (
+              <li
+                key={category.id}
+                className="relative bg-base-100 hover:bg-base-200 active:bg-base-300/70 transition-colors"
+              >
+                <button
                   onClick={() => navigate(`/catalog/categories/${category.id}/items`)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/catalog/categories/${category.id}/items`)}
-                  tabIndex={0}
+                  className="w-full text-left p-3 pr-12 cursor-pointer"
                 >
-                  <td>
-                    <div className="font-medium">{category.name}</div>
-                    {category.description && (
-                      <div className="text-base-content/50 text-xs">{category.description}</div>
-                    )}
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <div className="dropdown dropdown-end dropdown-left">
-                      <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle">
-                        <MoreVert width="16px" height="16px" strokeWidth={2} />
-                      </button>
-                      <ul className="dropdown-content menu bg-base-100 rounded-box z-50 w-40 p-2 shadow">
-                        <li>
-                          <button onClick={() => handleEdit(category)} className="gap-2">
-                            <EditPencil width="14px" height="14px" strokeWidth={2} />
-                            Edit
-                          </button>
-                        </li>
-                        <li>
-                          <button onClick={() => handleDeleteClick(category)} className="gap-2 text-error">
-                            <Trash width="14px" height="14px" strokeWidth={2} />
-                            Delete
-                          </button>
-                        </li>
-                      </ul>
+                  <div className="font-medium text-base text-base-content">{category.name}</div>
+                  {category.description && (
+                    <div className="text-xs text-base-content/50 mt-1">{category.description}</div>
+                  )}
+                  {category.items_count !== undefined && (
+                    <div className="text-sm text-base-content/60 mt-1">
+                      {category.items_count} {category.items_count === 1 ? 'item' : 'items'}
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  )}
+                </button>
+
+                {/* 3-dot menu */}
+                <div className="absolute top-2 right-2 dropdown dropdown-end">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    tabIndex={0}
+                    className="btn btn-ghost btn-sm btn-circle"
+                  >
+                    <MoreVert width="20px" height="20px" strokeWidth={2} />
+                  </button>
+                  <ul className="dropdown-content menu bg-base-100 rounded-box z-50 w-40 p-2 shadow-lg border border-base-300">
+                    <li>
+                      <button onClick={(e) => handleEdit(category, e)} className="gap-2">
+                        <EditPencil width="16px" height="16px" strokeWidth={2} />
+                        Edit
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => handleDeleteClick(category)} className="gap-2 text-error">
+                        <Trash width="16px" height="16px" strokeWidth={2} />
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -218,13 +232,6 @@ export default function CatalogCategories() {
           ></div>
         </div>
       )}
-
-      <div className="mt-5 stats shadow bg-primary/10">
-        <div className="stat">
-          <div className="stat-title">Total Categories</div>
-          <div className="stat-value text-primary">{categories.length}</div>
-        </div>
-      </div>
 
       {/* Create/Edit Category Modal */}
       <CategoryModal

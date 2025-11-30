@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useSessions, useDeleteSession } from '../hooks/queries/useShoppingQueries'
 import SessionListItem from '../components/shopping/SessionListItem'
 import SessionDetailsModal from '../components/shopping/SessionDetailsModal'
-import { Clock } from 'iconoir-react'
 
 export default function ShoppingSessions() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
@@ -40,64 +39,66 @@ export default function ShoppingSessions() {
 
   if (isLoading) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p>Loading sessions...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p className="text-error mb-3">Error: {error.message}</p>
-        <button
-          onClick={() => refetch()}
-          className="btn btn-primary"
-        >
-          Retry
-        </button>
+      <div className="p-4">
+        <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+          <p className="text-error font-medium mb-3">Error: {error.message}</p>
+          <button
+            onClick={() => refetch()}
+            className="btn btn-primary btn-sm"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="card bg-base-100 p-8 shadow-sm">
-      {/* Page Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Clock width="32px" height="32px" strokeWidth={2} className="text-primary" />
-          <h1 className="text-3xl font-bold">Past Shopping Trips</h1>
-        </div>
-        <p className="text-base-content/70 text-sm">Your shopping history</p>
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 p-4 sticky top-0 z-10">
+        <h1 className="text-xl font-bold">Shopping History</h1>
+        {sessions.length > 0 && (
+          <p className="text-sm text-base-content/60 mt-1">
+            {sessions.length} {sessions.length === 1 ? 'trip' : 'trips'} recorded
+          </p>
+        )}
       </div>
 
       {sessions.length === 0 ? (
-        <div className="p-8 text-center bg-base-200 rounded-lg border-2 border-dashed border-base-300">
-          <p className="text-base-content mb-4">No trips yet!</p>
-          <p className="text-base-content/70 text-sm">
-            Your completed shopping trips will show up here.
-          </p>
+        <div className="p-4">
+          <div className="py-16 text-center">
+            <div className="text-5xl mb-4">🛒</div>
+            <p className="text-base-content font-medium mb-2">No shopping history yet</p>
+            <p className="text-base-content/60 text-sm">
+              Completed trips will appear here
+            </p>
+          </div>
         </div>
       ) : (
-        <div>
-          {sessions.map((session) => (
-            <SessionListItem
-              key={session.id}
-              session={session}
-              onDelete={deleteSession}
-              onEdit={handleEdit}
-            />
-          ))}
+        <div className="p-4">
+          {/* Timeline */}
+          <div className="relative">
+            {sessions.map((session, index) => (
+              <SessionListItem
+                key={session.id}
+                session={session}
+                onDelete={deleteSession}
+                onEdit={handleEdit}
+                isLast={index === sessions.length - 1}
+              />
+            ))}
+          </div>
         </div>
       )}
-
-      {/* Summary Stats */}
-      <div className="mt-5 stats shadow bg-primary/10">
-        <div className="stat">
-          <div className="stat-title">Total trips</div>
-          <div className="stat-value text-primary">{sessions.length}</div>
-        </div>
-      </div>
 
       {/* Session Details Modal */}
       <SessionDetailsModal

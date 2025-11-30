@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
@@ -19,20 +19,13 @@ import {
   useUncheckItem,
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
-import { ANIMATION_DURATIONS } from '../config/animations'
-import { Cart, ShoppingBag, CheckCircle, Clock } from 'iconoir-react'
+import { Cart, CheckCircle, Clock } from 'iconoir-react'
 import { isWithin24Hours } from '../utils/dateUtils'
 
 export default function Backlog() {
   // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
-  const [transitioningOutItems, setTransitioningOutItems] = useState(new Set()) // Items fading out
-  const [transitioningInItems, setTransitioningInItems] = useState(new Set()) // Items fading in
   const [showCancelModal, setShowCancelModal] = useState(false)
-  const [isDoneButtonVisible, setIsDoneButtonVisible] = useState(false)
-
-  // Ref for tracking Done button visibility
-  const doneButtonRef = useRef(null)
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -40,25 +33,12 @@ export default function Backlog() {
   const { data: uncheckedItems = [], isLoading: isUncheckedLoading } = useShoppingItems({ isDone: false })
   const { data: checkedItems = [], isLoading: isCheckedLoading } = useShoppingItems(
     activeSession ? { forSession: activeSession.id } : {},
-    { enabled: !!activeSession }, // Only fetch if there's an active session
+    {
+      enabled: !!activeSession, // Only fetch if there's an active session
+      placeholderData: [], // Return empty array when query is disabled
+    },
   )
   const { data: catalogCache } = useCatalogItems({ includeCategory: true })
-
-  // Track Done button visibility with Intersection Observer
-  useEffect(() => {
-    const button = doneButtonRef.current
-    if (!button) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsDoneButtonVisible(entry.isIntersecting)
-      },
-      { threshold: 0 },
-    )
-
-    observer.observe(button)
-    return () => observer.disconnect()
-  }, [activeSession])
 
   // Mutations - actions that modify data
   const createSessionMutation = useCreateSession()
@@ -133,79 +113,13 @@ export default function Backlog() {
   const toggleCheck = (item, isCurrentlyChecked) => {
     if (isCurrentlyChecked) {
       uncheckItemMutation.mutate(item.id, {
-        onSuccess: () => {
-          // Start fade-out animation from checked section
-          setTransitioningOutItems(prev => new Set(prev).add(item.id))
-
-          // After fade-out completes, start fade-in in unchecked section
-          setTimeout(() => {
-            setTransitioningOutItems(prev => {
-              const next = new Set(prev)
-              next.delete(item.id)
-              return next
-            })
-            setTransitioningInItems(prev => new Set(prev).add(item.id))
-          }, ANIMATION_DURATIONS.ITEM_FADE_OUT)
-
-          // Clear fade-in animation after it completes
-          setTimeout(() => {
-            setTransitioningInItems(prev => {
-              const next = new Set(prev)
-              next.delete(item.id)
-              return next
-            })
-          }, ANIMATION_DURATIONS.ITEM_FULL_TRANSITION)
-        },
         onError: (err) => alert(`Error: ${err.message}`),
       })
     } else {
       checkItemMutation.mutate(item.id, {
-        onSuccess: () => {
-          // Start fade-out animation from unchecked section
-          setTransitioningOutItems(prev => new Set(prev).add(item.id))
-
-          // After fade-out completes, start fade-in in checked section
-          setTimeout(() => {
-            setTransitioningOutItems(prev => {
-              const next = new Set(prev)
-              next.delete(item.id)
-              return next
-            })
-            setTransitioningInItems(prev => new Set(prev).add(item.id))
-          }, ANIMATION_DURATIONS.ITEM_FADE_OUT)
-
-          // Clear fade-in animation after it completes
-          setTimeout(() => {
-            setTransitioningInItems(prev => {
-              const next = new Set(prev)
-              next.delete(item.id)
-              return next
-            })
-          }, ANIMATION_DURATIONS.ITEM_FULL_TRANSITION)
-        },
         onError: (err) => alert(`Error: ${err.message}`),
       })
     }
-  }
-
-  // Helper to check if a specific item is being checked/unchecked
-  const isItemLoading = (itemId) => {
-    return (
-      (checkItemMutation.isPending && checkItemMutation.variables === itemId) ||
-      (uncheckItemMutation.isPending && uncheckItemMutation.variables === itemId)
-    )
-  }
-
-  // Helper to trigger arrival animation for newly added items
-  const markItemAsArrived = (itemId) => {
-    setTransitioningInItems(prev => new Set(prev).add(itemId))
-    setTimeout(() => {
-      setTransitioningInItems(prev => {
-        const next = new Set(prev)
-        next.delete(itemId)
-        return next
-      })
-    }, ANIMATION_DURATIONS.ITEM_FADE_IN)
   }
 
   const deleteItem = (itemId) => {
@@ -218,10 +132,6 @@ export default function Backlog() {
 
   const addItemFromCatalog = (catalogItem) => {
     addItemMutation.mutate(catalogItem.id, {
-      onSuccess: (newItem) => {
-        // Trigger arrival animation for newly added item
-        markItemAsArrived(newItem.id)
-      },
       onError: (err) => alert(`Error: ${err.message}`),
     })
   }
@@ -230,10 +140,6 @@ export default function Backlog() {
     createCatalogItemMutation.mutate(
       { item: { name: itemName, category_id: null }, options: { addToShopping: true } },
       {
-        onSuccess: (newItem) => {
-          // Trigger arrival animation for newly created item
-          markItemAsArrived(newItem.id)
-        },
         onError: (err) => alert(`Error: ${err.message}`),
       },
     )
@@ -274,85 +180,45 @@ export default function Backlog() {
   // Loading and error states
   if (loading) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p>Loading shopping items...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p className="text-error mb-3">Error: {error.message}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="btn btn-primary"
-        >
-          Retry
-        </button>
+      <div className="p-4">
+        <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+          <p className="text-error font-medium mb-3">Error: {error.message}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn btn-primary btn-sm"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
 
   return (
-    <div className="card bg-base-100 p-8 shadow-sm">
-      {/* Page Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <ShoppingBag width="32px" height="32px" strokeWidth={2} className="text-primary" />
-          <h1 className="text-3xl font-bold">Shopping List</h1>
-        </div>
-        <p className="text-base-content/70 text-sm">Things you want to pick up whenever you&rsquo;re out shopping</p>
-      </div>
-
-      {/* Active Session Card or Start Button */}
-      {activeSession ? (
-        <ActiveSessionCard
-          session={activeSession}
-          hasCheckedItems={checkedItems.length > 0}
-          onFinish={finishSession}
-          onCancel={cancelSession}
-          doneButtonRef={doneButtonRef}
-        />
-      ) : uncheckedItems.length > 0 && (
-        <div className="mb-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-          {/* Primary action - Start new session */}
-          <button
-            onClick={startSession}
-            className="flex-1 btn btn-primary gap-3 min-h-12 sm:min-h-0"
-          >
-            <Cart width="20px" height="20px" strokeWidth={2} />
-            {recentSession ? 'Start a New Shopping Trip' : 'Start Shopping Trip'}
-          </button>
-
-          {/* Secondary action - Continue recent session (only if available) */}
-          {recentSession && (
-              <div className="text-base-content/50 text-xs font-medium text-center divider divider-vertical h-full">OR</div>
-          )}
-          {recentSession && (
-            <button
-                onClick={continueRecentSession}
-                className="btn btn-secondary gap-3 min-h-12 sm:min-h-0"
-              >
-              <Clock width="20px" height="20px" strokeWidth={2} className="shrink-0" />
-              <div className="flex flex-col items-start text-left">
-                <span className="text-sm font-medium normal-case">Continue Recent</span>
-                <span className="text-xs font-light normal-case">{recentSession.name}</span>
-              </div>
-            </button>
-          )}
+    <div className="min-h-screen bg-base-100">
+      {/* Active Session Banner - Sticky at top */}
+      {activeSession && (
+        <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300">
+          <ActiveSessionCard
+            session={activeSession}
+            hasCheckedItems={checkedItems.length > 0}
+            onFinish={finishSession}
+            onCancel={cancelSession}
+          />
         </div>
       )}
 
-      {/* Unchecked Items Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-semibold">Items to Get</h3>
-          <span className="text-base-content/70 text-sm">{uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'}</span>
-        </div>
-
-        {/* Add Item Input with Autocomplete */}
+      {/* Search Bar - Sticky below session banner */}
+      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4 pb-3">
         <AutocompleteSearch
           catalogCache={catalogCache}
           existingItems={[...uncheckedItems, ...checkedItems]}
@@ -360,27 +226,60 @@ export default function Backlog() {
           onCreateNew={createNewCatalogItem}
           placeholder={getPlaceholder()}
         />
+      </div>
+
+      {/* Start Shopping Button (when no active session) */}
+      {!activeSession && uncheckedItems.length > 0 && (
+        <div className="p-4 bg-base-200 border-b border-base-300">
+          <button
+            onClick={startSession}
+            className="w-full btn btn-primary h-12 gap-2"
+          >
+            <Cart width="20px" height="20px" strokeWidth={2} />
+            Start Shopping Trip
+          </button>
+
+          {recentSession && (
+            <button
+              onClick={continueRecentSession}
+              className="w-full btn btn-outline btn-primary gap-2 mt-2 h-10"
+            >
+              <Clock width="18px" height="18px" strokeWidth={2} />
+              Continue: {recentSession.name}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Unchecked Items Section */}
+      <div className="p-4">
 
         {uncheckedItems.length === 0 ? (
-          <div className="p-8 text-center bg-base-200 rounded-lg border-2 border-dashed border-base-300">
+          <div className="py-12 text-center">
             {activeSession && checkedItems.length > 0 ? (
               <>
-                <p className="text-base-content mb-2">🎉 Nice! You&rsquo;ve got everything in your cart.</p>
-                <p className="text-base-content/70 text-sm">Feel free to add more items or wrap up your trip when you&rsquo;re ready!</p>
+                <div className="text-4xl mb-3">🎉</div>
+                <p className="text-base-content font-medium mb-1">All items in cart!</p>
+                <p className="text-base-content/60 text-sm">Add more or finish shopping</p>
               </>
             ) : (
-              <p className="text-base-content/70">Your list is empty! Add items as you think of them.</p>
+              <>
+                <div className="text-4xl mb-3">📝</div>
+                <p className="text-base-content/60">Your list is empty</p>
+              </>
             )}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {Object.entries(groupItemsByCategory(uncheckedItems)).map(([categoryName, items]) => (
               <div key={categoryName}>
                 {shouldGroupByCategory(uncheckedItems) && (
-                  <h4 className="text-sm font-semibold text-base-content mb-2 px-1">{categoryName}</h4>
+                  <h4 className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-2 px-1">
+                    {categoryName}
+                  </h4>
                 )}
-                <ul className="list bg-base-100 rounded-box border border-base-300 divide-y divide-base-300">
-                  {items.map((item, _index) => (
+                <ul className="space-y-0 border-y border-base-300">
+                  {items.map((item) => (
                     <ShoppingItem
                       key={item.id}
                       item={item}
@@ -391,9 +290,6 @@ export default function Backlog() {
                       showCategoryLabel={shouldGroupByCategory(uncheckedItems)}
                       openMenuId={openMenuId}
                       onMenuToggle={setOpenMenuId}
-                      isLoading={isItemLoading(item.id)}
-                      isTransitioningOut={transitioningOutItems.has(item.id)}
-                      isTransitioningIn={transitioningInItems.has(item.id)}
                     />
                   ))}
                 </ul>
@@ -405,13 +301,12 @@ export default function Backlog() {
 
       {/* Checked Items Section (only when active session) */}
       {activeSession && checkedItems.length > 0 && (
-        <div className='mt-8'>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-medium text-base-content/70">In Your Cart</h3>
-            <span className="text-base-content/50 text-xs">{checkedItems.length} {checkedItems.length === 1 ? 'item' : 'items'}</span>
-          </div>
+        <div className="bg-base-200 border-t-4 border-base-300 p-4 pb-20 lg:pb-4">
+          <h3 className="text-xs font-semibold text-base-content/50 uppercase tracking-wider mb-3 px-1">
+            In Cart ({checkedItems.length})
+          </h3>
 
-          <div className="space-y-1">
+          <ul className="space-y-0 mb-4">
             {checkedItems.map((item) => (
               <ShoppingItem
                 key={item.id}
@@ -423,32 +318,24 @@ export default function Backlog() {
                 showCategoryLabel={false}
                 openMenuId={openMenuId}
                 onMenuToggle={setOpenMenuId}
-                isLoading={isItemLoading(item.id)}
-                isTransitioningOut={transitioningOutItems.has(item.id)}
-                isTransitioningIn={transitioningInItems.has(item.id)}
               />
             ))}
-          </div>
+          </ul>
 
-          {/* Subtle Finish Session prompt */}
-          <div className="mt-3">
-            <p className="text-xs text-base-content/70 mb-2 text-center italic">
-              Ready to wrap up? Finishing your trip will clear these items from your shopping list.
-              {uncheckedItems.length > 0 && (
-                <> The {uncheckedItems.length} remaining {uncheckedItems.length === 1 ? 'item' : 'items'} will stay for next time.</>
-              )} 👍
-            </p>
+          {/* Done Shopping Button - Inline */}
+          <div className="mt-4">
             <button
               onClick={finishSession}
-              className={`w-full btn btn-secondary btn-sm gap-2 transition-all duration-300 ease-in-out ${
-                isDoneButtonVisible
-                  ? 'opacity-0 max-h-0 py-0 min-h-0 overflow-hidden'
-                  : 'opacity-100 max-h-12'
-              }`}
+              className="w-full btn btn-primary h-14 gap-2 text-base"
             >
-              <CheckCircle width="16px" height="16px" strokeWidth={2} />
+              <CheckCircle width="20px" height="20px" strokeWidth={2} />
               Done Shopping
             </button>
+            {uncheckedItems.length > 0 && (
+              <p className="text-xs text-base-content/60 text-center mt-2 italic">
+                {uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'} will stay for next trip
+              </p>
+            )}
           </div>
         </div>
       )}

@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useCategory, useCategoryItems, useDeleteCatalogItem } from '../hooks/queries/useCatalogQueries'
 import { useFlash } from '../contexts/FlashContext'
-import Breadcrumb from '../components/common/Breadcrumb'
 import CatalogItemModal from '../components/catalog/CatalogItemModal'
 import CatalogItemDetailsModal from '../components/catalog/CatalogItemDetailsModal'
-import { Package, Plus, MoreVert, EditPencil, Trash } from 'iconoir-react'
+import { Plus, MoreVert, EditPencil, Trash, NavArrowLeft } from 'iconoir-react'
 
 export default function CatalogItems() {
   const { categoryId } = useParams()
+  const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
   const [itemToEdit, setItemToEdit] = useState(null)
   const [itemToDelete, setItemToDelete] = useState(null)
@@ -44,7 +44,8 @@ export default function CatalogItems() {
     setModalOpen(true)
   }
 
-  const handleEdit = (item) => {
+  const handleEdit = (item, e) => {
+    e.stopPropagation()
     setItemToEdit(item)
     setModalOpen(true)
   }
@@ -99,103 +100,115 @@ export default function CatalogItems() {
 
   if (loading) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p>Loading items...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="card bg-base-100 p-8 shadow-sm">
-        <p className="text-error mb-3">Error: {error.message}</p>
-        <button
-          onClick={() => refetch()}
-          className="btn btn-primary"
-        >
-          Retry
-        </button>
+      <div className="p-4">
+        <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+          <p className="text-error font-medium mb-3">Error: {error.message}</p>
+          <button
+            onClick={() => refetch()}
+            className="btn btn-primary btn-sm"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="card bg-base-100 p-8 shadow-sm">
-      <Breadcrumb items={[
-        { label: 'Catalog', path: '/catalog' },
-        { label: 'Categories', path: '/catalog/categories' },
-        { label: category?.name || 'Category' },
-      ]} />
-
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Package width="32px" height="32px" strokeWidth={2} className="text-primary" />
-            <h1 className="m-0 text-3xl font-bold">{category?.name || 'Category'}</h1>
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
+      {/* Header - Sticky */}
+      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <button
+            onClick={() => navigate('/catalog/categories')}
+            className="btn btn-ghost btn-sm btn-circle"
+          >
+            <NavArrowLeft width="20px" height="20px" strokeWidth={2} />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold">{category?.name || 'Category'}</h1>
+            {category?.description && (
+              <p className="text-sm text-base-content/60 mt-1">{category.description}</p>
+            )}
           </div>
-          <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-2">
-            <Plus width="16px" height="16px" strokeWidth={2} />
-            New Item
+          <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-1">
+            <Plus width="18px" height="18px" strokeWidth={2} />
+            <span className="hidden sm:inline">New</span>
           </button>
         </div>
       </div>
 
+      {/* Results info */}
+      <div className="p-4 pb-0">
+        <p className="text-sm text-base-content/60">
+          {items.length === 0 ? 'No items found' : `${items.length} ${items.length === 1 ? 'item' : 'items'}`}
+        </p>
+      </div>
+
+      {/* Items List */}
       {items.length === 0 ? (
-        <div className="alert alert-warning">
-          <span>No items found in this category. Items will appear here once added.</span>
+        <div className="p-4">
+          <div className="py-16 text-center">
+            <div className="text-5xl mb-4">📦</div>
+            <p className="text-base-content font-medium mb-2">No items yet</p>
+            <p className="text-base-content/60 text-sm">Add items to this category</p>
+          </div>
         </div>
       ) : (
-        <div className="rounded-box border border-base-300">
-          <table className="table">
-            <tbody>
-              {items.map((item) => (
-                <tr
-                  key={item.id}
-                  className="cursor-pointer hover"
+        <div className="p-4 pt-2">
+          <ul className="space-y-0 divide-y divide-base-300 border-y border-base-300">
+            {items.map((item) => (
+              <li
+                key={item.id}
+                className="relative bg-base-100 hover:bg-base-200 active:bg-base-300/70 transition-colors"
+              >
+                <button
                   onClick={() => handleViewDetails(item)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleViewDetails(item)}
-                  tabIndex={0}
+                  className="w-full text-left p-3 pr-12 cursor-pointer"
                 >
-                  <td>
-                    <div className="font-medium">{item.name}</div>
-                    {item.description && (
-                      <div className="text-base-content/50 text-xs">{item.description}</div>
-                    )}
-                  </td>
-                  <td className="w-12" onClick={(e) => e.stopPropagation()}>
-                    <div className="dropdown dropdown-end dropdown-left">
-                      <button tabIndex={0} className="btn btn-ghost btn-xs btn-circle">
-                        <MoreVert width="16px" height="16px" strokeWidth={2} />
+                  <div className="font-medium text-base text-base-content">{item.name}</div>
+                  {item.description && (
+                    <div className="text-xs text-base-content/50 mt-1">{item.description}</div>
+                  )}
+                </button>
+
+                {/* 3-dot menu */}
+                <div className="absolute top-2 right-2 dropdown dropdown-end">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    tabIndex={0}
+                    className="btn btn-ghost btn-sm btn-circle"
+                  >
+                    <MoreVert width="20px" height="20px" strokeWidth={2} />
+                  </button>
+                  <ul className="dropdown-content menu bg-base-100 rounded-box z-50 w-40 p-2 shadow-lg border border-base-300">
+                    <li>
+                      <button onClick={(e) => handleEdit(item, e)} className="gap-2">
+                        <EditPencil width="16px" height="16px" strokeWidth={2} />
+                        Edit
                       </button>
-                      <ul className="dropdown-content menu bg-base-100 rounded-box z-50 w-40 p-2 shadow">
-                        <li>
-                          <button onClick={() => handleEdit(item)} className="gap-2">
-                            <EditPencil width="14px" height="14px" strokeWidth={2} />
-                            Edit
-                          </button>
-                        </li>
-                        <li>
-                          <button onClick={() => handleDeleteClick(item)} className="gap-2 text-error">
-                            <Trash width="14px" height="14px" strokeWidth={2} />
-                            Delete
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </li>
+                    <li>
+                      <button onClick={() => handleDeleteClick(item)} className="gap-2 text-error">
+                        <Trash width="16px" height="16px" strokeWidth={2} />
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
-
-      <div className="mt-5 stats shadow bg-primary/10">
-        <div className="stat">
-          <div className="stat-title">Total Items</div>
-          <div className="stat-value text-primary">{items.length}</div>
-        </div>
-      </div>
 
       {/* Delete Confirmation Modal */}
       {itemToDelete && (
