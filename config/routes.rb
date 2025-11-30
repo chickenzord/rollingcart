@@ -54,6 +54,9 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Chrome DevTools discovery endpoint - return 204 No Content to suppress 406 errors
+  get ".well-known/appspecific/com.chrome.devtools" => proc { [ 204, {}, [] ] }
+
   # Defines the root path route ("/")
   # React app handles all frontend routing
   root "pages#index"

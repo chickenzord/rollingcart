@@ -25,7 +25,7 @@ export default function ShoppingItem({
               type="checkbox"
               checked={isChecked}
               onChange={onToggleCheck}
-              className={`checkbox checkbox-primary ${isChecked ? 'checkbox-sm' : 'checkbox-lg'}`}
+              className={`checkbox checkbox-primary cursor-pointer ${isChecked ? 'checkbox-sm' : 'checkbox-md'}`}
             />
           ) : (
             <div className="relative group">
@@ -33,7 +33,7 @@ export default function ShoppingItem({
                 type="checkbox"
                 checked={isChecked}
                 disabled
-                className="checkbox checkbox-lg checkbox-primary opacity-30"
+                className="checkbox checkbox-md checkbox-primary opacity-30"
               />
               <div className="hidden group-active:block absolute -top-16 left-1/2 -translate-x-1/2 bg-base-300 text-base-content text-xs px-3 py-2 rounded-lg whitespace-nowrap shadow-lg z-50">
                 Start a shopping trip to check off items
