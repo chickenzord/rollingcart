@@ -32,7 +32,7 @@ export default function Backlog() {
   const { data: allSessions = [] } = useSessions()
   const { data: uncheckedItems = [], isLoading: isUncheckedLoading } = useShoppingItems({ isDone: false })
   const { data: checkedItems = [], isLoading: isCheckedLoading } = useShoppingItems(
-    activeSession ? { forSession: activeSession.id } : {},
+    activeSession ? { forSession: activeSession.id } : { isDone: false },
     {
       enabled: !!activeSession, // Only fetch if there's an active session
       placeholderData: [], // Return empty array when query is disabled
