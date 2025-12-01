@@ -204,21 +204,19 @@ export default function Backlog() {
 
 
   return (
-    <div className="min-h-screen bg-base-100">
-      {/* Active Session Banner - Sticky at top */}
-      {activeSession && (
-        <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300">
-          <ActiveSessionCard
-            session={activeSession}
-            hasCheckedItems={checkedItems.length > 0}
-            onFinish={finishSession}
-            onCancel={cancelSession}
-          />
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="mb-2">
+          <h1 className="text-lg font-semibold">Shopping List</h1>
+          {uncheckedItems.length > 0 && (
+            <p className="text-xs text-base-content/60 mt-0.5">
+              {uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'} in backlog
+            </p>
+          )}
         </div>
-      )}
 
-      {/* Search Bar - Sticky below session banner */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4 pb-3">
+        {/* Search */}
         <AutocompleteSearch
           catalogCache={catalogCache}
           existingItems={[...uncheckedItems, ...checkedItems]}
@@ -227,6 +225,18 @@ export default function Backlog() {
           placeholder={getPlaceholder()}
         />
       </div>
+
+      {/* Active Session Banner */}
+      {activeSession && (
+        <div className="bg-base-100 border-b border-base-300">
+          <ActiveSessionCard
+            session={activeSession}
+            hasCheckedItems={checkedItems.length > 0}
+            onFinish={finishSession}
+            onCancel={cancelSession}
+          />
+        </div>
+      )}
 
       {/* Start Shopping Button (when no active session) */}
       {!activeSession && uncheckedItems.length > 0 && (

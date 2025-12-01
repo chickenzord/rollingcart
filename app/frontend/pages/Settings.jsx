@@ -5,10 +5,10 @@ export default function Settings() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen bg-base-100">
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
       {/* Header */}
-      <div className="bg-base-200 border-b border-base-300 p-4">
-        <h1 className="text-xl font-bold">Settings</h1>
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <h1 className="text-lg font-semibold">Settings</h1>
       </div>
 
       {/* Account Section */}

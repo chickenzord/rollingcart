@@ -118,7 +118,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
   }
 
   return (
-    <div className={`dropdown mb-6 w-full ${showAutocomplete && searchQuery.length >= 1 ? 'dropdown-open' : ''}`}>
+    <div className={`dropdown w-full ${showAutocomplete && searchQuery.length >= 1 ? 'dropdown-open' : ''}`}>
       <input
         type="text"
         placeholder={placeholder}
@@ -127,7 +127,7 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
         onKeyDown={handleSearchKeyDown}
         onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
         onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-        className="input input-lg input-bordered w-full shadow-sm focus:shadow-md transition-shadow"
+        className="input input-sm input-bordered w-full"
         role="button"
         tabIndex={0}
       />

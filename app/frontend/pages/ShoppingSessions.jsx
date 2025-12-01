@@ -64,10 +64,10 @@ export default function ShoppingSessions() {
   return (
     <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
       {/* Header */}
-      <div className="bg-base-200 border-b border-base-300 p-4 sticky top-0 z-10">
-        <h1 className="text-xl font-bold">Shopping History</h1>
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <h1 className="text-lg font-semibold">Shopping History</h1>
         {sessions.length > 0 && (
-          <p className="text-sm text-base-content/60 mt-1">
+          <p className="text-xs text-base-content/60 mt-0.5">
             {sessions.length} {sessions.length === 1 ? 'trip' : 'trips'} recorded
           </p>
         )}

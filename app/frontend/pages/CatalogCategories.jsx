@@ -99,28 +99,28 @@ export default function CatalogCategories() {
 
   return (
     <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
-      {/* Header - Sticky */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
-        <div className="flex items-center gap-3 mb-3">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/catalog')}
             className="btn btn-ghost btn-sm btn-circle"
           >
             <NavArrowLeft width="20px" height="20px" strokeWidth={2} />
           </button>
-          <h1 className="text-xl font-bold flex-1">Categories</h1>
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold">Categories</h1>
+            {categories.length > 0 && (
+              <p className="text-xs text-base-content/60 mt-0.5">
+                {categories.length} {categories.length === 1 ? 'category' : 'categories'}
+              </p>
+            )}
+          </div>
           <button onClick={handleNewCategory} className="btn btn-primary btn-sm gap-1">
             <Plus width="18px" height="18px" strokeWidth={2} />
             <span className="hidden sm:inline">New</span>
           </button>
         </div>
-      </div>
-
-      {/* Results info */}
-      <div className="p-4 pb-0">
-        <p className="text-sm text-base-content/60">
-          {categories.length === 0 ? 'No categories found' : `${categories.length} ${categories.length === 1 ? 'category' : 'categories'}`}
-        </p>
       </div>
 
       {/* Categories List */}

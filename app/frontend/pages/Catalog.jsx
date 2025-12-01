@@ -152,10 +152,17 @@ export default function Catalog() {
 
   return (
     <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
-      {/* Header - Sticky */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold">Catalog</h1>
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h1 className="text-lg font-semibold">Catalog</h1>
+            {totalItems > 0 && (
+              <p className="text-xs text-base-content/60 mt-0.5">
+                {totalItems} {totalItems === 1 ? 'item' : 'items'}
+              </p>
+            )}
+          </div>
           <div className="flex gap-2">
             <Link to="/catalog/categories" className="btn btn-ghost btn-sm gap-1">
               <Settings width="18px" height="18px" strokeWidth={2} />
@@ -169,7 +176,7 @@ export default function Catalog() {
         </div>
 
         {/* Search */}
-        <label className="input input-bordered flex items-center gap-2">
+        <label className="input input-sm input-bordered flex items-center gap-2">
           <Search width="16px" height="16px" strokeWidth={2} className="text-base-content/50" />
           <input
             type="text"
