@@ -77,6 +77,15 @@ export default function SessionListItem({ session, onDelete, onEdit, isLast }) {
                       e.stopPropagation()
                       setIsMenuOpen(false)
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.stopPropagation()
+                        setIsMenuOpen(false)
+                      }
+                    }}
+                    role="button"
+                    tabIndex={-1}
+                    aria-label="Close menu"
                   ></div>
                   {/* Menu */}
                   <ul className="absolute right-0 top-full mt-1 menu bg-base-100 rounded-box w-36 p-2 shadow-lg border border-base-300 z-50">
