@@ -80,7 +80,7 @@ export default function ShoppingItem({
           }}
           onDelete={() => {
             onMenuToggle(null)
-            onDelete(item.id)
+            onDelete(item)
           }}
         />
       </div>

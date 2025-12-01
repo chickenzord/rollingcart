@@ -20,14 +20,14 @@ export default function ItemMenu({ isOpen, onToggle, onEdit, onDelete }) {
       </button>
       {isOpen && (
         <ul className="dropdown-content menu bg-base-100 rounded-box w-36 p-2 shadow-lg border border-base-300">
-          <li>
+          {/* <li>
             <button
               onClick={onEdit}
               className="text-sm"
             >
               Edit Notes
             </button>
-          </li>
+          </li> */}
           <li>
             <button
               onClick={onDelete}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useCategories, useDeleteCategory } from '../hooks/queries/useCatalogQueries'
 import { useFlash } from '../contexts/FlashContext'
 import CategoryModal from '../components/catalog/CategoryModal'
+import ConfirmationModal from '../components/common/ConfirmationModal'
 import { MoreVert, EditPencil, Trash, Plus, NavArrowLeft } from 'iconoir-react'
 
 export default function CatalogCategories() {
@@ -99,28 +100,28 @@ export default function CatalogCategories() {
 
   return (
     <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
-      {/* Header - Sticky */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
-        <div className="flex items-center gap-3 mb-3">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/catalog')}
             className="btn btn-ghost btn-sm btn-circle"
           >
             <NavArrowLeft width="20px" height="20px" strokeWidth={2} />
           </button>
-          <h1 className="text-xl font-bold flex-1">Categories</h1>
+          <div className="flex-1">
+            <h1 className="text-lg font-semibold">Categories</h1>
+            {categories.length > 0 && (
+              <p className="text-xs text-base-content/60 mt-0.5">
+                {categories.length} {categories.length === 1 ? 'category' : 'categories'}
+              </p>
+            )}
+          </div>
           <button onClick={handleNewCategory} className="btn btn-primary btn-sm gap-1">
             <Plus width="18px" height="18px" strokeWidth={2} />
             <span className="hidden sm:inline">New</span>
           </button>
         </div>
-      </div>
-
-      {/* Results info */}
-      <div className="p-4 pb-0">
-        <p className="text-sm text-base-content/60">
-          {categories.length === 0 ? 'No categories found' : `${categories.length} ${categories.length === 1 ? 'category' : 'categories'}`}
-        </p>
       </div>
 
       {/* Categories List */}
@@ -186,52 +187,40 @@ export default function CatalogCategories() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {categoryToDelete && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Category</h3>
-            <p className="py-4">
-              Are you sure you want to delete <strong>{categoryToDelete.name}</strong>?
-              {categoryToDelete.items_count > 0 && (
-                <span className="block mt-2 text-warning">
-                  This will make {categoryToDelete.items_count} {categoryToDelete.items_count === 1 ? 'item' : 'items'} uncategorized.
-                </span>
+      <ConfirmationModal
+        isOpen={!!categoryToDelete}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Category"
+        message={
+          categoryToDelete ? (
+            <>
+              <p className="mb-3">
+                Are you sure you want to delete <strong>{categoryToDelete.name}</strong>?
+              </p>
+              {categoryToDelete.items_count > 0 ? (
+                <>
+                  <p className="text-sm text-base-content/60 mb-2">
+                    This category contains <strong>{categoryToDelete.items_count}</strong> {categoryToDelete.items_count === 1 ? 'item' : 'items'}.
+                  </p>
+                  <p className="text-sm text-warning">
+                    ⚠️ Items will become uncategorized but will not be deleted.
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-base-content/60">
+                  This category is empty and can be safely deleted.
+                </p>
               )}
-            </p>
-            <div className="modal-action">
-              <button
-                onClick={handleDeleteCancel}
-                className="btn btn-ghost"
-                disabled={deleteMutation.isPending}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteConfirm}
-                className="btn btn-error"
-                disabled={deleteMutation.isPending}
-              >
-                {deleteMutation.isPending ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete'
-                )}
-              </button>
-            </div>
-          </div>
-          <div
-            className="modal-backdrop"
-            onClick={handleDeleteCancel}
-            onKeyDown={(e) => e.key === 'Escape' && handleDeleteCancel()}
-            role="button"
-            tabIndex={0}
-            aria-label="Close modal"
-          ></div>
-        </div>
-      )}
+            </>
+          ) : (
+            'Are you sure you want to delete this category?'
+          )
+        }
+        confirmText="Delete"
+        severity="danger"
+        isLoading={deleteMutation.isPending}
+      />
 
       {/* Create/Edit Category Modal */}
       <CategoryModal

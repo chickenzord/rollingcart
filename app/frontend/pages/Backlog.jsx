@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
 import AutocompleteSearch from '../components/shopping/AutocompleteSearch'
 import CancelSessionModal from '../components/shopping/CancelSessionModal'
+import ConfirmationModal from '../components/common/ConfirmationModal'
 import {
   useActiveSession,
   useSessions,
@@ -19,13 +20,46 @@ import {
   useUncheckItem,
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
-import { Cart, CheckCircle, Clock } from 'iconoir-react'
+import { Cart, CheckCircle, Clock, Plus } from 'iconoir-react'
 import { isWithin24Hours } from '../utils/dateUtils'
 
 export default function Backlog() {
   // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const [showSearch, setShowSearch] = useState(true)
+  const lastScrollY = useRef(0)
+
+  // Auto-hide search on scroll with debounce to prevent stuttering
+  useEffect(() => {
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+
+          if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+            // Scrolling down & past threshold
+            setShowSearch(false)
+          } else if (currentScrollY < lastScrollY.current) {
+            // Scrolling up
+            setShowSearch(true)
+          }
+
+          lastScrollY.current = currentScrollY
+          ticking = false
+        })
+
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -122,12 +156,28 @@ export default function Backlog() {
     }
   }
 
-  const deleteItem = (itemId) => {
-    if (!confirm('Are you sure you want to delete this item?')) return
+  const deleteItem = (item) => {
+    setItemToDelete(item)
+    setShowDeleteModal(true)
+  }
 
-    deleteItemMutation.mutate(itemId, {
-      onError: (err) => alert(`Error: ${err.message}`),
+  const handleDeleteConfirm = () => {
+    if (!itemToDelete) return
+
+    deleteItemMutation.mutate(itemToDelete.id, {
+      onSuccess: () => {
+        setShowDeleteModal(false)
+        setItemToDelete(null)
+      },
+      onError: (err) => {
+        alert(`Error: ${err.message}`)
+      },
     })
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false)
+    setItemToDelete(null)
   }
 
   const addItemFromCatalog = (catalogItem) => {
@@ -143,6 +193,17 @@ export default function Backlog() {
         onError: (err) => alert(`Error: ${err.message}`),
       },
     )
+  }
+
+  const handleFabClick = () => {
+    setShowSearch(true)
+    // Focus on search input after animation
+    setTimeout(() => {
+      const input = document.querySelector('[placeholder*="Add"]')
+      if (input) {
+        input.focus()
+      }
+    }, 300)
   }
 
   const groupItemsByCategory = (items) => {
@@ -204,10 +265,35 @@ export default function Backlog() {
 
 
   return (
-    <div className="min-h-screen bg-base-100">
-      {/* Active Session Banner - Sticky at top */}
+    <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="mb-2">
+          <h1 className="text-lg font-semibold">Shopping List</h1>
+          {uncheckedItems.length > 0 && (
+            <p className="text-xs text-base-content/60 mt-0.5">
+              {uncheckedItems.length} {uncheckedItems.length === 1 ? 'item' : 'items'} in backlog
+            </p>
+          )}
+        </div>
+
+        {/* Search - Auto-hide on scroll */}
+        <div className={`relative transition-all duration-300 ease-in-out ${showSearch ? 'h-8' : 'h-0 overflow-hidden'}`}>
+          <div className="absolute inset-x-0 top-0">
+            <AutocompleteSearch
+              catalogCache={catalogCache}
+              existingItems={[...uncheckedItems, ...checkedItems]}
+              onSelectItem={addItemFromCatalog}
+              onCreateNew={createNewCatalogItem}
+              placeholder={getPlaceholder()}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Active Session Banner */}
       {activeSession && (
-        <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300">
+        <div className="bg-base-100 border-b border-base-300">
           <ActiveSessionCard
             session={activeSession}
             hasCheckedItems={checkedItems.length > 0}
@@ -217,34 +303,23 @@ export default function Backlog() {
         </div>
       )}
 
-      {/* Search Bar - Sticky below session banner */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4 pb-3">
-        <AutocompleteSearch
-          catalogCache={catalogCache}
-          existingItems={[...uncheckedItems, ...checkedItems]}
-          onSelectItem={addItemFromCatalog}
-          onCreateNew={createNewCatalogItem}
-          placeholder={getPlaceholder()}
-        />
-      </div>
-
       {/* Start Shopping Button (when no active session) */}
       {!activeSession && uncheckedItems.length > 0 && (
-        <div className="p-4 bg-base-200 border-b border-base-300">
+        <div className="px-4 py-3 bg-base-200 border-b border-base-300">
           <button
             onClick={startSession}
-            className="w-full btn btn-primary h-12 gap-2"
+            className="w-full btn btn-primary btn-sm gap-2"
           >
-            <Cart width="20px" height="20px" strokeWidth={2} />
+            <Cart width="18px" height="18px" strokeWidth={2} />
             Start Shopping Trip
           </button>
 
           {recentSession && (
             <button
               onClick={continueRecentSession}
-              className="w-full btn btn-outline btn-primary gap-2 mt-2 h-10"
+              className="w-full btn btn-outline btn-primary btn-sm gap-2 mt-2"
             >
-              <Clock width="18px" height="18px" strokeWidth={2} />
+              <Clock width="16px" height="16px" strokeWidth={2} />
               Continue: {recentSession.name}
             </button>
           )}
@@ -350,6 +425,42 @@ export default function Backlog() {
           onKeepItems={handleKeepItems}
           onRemoveItems={handleRemoveItems}
         />
+      )}
+
+      {/* Delete Item Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Item"
+        message={
+          itemToDelete ? (
+            <>
+              <p className="mb-3">
+                Are you sure you want to delete <strong>{itemToDelete.name}</strong> from your shopping list?
+              </p>
+              <p className="text-sm text-base-content/60">
+                Don&apos;t worry! You can always add it back from the catalog later.
+              </p>
+            </>
+          ) : (
+            'Are you sure you want to delete this item?'
+          )
+        }
+        confirmText="Delete"
+        severity="danger"
+        isLoading={deleteItemMutation.isPending}
+      />
+
+      {/* Floating Action Button - Show when search is hidden */}
+      {!showSearch && (
+        <button
+          onClick={handleFabClick}
+          className="lg:hidden fixed bottom-20 right-4 z-30 btn btn-circle btn-accent btn-lg shadow-lg hover:shadow-xl"
+          aria-label="Add item"
+        >
+          <Plus width="24px" height="24px" strokeWidth={2} />
+        </button>
       )}
     </div>
   )

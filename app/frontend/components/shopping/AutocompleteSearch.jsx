@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Fuse from 'fuse.js'
+import { Plus } from 'iconoir-react'
 
 /**
  * Smart autocomplete search for shopping items
@@ -118,21 +119,24 @@ export default function AutocompleteSearch({ catalogCache, existingItems, onSele
   }
 
   return (
-    <div className={`dropdown mb-6 w-full ${showAutocomplete && searchQuery.length >= 1 ? 'dropdown-open' : ''}`}>
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={handleSearchChange}
-        onKeyDown={handleSearchKeyDown}
-        onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
-        onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
-        className="input input-lg input-bordered w-full shadow-sm focus:shadow-md transition-shadow"
-        role="button"
-        tabIndex={0}
-      />
+    <div className={`dropdown w-full ${showAutocomplete && searchQuery.length >= 1 ? 'dropdown-open' : ''}`}>
+      <label className="input input-sm input-bordered flex items-center gap-2 focus-within:border-accent focus-within:outline-none">
+        <Plus width="16px" height="16px" strokeWidth={2} className="text-base-content/50" />
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onKeyDown={handleSearchKeyDown}
+          onFocus={() => searchQuery.length >= 1 && setShowAutocomplete(true)}
+          onBlur={() => setTimeout(() => setShowAutocomplete(false), 200)}
+          className="grow outline-none"
+          role="button"
+          tabIndex={0}
+        />
+      </label>
       {showAutocomplete && searchQuery.length >= 1 && (
-        <ul className="dropdown-content menu bg-base-100 border border-base-300 rounded-box shadow-lg w-full mt-1 max-h-60 overflow-y-auto p-0 z-[1] flex-nowrap">
+        <ul className="dropdown-content menu bg-base-100 border border-base-300 rounded-box shadow-lg w-full mt-1 max-h-60 overflow-y-auto p-0 z-50 flex-nowrap">
           {catalogSuggestions.map((item, index) => (
             <li
               key={item.id}

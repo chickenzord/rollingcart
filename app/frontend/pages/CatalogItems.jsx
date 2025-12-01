@@ -5,6 +5,7 @@ import { useCategory, useCategoryItems, useDeleteCatalogItem } from '../hooks/qu
 import { useFlash } from '../contexts/FlashContext'
 import CatalogItemModal from '../components/catalog/CatalogItemModal'
 import CatalogItemDetailsModal from '../components/catalog/CatalogItemDetailsModal'
+import ConfirmationModal from '../components/common/ConfirmationModal'
 import { Plus, MoreVert, EditPencil, Trash, NavArrowLeft } from 'iconoir-react'
 
 export default function CatalogItems() {
@@ -124,9 +125,9 @@ export default function CatalogItems() {
 
   return (
     <div className="min-h-screen bg-base-100 pb-20 lg:pb-4">
-      {/* Header - Sticky */}
-      <div className="sticky top-0 z-10 bg-base-100 border-b border-base-300 p-4">
-        <div className="flex items-center gap-3 mb-3">
+      {/* Header */}
+      <div className="bg-base-200 border-b border-base-300 px-4 py-3 sticky top-0 z-20">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/catalog/categories')}
             className="btn btn-ghost btn-sm btn-circle"
@@ -134,9 +135,11 @@ export default function CatalogItems() {
             <NavArrowLeft width="20px" height="20px" strokeWidth={2} />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold">{category?.name || 'Category'}</h1>
-            {category?.description && (
-              <p className="text-sm text-base-content/60 mt-1">{category.description}</p>
+            <h1 className="text-lg font-semibold">{category?.name || 'Category'}</h1>
+            {items.length > 0 && (
+              <p className="text-xs text-base-content/60 mt-0.5">
+                {items.length} {items.length === 1 ? 'item' : 'items'}
+              </p>
             )}
           </div>
           <button onClick={handleNewItem} className="btn btn-primary btn-sm gap-1">
@@ -146,12 +149,12 @@ export default function CatalogItems() {
         </div>
       </div>
 
-      {/* Results info */}
-      <div className="p-4 pb-0">
-        <p className="text-sm text-base-content/60">
-          {items.length === 0 ? 'No items found' : `${items.length} ${items.length === 1 ? 'item' : 'items'}`}
-        </p>
-      </div>
+      {/* Category Description */}
+      {category?.description && (
+        <div className="p-4 pb-2">
+          <p className="text-sm text-base-content/60">{category.description}</p>
+        </div>
+      )}
 
       {/* Items List */}
       {items.length === 0 ? (
@@ -163,7 +166,7 @@ export default function CatalogItems() {
           </div>
         </div>
       ) : (
-        <div className="p-4 pt-2">
+        <div className={category?.description ? 'px-4 pb-4' : 'p-4'}>
           <ul className="space-y-0 divide-y divide-base-300 border-y border-base-300">
             {items.map((item) => (
               <li
@@ -211,47 +214,37 @@ export default function CatalogItems() {
       )}
 
       {/* Delete Confirmation Modal */}
-      {itemToDelete && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Item</h3>
-            <p className="py-4">
-              Are you sure you want to delete <strong>{itemToDelete.name}</strong>? This action cannot be undone.
-            </p>
-            <div className="modal-action">
-              <button
-                onClick={handleDeleteCancel}
-                className="btn btn-ghost"
-                disabled={deleteMutation.isPending}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteConfirm}
-                className="btn btn-error"
-                disabled={deleteMutation.isPending}
-              >
-                {deleteMutation.isPending ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete'
-                )}
-              </button>
-            </div>
-          </div>
-          <div
-            className="modal-backdrop"
-            onClick={handleDeleteCancel}
-            onKeyDown={(e) => e.key === 'Escape' && handleDeleteCancel()}
-            role="button"
-            tabIndex={0}
-            aria-label="Close modal"
-          ></div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={!!itemToDelete}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Catalog Item"
+        message={
+          itemToDelete ? (
+            <>
+              <p className="mb-3">
+                Are you sure you want to delete <strong>{itemToDelete.name}</strong> from the catalog?
+              </p>
+              <p className="text-sm text-base-content/60 mb-2">
+                This will permanently remove:
+              </p>
+              <ul className="text-sm text-base-content/60 list-disc list-inside space-y-1 mb-3">
+                <li>The item from your catalog</li>
+                <li>All related shopping list entries</li>
+                <li>Item details and description</li>
+              </ul>
+              <p className="text-sm font-medium text-warning">
+                ⚠️ This action cannot be undone.
+              </p>
+            </>
+          ) : (
+            'Are you sure you want to delete this item?'
+          )
+        }
+        confirmText="Delete"
+        severity="danger"
+        isLoading={deleteMutation.isPending}
+      />
 
       {/* Create/Edit Item Modal */}
       <CatalogItemModal
