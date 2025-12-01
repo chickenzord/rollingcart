@@ -14,7 +14,7 @@ export const queryPersister = {
       const filteredQueries = persistedClient.clientState.queries.filter(query => {
         const queryKey = query.queryKey
         const hasAuth = queryKey.some(key =>
-          typeof key === 'string' && (key.includes('auth') || key.includes('user'))
+          typeof key === 'string' && (key.includes('auth') || key.includes('user')),
         )
         // Only persist successful queries that aren't auth-related
         return !hasAuth && query.state.status === 'success'

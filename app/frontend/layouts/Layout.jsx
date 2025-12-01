@@ -40,7 +40,7 @@ function Layout() {
       {/* Offline indicator */}
       {!isOnline && (
         <div className="bg-warning text-warning-content p-2 text-center text-sm">
-          You are offline. Some features may be limited.
+          No internet connection. You can view your lists but can&apos;t make changes.
         </div>
       )}
 

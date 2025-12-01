@@ -3,7 +3,8 @@
  * Provides reusable TanStack Query hooks for shopping operations
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useOfflineMutation } from '../useOfflineMutation'
 import * as shoppingService from '../../services/shoppingService'
 
 /**
@@ -49,7 +50,7 @@ export function useShoppingItems(params = {}) {
 export function useCreateSession() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.createSession,
     onSuccess: () => {
       // Invalidate active session and items queries
@@ -66,7 +67,7 @@ export function useCreateSession() {
 export function useFinishSession() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.finishSession,
     onSuccess: () => {
       // Invalidate active session, sessions list, and items queries
@@ -84,7 +85,7 @@ export function useFinishSession() {
 export function useReactivateSession() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.reactivateSession,
     onSuccess: () => {
       // Invalidate active session, sessions list, and items queries
@@ -102,7 +103,7 @@ export function useReactivateSession() {
 export function useDeleteSession() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.deleteSession,
     onSuccess: () => {
       // Invalidate active session, sessions list, and items queries
@@ -120,7 +121,7 @@ export function useDeleteSession() {
 export function useUncheckSessionItems() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.uncheckSessionItems,
     onSuccess: () => {
       // Invalidate items queries to refetch
@@ -136,7 +137,7 @@ export function useUncheckSessionItems() {
 export function useDeleteSessionItems() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.deleteSessionItems,
     onSuccess: () => {
       // Invalidate items queries to refetch
@@ -152,7 +153,7 @@ export function useDeleteSessionItems() {
 export function useAddItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.addItem,
     onSuccess: () => {
       // Invalidate items queries to refetch
@@ -168,7 +169,7 @@ export function useAddItem() {
 export function useCheckItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.checkItem,
     onSuccess: () => {
       // Invalidate items queries to refetch
@@ -184,7 +185,7 @@ export function useCheckItem() {
 export function useUncheckItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.uncheckItem,
     onSuccess: () => {
       // Invalidate items queries to refetch
@@ -200,7 +201,7 @@ export function useUncheckItem() {
 export function useDeleteItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: shoppingService.deleteItem,
     onSuccess: () => {
       // Invalidate items queries to refetch

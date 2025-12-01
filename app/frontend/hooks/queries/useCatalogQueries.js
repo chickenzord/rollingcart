@@ -3,7 +3,8 @@
  * Provides reusable TanStack Query hooks for catalog operations
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useOfflineMutation } from '../useOfflineMutation'
 import * as catalogService from '../../services/catalogService'
 
 /**
@@ -37,7 +38,7 @@ export function useCategory(categoryId) {
 export function useCreateCategory() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: (category) => catalogService.createCategory(category),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
@@ -52,7 +53,7 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: ({ categoryId, category }) => catalogService.updateCategory(categoryId, category),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['catalog', 'categories'] })
@@ -95,7 +96,7 @@ export function useCatalogItems(params = {}) {
 export function useCreateCatalogItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: ({ item, options }) => catalogService.createItem(item, options),
     onSuccess: (data, variables) => {
       // Invalidate relevant queries
@@ -123,7 +124,7 @@ export function useCreateCatalogItem() {
 export function useUpdateCatalogItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: ({ itemId, item }) => catalogService.updateItem(itemId, item),
     onSuccess: () => {
       // Invalidate all catalog item queries
@@ -153,7 +154,7 @@ export function useItemShoppingSessions(itemId) {
 export function useDeleteCatalogItem() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: (itemId) => catalogService.deleteItem(itemId),
     onSuccess: () => {
       // Invalidate all catalog item queries
@@ -172,7 +173,7 @@ export function useDeleteCatalogItem() {
 export function useDeleteCategory() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useOfflineMutation({
     mutationFn: (categoryId) => catalogService.deleteCategory(categoryId),
     onSuccess: () => {
       // Invalidate all category queries
