@@ -4,6 +4,7 @@ import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
 import AutocompleteSearch from '../components/shopping/AutocompleteSearch'
 import CancelSessionModal from '../components/shopping/CancelSessionModal'
+import ConfirmationModal from '../components/common/ConfirmationModal'
 import {
   useActiveSession,
   useSessions,
@@ -26,6 +27,8 @@ export default function Backlog() {
   // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
   const [showSearch, setShowSearch] = useState(true)
   const lastScrollY = useRef(0)
 
@@ -153,12 +156,28 @@ export default function Backlog() {
     }
   }
 
-  const deleteItem = (itemId) => {
-    if (!confirm('Are you sure you want to delete this item?')) return
+  const deleteItem = (item) => {
+    setItemToDelete(item)
+    setShowDeleteModal(true)
+  }
 
-    deleteItemMutation.mutate(itemId, {
-      onError: (err) => alert(`Error: ${err.message}`),
+  const handleDeleteConfirm = () => {
+    if (!itemToDelete) return
+
+    deleteItemMutation.mutate(itemToDelete.id, {
+      onSuccess: () => {
+        setShowDeleteModal(false)
+        setItemToDelete(null)
+      },
+      onError: (err) => {
+        alert(`Error: ${err.message}`)
+      },
     })
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false)
+    setItemToDelete(null)
   }
 
   const addItemFromCatalog = (catalogItem) => {
@@ -407,6 +426,31 @@ export default function Backlog() {
           onRemoveItems={handleRemoveItems}
         />
       )}
+
+      {/* Delete Item Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Item"
+        message={
+          itemToDelete ? (
+            <>
+              <p className="mb-3">
+                Are you sure you want to delete <strong>{itemToDelete.name}</strong> from your shopping list?
+              </p>
+              <p className="text-sm text-base-content/60">
+                Don&apos;t worry! You can always add it back from the catalog later.
+              </p>
+            </>
+          ) : (
+            'Are you sure you want to delete this item?'
+          )
+        }
+        confirmText="Delete"
+        severity="danger"
+        isLoading={deleteItemMutation.isPending}
+      />
 
       {/* Floating Action Button - Show when search is hidden */}
       {!showSearch && (

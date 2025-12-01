@@ -2,10 +2,13 @@ import { useState } from 'react'
 import { useSessions, useDeleteSession } from '../hooks/queries/useShoppingQueries'
 import SessionListItem from '../components/shopping/SessionListItem'
 import SessionDetailsModal from '../components/shopping/SessionDetailsModal'
+import ConfirmationModal from '../components/common/ConfirmationModal'
 
 export default function ShoppingSessions() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false)
   const [selectedSession, setSelectedSession] = useState(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [sessionToDelete, setSessionToDelete] = useState(null)
 
   // Fetch all sessions
   const {
@@ -19,11 +22,28 @@ export default function ShoppingSessions() {
   const deleteSessionMutation = useDeleteSession()
 
   const deleteSession = (sessionId) => {
-    if (!confirm('Are you sure you want to delete this session? This action cannot be undone.')) return
+    const session = sessions.find(s => s.id === sessionId)
+    setSessionToDelete(session)
+    setShowDeleteModal(true)
+  }
 
-    deleteSessionMutation.mutate(sessionId, {
-      onError: (err) => alert(`Error: ${err.message}`),
+  const handleDeleteConfirm = () => {
+    if (!sessionToDelete) return
+
+    deleteSessionMutation.mutate(sessionToDelete.id, {
+      onSuccess: () => {
+        setShowDeleteModal(false)
+        setSessionToDelete(null)
+      },
+      onError: (err) => {
+        alert(`Error: ${err.message}`)
+      },
     })
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false)
+    setSessionToDelete(null)
   }
 
   const handleEdit = (session) => {
@@ -105,6 +125,38 @@ export default function ShoppingSessions() {
         isOpen={detailsModalOpen}
         onClose={handleModalClose}
         session={selectedSession}
+      />
+
+      {/* Delete Session Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Shopping Trip"
+        message={
+          sessionToDelete ? (
+            <>
+              <p className="mb-3">
+                Are you sure you want to delete <strong>{sessionToDelete.name}</strong>?
+              </p>
+              <p className="text-sm text-base-content/60 mb-2">
+                This will permanently remove:
+              </p>
+              <ul className="text-sm text-base-content/60 list-disc list-inside space-y-1 mb-3">
+                <li>All purchased items from this trip</li>
+                <li>Shopping history and timestamps</li>
+              </ul>
+              <p className="text-sm font-medium text-warning">
+                ⚠️ This action cannot be undone.
+              </p>
+            </>
+          ) : (
+            'Are you sure you want to delete this shopping trip?'
+          )
+        }
+        confirmText="Delete"
+        severity="danger"
+        isLoading={deleteSessionMutation.isPending}
       />
     </div>
   )
