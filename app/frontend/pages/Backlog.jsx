@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useCatalogItems, useCreateCatalogItem } from '../hooks/queries/useCatalogQueries'
 import ShoppingItem from '../components/shopping/ShoppingItem'
 import ActiveSessionCard from '../components/shopping/ActiveSessionCard'
@@ -19,13 +19,44 @@ import {
   useUncheckItem,
   useDeleteItem,
 } from '../hooks/queries/useShoppingQueries'
-import { Cart, CheckCircle, Clock } from 'iconoir-react'
+import { Cart, CheckCircle, Clock, Plus } from 'iconoir-react'
 import { isWithin24Hours } from '../utils/dateUtils'
 
 export default function Backlog() {
   // UI state (not data state)
   const [openMenuId, setOpenMenuId] = useState(null)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showSearch, setShowSearch] = useState(true)
+  const lastScrollY = useRef(0)
+
+  // Auto-hide search on scroll with debounce to prevent stuttering
+  useEffect(() => {
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+
+          if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+            // Scrolling down & past threshold
+            setShowSearch(false)
+          } else if (currentScrollY < lastScrollY.current) {
+            // Scrolling up
+            setShowSearch(true)
+          }
+
+          lastScrollY.current = currentScrollY
+          ticking = false
+        })
+
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Queries - fetch data with automatic caching
   const { data: activeSession, isLoading: isSessionLoading, error: sessionError } = useActiveSession()
@@ -145,6 +176,17 @@ export default function Backlog() {
     )
   }
 
+  const handleFabClick = () => {
+    setShowSearch(true)
+    // Focus on search input after animation
+    setTimeout(() => {
+      const input = document.querySelector('[placeholder*="Add"]')
+      if (input) {
+        input.focus()
+      }
+    }, 300)
+  }
+
   const groupItemsByCategory = (items) => {
     const categories = {}
     items.forEach(item => {
@@ -216,14 +258,18 @@ export default function Backlog() {
           )}
         </div>
 
-        {/* Search */}
-        <AutocompleteSearch
-          catalogCache={catalogCache}
-          existingItems={[...uncheckedItems, ...checkedItems]}
-          onSelectItem={addItemFromCatalog}
-          onCreateNew={createNewCatalogItem}
-          placeholder={getPlaceholder()}
-        />
+        {/* Search - Auto-hide on scroll */}
+        <div className={`relative transition-all duration-300 ease-in-out ${showSearch ? 'h-8' : 'h-0 overflow-hidden'}`}>
+          <div className="absolute inset-x-0 top-0">
+            <AutocompleteSearch
+              catalogCache={catalogCache}
+              existingItems={[...uncheckedItems, ...checkedItems]}
+              onSelectItem={addItemFromCatalog}
+              onCreateNew={createNewCatalogItem}
+              placeholder={getPlaceholder()}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Active Session Banner */}
@@ -240,21 +286,21 @@ export default function Backlog() {
 
       {/* Start Shopping Button (when no active session) */}
       {!activeSession && uncheckedItems.length > 0 && (
-        <div className="p-4 bg-base-200 border-b border-base-300">
+        <div className="px-4 py-3 bg-base-200 border-b border-base-300">
           <button
             onClick={startSession}
-            className="w-full btn btn-primary h-12 gap-2"
+            className="w-full btn btn-primary btn-sm gap-2"
           >
-            <Cart width="20px" height="20px" strokeWidth={2} />
+            <Cart width="18px" height="18px" strokeWidth={2} />
             Start Shopping Trip
           </button>
 
           {recentSession && (
             <button
               onClick={continueRecentSession}
-              className="w-full btn btn-outline btn-primary gap-2 mt-2 h-10"
+              className="w-full btn btn-outline btn-primary btn-sm gap-2 mt-2"
             >
-              <Clock width="18px" height="18px" strokeWidth={2} />
+              <Clock width="16px" height="16px" strokeWidth={2} />
               Continue: {recentSession.name}
             </button>
           )}
@@ -360,6 +406,17 @@ export default function Backlog() {
           onKeepItems={handleKeepItems}
           onRemoveItems={handleRemoveItems}
         />
+      )}
+
+      {/* Floating Action Button - Show when search is hidden */}
+      {!showSearch && (
+        <button
+          onClick={handleFabClick}
+          className="lg:hidden fixed bottom-20 right-4 z-30 btn btn-circle btn-accent btn-lg shadow-lg hover:shadow-xl"
+          aria-label="Add item"
+        >
+          <Plus width="24px" height="24px" strokeWidth={2} />
+        </button>
       )}
     </div>
   )
