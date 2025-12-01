@@ -3,58 +3,61 @@ import { formatTimeAgo, isSessionStale } from '../../utils/dateUtils'
 import { CheckCircle, Xmark, Clock } from 'iconoir-react'
 
 /**
- * Active session information card
- * Displays session name, start time, stale warning (if applicable), and action buttons (Finish/Cancel)
+ * Mobile-first active session banner
+ * Compact design with essential info and quick actions
  */
-export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, onCancel, doneButtonRef }) {
+export default function ActiveSessionCard({ session, hasCheckedItems, onFinish, onCancel }) {
   const isStale = isSessionStale(session.created_at)
 
   return (
-    <div className="mb-4 bg-primary/10 border border-primary/30 rounded-lg px-3 py-2">
-      {/* Line 1 - Badge */}
-      <div className="mb-1">
-        <span className="badge badge-primary badge-xs">SHOPPING NOW</span>
-      </div>
+    <div className="bg-primary/10 border-b-2 border-primary/30 p-3">
+      <div className="flex items-center justify-between gap-3">
+        {/* Session Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="badge badge-primary badge-sm">SHOPPING</span>
+            {isStale && (
+              <span className="badge badge-warning badge-sm gap-1">
+                <Clock width="12px" height="12px" strokeWidth={2} />
+                Old
+              </span>
+            )}
+          </div>
+          <div className="text-sm font-medium text-base-content truncate">
+            {session.name}
+          </div>
+          <div className="text-xs text-base-content/60">
+            Started {formatTimeAgo(session.created_at)}
+          </div>
+        </div>
 
-      {/* Line 2 - Information */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className="font-medium truncate">{session.name}</span>
-        <span className="text-base-content/50">·</span>
-        <span className="text-base-content/60 text-xs whitespace-nowrap">
-          {formatTimeAgo(session.created_at)}
-        </span>
-        {isStale && (
-          <>
-            <span className="text-base-content/50">·</span>
-            <span className="text-warning text-xs flex items-center gap-1">
-              <Clock width="12px" height="12px" strokeWidth={2} />
-              Stale
-            </span>
-          </>
-        )}
-      </div>
-
-      {/* Line 3 - Actions */}
-      <div className="flex mt-2 justify-end">
-        <div className="join">
+        {/* Actions */}
+        <div className="flex gap-2 shrink-0">
           <button
-            ref={doneButtonRef}
             onClick={onFinish}
             disabled={!hasCheckedItems}
-            className="btn btn-primary btn-xs gap-1 join-item"
+            className="btn btn-primary btn-sm gap-1"
+            title={hasCheckedItems ? 'Finish shopping' : 'Check off items first'}
           >
-            <CheckCircle width="14px" height="14px" strokeWidth={2} />
+            <CheckCircle width="16px" height="16px" strokeWidth={2} />
             Done
           </button>
           <button
             onClick={onCancel}
-            className="btn btn-soft btn-xs gap-1 join-item"
+            className="btn btn-ghost btn-sm"
+            title="Cancel this shopping trip"
           >
-            <Xmark width="14px" height="14px" strokeWidth={2} />
-            Cancel
+            <Xmark width="18px" height="18px" strokeWidth={2} />
           </button>
         </div>
       </div>
+
+      {/* Helpful message when can't finish */}
+      {!hasCheckedItems && (
+        <div className="mt-2 text-xs text-base-content/60 italic">
+          Check off items as you add them to your cart, then tap Done when finished
+        </div>
+      )}
     </div>
   )
 }
@@ -68,5 +71,4 @@ ActiveSessionCard.propTypes = {
   hasCheckedItems: PropTypes.bool.isRequired,
   onFinish: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  doneButtonRef: PropTypes.object,
 }

@@ -13,6 +13,7 @@ export default [
       'log/**',
       'vendor/**',
       'app/assets/**',
+      'app/frontend/dev-dist/**',
     ],
   },
   js.configs.recommended,

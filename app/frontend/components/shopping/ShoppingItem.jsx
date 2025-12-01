@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import ItemMenu from './ItemMenu'
 
 /**
- * Shopping item card with checkbox, name, category, description, and menu
- * Supports both unchecked (default) and checked (completed) states
+ * Mobile-first shopping item with large touch targets
+ * Simplified design for better mobile UX
  */
 export default function ShoppingItem({
   item,
@@ -14,60 +14,49 @@ export default function ShoppingItem({
   showCategoryLabel,
   openMenuId,
   onMenuToggle,
-  isLoading,
-  isTransitioningOut,
-  isTransitioningIn,
 }) {
-  const paddingClasses = isChecked ? 'py-1.5 px-2' : 'py-2 px-3'
-  const opacityClasses = isChecked ? 'ghost' : ''
-  const loadingClasses = isLoading ? 'item-loading pointer-events-none' : ''
-  const transitionOutClasses = isTransitioningOut ? 'item-transition-out' : ''
-  const transitionInClasses = isTransitioningIn ? 'item-transition-in' : ''
-
   return (
-    <li
-      className={`flex items-center gap-3 transition-colors ${paddingClasses} ${opacityClasses} ${loadingClasses} ${transitionOutClasses} ${transitionInClasses}`}
-    >
+    <li className={`flex items-center gap-3 py-3 bg-base-100 active:bg-base-200 transition-colors ${isChecked ? 'opacity-60' : ''}`}>
+      {/* Checkbox - Large touch target */}
       {showCheckbox && (
-        <>
-          {isLoading ? (
-            <div className="shrink-0">
-              <span className={`loading loading-spinner ${isChecked ? 'loading-xs' : 'loading-sm'} text-primary`}></span>
-            </div>
-          ) : onToggleCheck ? (
+        <label className="flex items-center justify-center shrink-0 cursor-pointer">
+          {onToggleCheck ? (
             <input
               type="checkbox"
               checked={isChecked}
               onChange={onToggleCheck}
-              className={`checkbox ${isChecked ? 'checkbox-xs' : 'checkbox-sm'} checkbox-primary shrink-0`}
+              className={`checkbox checkbox-primary cursor-pointer ${isChecked ? 'checkbox-sm' : 'checkbox-md'}`}
             />
           ) : (
-            <div className="tooltip tooltip-right shrink-0" data-tip="Start a shopping trip to check off items">
+            <div className="relative group">
               <input
                 type="checkbox"
                 checked={isChecked}
                 disabled
-                className={`checkbox ${isChecked ? 'checkbox-xs' : 'checkbox-sm'} checkbox-primary opacity-30`}
+                className="checkbox checkbox-md checkbox-primary opacity-30"
               />
+              <div className="hidden group-active:block absolute -top-16 left-1/2 -translate-x-1/2 bg-base-300 text-base-content text-xs px-3 py-2 rounded-lg whitespace-nowrap shadow-lg z-50">
+                Start a shopping trip to check off items
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-base-300"></div>
+              </div>
             </div>
           )}
-        </>
+        </label>
       )}
 
+      {/* Item Content */}
       <div className="flex-1 min-w-0">
-        <div className={`${isChecked ? 'text-sm text-base-content/60 line-through truncate' : 'font-semibold text-base-content'}`}>
+        <div className={`${isChecked ? 'text-sm text-base-content/60 line-through' : 'text-base font-medium text-base-content'}`}>
           {item.name}
         </div>
 
-        {(item.category || item.description) && (
-          <div className={`${isChecked ? 'text-xs text-base-content/40' : 'text-sm text-base-content/70 mt-0.5'} ${isChecked ? 'truncate' : ''}`}>
+        {(item.category || item.description) && !isChecked && (
+          <div className="text-sm text-base-content/60 mt-1">
             {showCategoryLabel ? (
-              // Show description only if category grouping is active
               item.description
             ) : (
-              // Show both category and description if not grouped
               <>
-                {item.category && item.category.name}
+                {item.category?.name}
                 {item.category && item.description && ' • '}
                 {item.description}
               </>
@@ -76,23 +65,25 @@ export default function ShoppingItem({
         )}
 
         {item.notes && !isChecked && (
-          <div className="text-sm text-base-content/70 mt-0.5 italic">{item.notes}</div>
+          <div className="text-sm text-base-content/60 mt-1 italic">{item.notes}</div>
         )}
       </div>
 
-      <ItemMenu
-        isOpen={openMenuId === item.id}
-        onToggle={() => onMenuToggle(item.id)}
-        onEdit={() => {
-          onMenuToggle(null)
-          // TODO: Implement edit functionality
-          alert('Edit functionality coming soon!')
-        }}
-        onDelete={() => {
-          onMenuToggle(null)
-          onDelete(item.id)
-        }}
-      />
+      {/* Menu - Large touch target */}
+      <div className="shrink-0">
+        <ItemMenu
+          isOpen={openMenuId === item.id}
+          onToggle={() => onMenuToggle(item.id)}
+          onEdit={() => {
+            onMenuToggle(null)
+            alert('Edit functionality coming soon!')
+          }}
+          onDelete={() => {
+            onMenuToggle(null)
+            onDelete(item.id)
+          }}
+        />
+      </div>
     </li>
   )
 }
@@ -115,9 +106,6 @@ ShoppingItem.propTypes = {
   showCategoryLabel: PropTypes.bool,
   openMenuId: PropTypes.number,
   onMenuToggle: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool,
-  isTransitioningOut: PropTypes.bool,
-  isTransitioningIn: PropTypes.bool,
 }
 
 ShoppingItem.defaultProps = {
@@ -126,9 +114,4 @@ ShoppingItem.defaultProps = {
   onToggleCheck: null,
   showCategoryLabel: false,
   openMenuId: null,
-  isFirstInGroup: false,
-  isLastInGroup: false,
-  isLoading: false,
-  isTransitioningOut: false,
-  isTransitioningIn: false,
 }
