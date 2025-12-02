@@ -112,14 +112,12 @@ Seeding is optional. You can start with zero catalog items and build your own fr
 
 ## Development
 
-See [CLAUDE.md](CLAUDE.md) for development setup, architecture details, and contribution guidelines.
-
 ```bash
 # Quick start for development
 bundle install && npm install
 bin/rails db:setup
 bin/rails user:create EMAIL=dev@example.com PASSWORD=password
-bin/dev  # Starts Rails + Vite
+foreman start -f Procfile.dev  # Starts Rails + Vite
 ```
 
 ## Tech Stack
