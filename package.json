@@ -31,7 +31,7 @@
     "@tanstack/react-query-devtools": "^5.90.2",
     "@tanstack/react-query-persist-client": "^5.90.13",
     "@tanstack/react-table": "^8.21.3",
-    "daisyui": "^5.5.5",
+    "daisyui": "^5.5.8",
     "fuse.js": "^7.1.0",
     "iconoir-react": "^7.11.0",
     "idb-keyval": "^6.2.2",
