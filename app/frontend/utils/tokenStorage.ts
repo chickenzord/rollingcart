@@ -8,26 +8,26 @@ const REFRESH_TOKEN_KEY = 'auth_refresh_token'
 
 /**
  * Get the current access token
- * @returns {string|null} The access token or null if not found
+ * @returns The access token or null if not found
  */
-export function getAccessToken() {
+export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
 }
 
 /**
  * Get the current refresh token
- * @returns {string|null} The refresh token or null if not found
+ * @returns The refresh token or null if not found
  */
-export function getRefreshToken() {
+export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
 /**
  * Store both access and refresh tokens
- * @param {string} accessToken - The JWT access token
- * @param {string} refreshToken - The refresh token
+ * @param accessToken - The JWT access token
+ * @param refreshToken - The refresh token
  */
-export function setTokens(accessToken, refreshToken) {
+export function setTokens(accessToken: string, refreshToken: string): void {
   if (accessToken) {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
   }
@@ -40,15 +40,15 @@ export function setTokens(accessToken, refreshToken) {
  * Clear all authentication tokens
  * Called on logout or when refresh fails
  */
-export function clearTokens() {
+export function clearTokens(): void {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
   localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
 /**
  * Check if valid tokens exist
- * @returns {boolean} True if both tokens are present
+ * @returns True if both tokens are present
  */
-export function hasValidTokens() {
+export function hasValidTokens(): boolean {
   return !!(getAccessToken() && getRefreshToken())
 }
