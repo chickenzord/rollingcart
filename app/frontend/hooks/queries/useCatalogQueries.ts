@@ -3,15 +3,53 @@
  * Provides reusable TanStack Query hooks for catalog operations
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useOfflineMutation } from '../useOfflineMutation'
-import * as catalogService from '../../services/catalogService'
+import { useQuery, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query'
+import { useOfflineMutation } from '@/hooks/useOfflineMutation'
+import * as catalogService from '@/services/catalogService'
+import type { CatalogCategory, CatalogItem } from '@/services/catalogService'
+
+interface CreateCategoryVariables {
+  name: string
+  description?: string
+}
+
+interface UpdateCategoryVariables {
+  categoryId: number
+  category: {
+    name?: string
+    description?: string
+  }
+}
+
+interface CreateItemVariables {
+  item: {
+    name: string
+    category_id?: number
+    description?: string
+  }
+  options?: {
+    addToShopping?: boolean
+  }
+}
+
+interface UpdateItemVariables {
+  itemId: number
+  item: {
+    name?: string
+    category_id?: number
+    description?: string
+  }
+}
+
+interface CatalogItemsParams {
+  includeCategory?: boolean
+}
 
 /**
  * Fetch all catalog categories
- * @returns {UseQueryResult} Query result with categories array
+ * @returns Query result with categories array
  */
-export function useCategories() {
+export function useCategories(): UseQueryResult<CatalogCategory[], Error> {
   return useQuery({
     queryKey: ['catalog', 'categories'],
     queryFn: catalogService.getCategories,
@@ -20,10 +58,10 @@ export function useCategories() {
 
 /**
  * Fetch a single category by ID
- * @param {string|number} categoryId - The category ID
- * @returns {UseQueryResult} Query result with category object
+ * @param categoryId - The category ID
+ * @returns Query result with category object
  */
-export function useCategory(categoryId) {
+export function useCategory(categoryId: string | number): UseQueryResult<CatalogCategory, Error> {
   return useQuery({
     queryKey: ['catalog', 'categories', categoryId],
     queryFn: () => catalogService.getCategory(categoryId),
@@ -33,9 +71,9 @@ export function useCategory(categoryId) {
 
 /**
  * Create a new catalog category
- * @returns {UseMutationResult} Mutation for creating categories
+ * @returns Mutation for creating categories
  */
-export function useCreateCategory() {
+export function useCreateCategory(): UseMutationResult<CatalogCategory, Error, CreateCategoryVariables> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -48,9 +86,9 @@ export function useCreateCategory() {
 
 /**
  * Update a catalog category
- * @returns {UseMutationResult} Mutation for updating categories
+ * @returns Mutation for updating categories
  */
-export function useUpdateCategory() {
+export function useUpdateCategory(): UseMutationResult<CatalogCategory, Error, UpdateCategoryVariables> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -65,10 +103,10 @@ export function useUpdateCategory() {
 
 /**
  * Fetch items for a specific category
- * @param {string|number} categoryId - The category ID
- * @returns {UseQueryResult} Query result with items array
+ * @param categoryId - The category ID
+ * @returns Query result with items array
  */
-export function useCategoryItems(categoryId) {
+export function useCategoryItems(categoryId: string | number): UseQueryResult<CatalogItem[], Error> {
   return useQuery({
     queryKey: ['catalog', 'categories', categoryId, 'items'],
     queryFn: () => catalogService.getCategoryItems(categoryId),
@@ -78,11 +116,10 @@ export function useCategoryItems(categoryId) {
 
 /**
  * Fetch all catalog items (with optional filters)
- * @param {Object} params - Query parameters
- * @param {boolean} params.includeCategory - Whether to include category data
- * @returns {UseQueryResult} Query result with items array
+ * @param params - Query parameters
+ * @returns Query result with items array
  */
-export function useCatalogItems(params = {}) {
+export function useCatalogItems(params: CatalogItemsParams = {}): UseQueryResult<CatalogItem[], Error> {
   return useQuery({
     queryKey: ['catalog', 'items', params],
     queryFn: () => catalogService.getItems(params),
@@ -91,9 +128,9 @@ export function useCatalogItems(params = {}) {
 
 /**
  * Create a new catalog item
- * @returns {UseMutationResult} Mutation for creating items
+ * @returns Mutation for creating items
  */
-export function useCreateCatalogItem() {
+export function useCreateCatalogItem(): UseMutationResult<CatalogItem, Error, CreateItemVariables> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -119,9 +156,9 @@ export function useCreateCatalogItem() {
 
 /**
  * Update a catalog item
- * @returns {UseMutationResult} Mutation for updating items
+ * @returns Mutation for updating items
  */
-export function useUpdateCatalogItem() {
+export function useUpdateCatalogItem(): UseMutationResult<CatalogItem, Error, UpdateItemVariables> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -136,10 +173,10 @@ export function useUpdateCatalogItem() {
 
 /**
  * Fetch shopping sessions that contain a catalog item
- * @param {string|number} itemId - The catalog item ID
- * @returns {UseQueryResult} Query result with sessions array
+ * @param itemId - The catalog item ID
+ * @returns Query result with sessions array
  */
-export function useItemShoppingSessions(itemId) {
+export function useItemShoppingSessions(itemId: number): UseQueryResult<unknown[], Error> {
   return useQuery({
     queryKey: ['catalog', 'items', itemId, 'shopping_sessions'],
     queryFn: () => catalogService.getItemShoppingSessions(itemId),
@@ -149,9 +186,9 @@ export function useItemShoppingSessions(itemId) {
 
 /**
  * Delete a catalog item
- * @returns {UseMutationResult} Mutation for deleting items
+ * @returns Mutation for deleting items
  */
-export function useDeleteCatalogItem() {
+export function useDeleteCatalogItem(): UseMutationResult<void, Error, number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -168,9 +205,9 @@ export function useDeleteCatalogItem() {
 
 /**
  * Delete a catalog category
- * @returns {UseMutationResult} Mutation for deleting categories
+ * @returns Mutation for deleting categories
  */
-export function useDeleteCategory() {
+export function useDeleteCategory(): UseMutationResult<void, Error, number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
