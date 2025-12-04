@@ -61,7 +61,7 @@ jobs:
         run: npm ci
 
       - name: Lint frontend code
-        run: npx eslint "app/frontend/**/*.{js,jsx,ts,tsx}" --format github
+        run: npm run lint
 
       - name: TypeScript type check
         run: npm run typecheck
