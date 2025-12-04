@@ -4,16 +4,27 @@
  * Token management is internal - components don't need to handle tokens
  */
 
-import { setTokens, clearTokens, getAccessToken } from '../utils/tokenStorage'
+import { setTokens, clearTokens, getAccessToken } from '@/utils/tokenStorage'
+
+interface LoginResponse {
+  access_token: string
+  refresh_token: string
+}
+
+export interface User {
+  id: number
+  email: string
+  created_at: string
+}
 
 /**
  * Login with email and password
  * Stores tokens internally
- * @param {string} email
- * @param {string} password
- * @returns {Promise<Object>} User data
+ * @param email - User email
+ * @param password - User password
+ * @returns User data
  */
-export async function login(email, password) {
+export async function login(email: string, password: string): Promise<User> {
   const response = await fetch('/auth/login', {
     method: 'POST',
     headers: {
@@ -28,7 +39,7 @@ export async function login(email, password) {
     throw new Error(error.error || 'Login failed')
   }
 
-  const data = await response.json()
+  const data: LoginResponse = await response.json()
 
   // Extract and store both tokens
   // Rodauth with jwt_refresh returns: { access_token, refresh_token }
@@ -45,9 +56,9 @@ export async function login(email, password) {
 /**
  * Get current user details
  * Uses token from storage internally
- * @returns {Promise<Object>} User data
+ * @returns User data
  */
-export async function getMe() {
+export async function getMe(): Promise<User> {
   const token = getAccessToken()
 
   if (!token) {
@@ -73,7 +84,7 @@ export async function getMe() {
  * Logout current user
  * Clears tokens from storage
  */
-export async function logout() {
+export async function logout(): Promise<void> {
   const token = getAccessToken()
 
   if (token) {

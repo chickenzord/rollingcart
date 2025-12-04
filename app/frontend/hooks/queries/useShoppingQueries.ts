@@ -3,15 +3,21 @@
  * Provides reusable TanStack Query hooks for shopping operations
  */
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useOfflineMutation } from '../useOfflineMutation'
-import * as shoppingService from '../../services/shoppingService'
+import { useQuery, useQueryClient, UseQueryResult, UseMutationResult } from '@tanstack/react-query'
+import { useOfflineMutation } from '@/hooks/useOfflineMutation'
+import * as shoppingService from '@/services/shoppingService'
+import type { ShoppingSession, ShoppingItem } from '@/services/shoppingService'
+
+interface ShoppingItemsParams {
+  isDone?: boolean
+  forSession?: string | number
+}
 
 /**
  * Fetch all shopping sessions
- * @returns {UseQueryResult} Query result with sessions array
+ * @returns Query result with sessions array
  */
-export function useSessions() {
+export function useSessions(): UseQueryResult<ShoppingSession[], Error> {
   return useQuery({
     queryKey: ['shopping', 'sessions'],
     queryFn: shoppingService.getAllSessions,
@@ -20,9 +26,9 @@ export function useSessions() {
 
 /**
  * Fetch the active shopping session
- * @returns {UseQueryResult} Query result with active session or null
+ * @returns Query result with active session or null
  */
-export function useActiveSession() {
+export function useActiveSession(): UseQueryResult<ShoppingSession | null, Error> {
   return useQuery({
     queryKey: ['shopping', 'session', 'active'],
     queryFn: shoppingService.getActiveSession,
@@ -31,12 +37,10 @@ export function useActiveSession() {
 
 /**
  * Fetch shopping items with filters
- * @param {Object} params - Query parameters
- * @param {boolean} params.isDone - Filter by done status
- * @param {number} params.forSession - Filter by session ID
- * @returns {UseQueryResult} Query result with items array
+ * @param params - Query parameters
+ * @returns Query result with items array
  */
-export function useShoppingItems(params = {}) {
+export function useShoppingItems(params: ShoppingItemsParams = {}): UseQueryResult<ShoppingItem[], Error> {
   return useQuery({
     queryKey: ['shopping', 'items', params],
     queryFn: () => shoppingService.getItems(params),
@@ -45,9 +49,9 @@ export function useShoppingItems(params = {}) {
 
 /**
  * Create a new shopping session
- * @returns {UseMutationResult} Mutation for creating sessions
+ * @returns Mutation for creating sessions
  */
-export function useCreateSession() {
+export function useCreateSession(): UseMutationResult<ShoppingSession, Error, void> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -62,9 +66,9 @@ export function useCreateSession() {
 
 /**
  * Finish a shopping session
- * @returns {UseMutationResult} Mutation for finishing sessions
+ * @returns Mutation for finishing sessions
  */
-export function useFinishSession() {
+export function useFinishSession(): UseMutationResult<ShoppingSession, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -80,9 +84,9 @@ export function useFinishSession() {
 
 /**
  * Reactivate a shopping session
- * @returns {UseMutationResult} Mutation for reactivating sessions
+ * @returns Mutation for reactivating sessions
  */
-export function useReactivateSession() {
+export function useReactivateSession(): UseMutationResult<ShoppingSession, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -98,9 +102,9 @@ export function useReactivateSession() {
 
 /**
  * Delete a shopping session
- * @returns {UseMutationResult} Mutation for deleting sessions
+ * @returns Mutation for deleting sessions
  */
-export function useDeleteSession() {
+export function useDeleteSession(): UseMutationResult<void, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -116,9 +120,9 @@ export function useDeleteSession() {
 
 /**
  * Uncheck all items in a session (return to backlog)
- * @returns {UseMutationResult} Mutation for unchecking session items
+ * @returns Mutation for unchecking session items
  */
-export function useUncheckSessionItems() {
+export function useUncheckSessionItems(): UseMutationResult<void, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -132,9 +136,9 @@ export function useUncheckSessionItems() {
 
 /**
  * Delete all items in a session
- * @returns {UseMutationResult} Mutation for deleting session items
+ * @returns Mutation for deleting session items
  */
-export function useDeleteSessionItems() {
+export function useDeleteSessionItems(): UseMutationResult<void, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -148,9 +152,9 @@ export function useDeleteSessionItems() {
 
 /**
  * Add item to shopping backlog
- * @returns {UseMutationResult} Mutation for adding items
+ * @returns Mutation for adding items
  */
-export function useAddItem() {
+export function useAddItem(): UseMutationResult<ShoppingItem, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -164,9 +168,9 @@ export function useAddItem() {
 
 /**
  * Check an item (mark as added to cart/session)
- * @returns {UseMutationResult} Mutation for checking items
+ * @returns Mutation for checking items
  */
-export function useCheckItem() {
+export function useCheckItem(): UseMutationResult<ShoppingItem, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -180,9 +184,9 @@ export function useCheckItem() {
 
 /**
  * Uncheck an item (remove from cart/session)
- * @returns {UseMutationResult} Mutation for unchecking items
+ * @returns Mutation for unchecking items
  */
-export function useUncheckItem() {
+export function useUncheckItem(): UseMutationResult<ShoppingItem, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({
@@ -196,9 +200,9 @@ export function useUncheckItem() {
 
 /**
  * Delete a shopping item
- * @returns {UseMutationResult} Mutation for deleting items
+ * @returns Mutation for deleting items
  */
-export function useDeleteItem() {
+export function useDeleteItem(): UseMutationResult<void, Error, string | number> {
   const queryClient = useQueryClient()
 
   return useOfflineMutation({

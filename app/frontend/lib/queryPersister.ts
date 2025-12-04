@@ -1,14 +1,22 @@
 import { get, set, del } from 'idb-keyval'
+import type { PersistedClient, Persister } from '@tanstack/react-query-persist-client'
 
 const IDB_KEY = 'rollingcart-query-cache'
 const CACHE_VERSION = 1 // Increment to invalidate old caches
+
+interface StoredCache {
+  version: number
+  timestamp: number
+  buster: string
+  clientState: PersistedClient['clientState']
+}
 
 /**
  * Custom persister for TanStack Query using IndexedDB
  * Stores dehydrated query cache with versioning and filtering
  */
-export const queryPersister = {
-  persistClient: async (persistedClient) => {
+export const queryPersister: Persister = {
+  persistClient: async (persistedClient: PersistedClient) => {
     try {
       // Filter out auth/user queries from the dehydrated state
       const filteredQueries = persistedClient.clientState.queries.filter(query => {
@@ -20,7 +28,7 @@ export const queryPersister = {
         return !hasAuth && query.state.status === 'success'
       })
 
-      const filteredClient = {
+      const filteredClient: PersistedClient = {
         ...persistedClient,
         clientState: {
           ...persistedClient.clientState,
@@ -28,20 +36,22 @@ export const queryPersister = {
         },
       }
 
-      await set(IDB_KEY, {
+      const storedCache: StoredCache = {
         version: CACHE_VERSION,
         timestamp: Date.now(),
         buster: persistedClient.buster,
         clientState: filteredClient.clientState,
-      })
+      }
+
+      await set(IDB_KEY, storedCache)
     } catch (error) {
       console.error('Failed to persist client:', error)
     }
   },
 
-  restoreClient: async () => {
+  restoreClient: async (): Promise<PersistedClient | undefined> => {
     try {
-      const stored = await get(IDB_KEY)
+      const stored = await get<StoredCache>(IDB_KEY)
 
       // Version check - invalidate if mismatched or too old
       if (!stored || stored.version !== CACHE_VERSION) {
@@ -59,6 +69,7 @@ export const queryPersister = {
 
       return {
         buster: stored.buster,
+        timestamp: stored.timestamp,
         clientState: stored.clientState,
       }
     } catch (error) {

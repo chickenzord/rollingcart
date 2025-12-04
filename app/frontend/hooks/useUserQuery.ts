@@ -3,19 +3,19 @@
  * Uses TanStack Query for caching and automatic refetching
  */
 
-import { useQuery } from '@tanstack/react-query'
-import { getMe } from '../services/authService'
-import { hasValidTokens } from '../utils/tokenStorage'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
+import { getMe, type User } from '@/services/authService'
+import { hasValidTokens } from '@/utils/tokenStorage'
 
-export const USER_QUERY_KEY = ['user', 'me']
+export const USER_QUERY_KEY = ['user', 'me'] as const
 
 /**
  * Fetch current user data from /api/v1/me
  * Only runs if valid tokens exist in storage
  *
- * @returns {UseQueryResult} Query result with user data, loading, error states
+ * @returns Query result with user data, loading, error states
  */
-export function useUserQuery() {
+export function useUserQuery(): UseQueryResult<User, Error> {
   return useQuery({
     queryKey: USER_QUERY_KEY,
     queryFn: getMe,

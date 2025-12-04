@@ -4,13 +4,13 @@
 
 /**
  * Format a date as a relative time string
- * @param {string} dateString - ISO date string
- * @returns {string} Relative time (e.g., "2 hours ago", "just now")
+ * @param dateString - ISO date string
+ * @returns Relative time (e.g., "2 hours ago", "just now")
  */
-export function formatTimeAgo(dateString) {
+export function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
-  const seconds = Math.floor((now - date) / 1000)
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
   if (seconds < 60) return 'just now'
   if (seconds < 3600) {
@@ -31,25 +31,25 @@ export function formatTimeAgo(dateString) {
 
 /**
  * Check if a date is within the last 24 hours
- * @param {string} dateString - ISO date string
- * @returns {boolean} True if within 24 hours
+ * @param dateString - ISO date string
+ * @returns True if within 24 hours
  */
-export function isWithin24Hours(dateString) {
+export function isWithin24Hours(dateString: string): boolean {
   const date = new Date(dateString)
   const now = new Date()
-  const hoursDiff = (now - date) / (1000 * 60 * 60) // Convert to hours
+  const hoursDiff = (now.getTime() - date.getTime()) / (1000 * 60 * 60) // Convert to hours
   return hoursDiff <= 24
 }
 
 /**
  * Check if a session is stale (inactive for too long)
- * @param {string} dateString - ISO date string (created_at or updated_at)
- * @param {number} hoursThreshold - Hours after which session is considered stale (default: 3)
- * @returns {boolean} True if session is stale
+ * @param dateString - ISO date string (created_at or updated_at)
+ * @param hoursThreshold - Hours after which session is considered stale (default: 3)
+ * @returns True if session is stale
  */
-export function isSessionStale(dateString, hoursThreshold = 3) {
+export function isSessionStale(dateString: string, hoursThreshold: number = 3): boolean {
   const date = new Date(dateString)
   const now = new Date()
-  const hoursDiff = (now - date) / (1000 * 60 * 60) // Convert to hours
+  const hoursDiff = (now.getTime() - date.getTime()) / (1000 * 60 * 60) // Convert to hours
   return hoursDiff >= hoursThreshold
 }

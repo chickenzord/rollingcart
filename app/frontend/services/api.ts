@@ -5,8 +5,11 @@
 
 import { getAccessToken, getRefreshToken, setTokens, clearTokens } from '../utils/tokenStorage'
 
-class APIError extends Error {
-  constructor(message, status, response) {
+export class APIError extends Error {
+  status: number
+  response: unknown
+
+  constructor(message: string, status: number, response: unknown) {
     super(message)
     this.name = 'APIError'
     this.status = status
@@ -14,15 +17,20 @@ class APIError extends Error {
   }
 }
 
+interface RefreshTokenResponse {
+  access_token: string
+  refresh_token: string
+}
+
 // Flag to prevent infinite refresh loops
 let isRefreshing = false
-let refreshPromise = null
+let refreshPromise: Promise<boolean> | null = null
 
 /**
  * Refresh the access token using the refresh token
- * @returns {Promise<boolean>} True if refresh successful, false otherwise
+ * @returns True if refresh successful, false otherwise
  */
-async function refreshAccessToken() {
+async function refreshAccessToken(): Promise<boolean> {
   // If already refreshing, wait for that promise
   if (isRefreshing && refreshPromise) {
     return refreshPromise
@@ -56,7 +64,7 @@ async function refreshAccessToken() {
         return false
       }
 
-      const data = await response.json()
+      const data: RefreshTokenResponse = await response.json()
 
       // Store new tokens
       setTokens(data.access_token, data.refresh_token)
@@ -77,13 +85,17 @@ async function refreshAccessToken() {
 /**
  * Make an authenticated API request
  * Automatically handles token refresh on 401 errors
- * @param {string} url - The API endpoint
- * @param {Object} options - Fetch options
- * @param {boolean} isRetry - Internal flag to prevent infinite retry loops
- * @returns {Promise<any>} - Response data
+ * @param url - The API endpoint
+ * @param options - Fetch options
+ * @param isRetry - Internal flag to prevent infinite retry loops
+ * @returns Response data
  */
-export async function apiRequest(url, options = {}, isRetry = false) {
-  const headers = {
+export async function apiRequest<T = unknown>(
+  url: string,
+  options: RequestInit = {},
+  isRetry = false,
+): Promise<T> {
+  const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     ...options.headers,
@@ -102,7 +114,7 @@ export async function apiRequest(url, options = {}, isRetry = false) {
 
   // Handle 204 No Content
   if (response.status === 204) {
-    return null
+    return null as T
   }
 
   const data = await response.json().catch(() => null)
@@ -113,7 +125,7 @@ export async function apiRequest(url, options = {}, isRetry = false) {
 
     if (refreshed) {
       // Retry the original request with new token
-      return apiRequest(url, options, true)
+      return apiRequest<T>(url, options, true)
     } else {
       // Refresh failed - clear tokens and throw
       // This will cause AuthContext to detect no tokens and redirect to login
@@ -133,21 +145,21 @@ export async function apiRequest(url, options = {}, isRetry = false) {
     )
   }
 
-  return data
+  return data as T
 }
 
 /**
  * Make a GET request
  */
-export async function get(url) {
-  return apiRequest(url, { method: 'GET' })
+export async function get<T = unknown>(url: string): Promise<T> {
+  return apiRequest<T>(url, { method: 'GET' })
 }
 
 /**
  * Make a POST request
  */
-export async function post(url, body) {
-  return apiRequest(
+export async function post<T = unknown>(url: string, body?: unknown): Promise<T> {
+  return apiRequest<T>(
     url,
     {
       method: 'POST',
@@ -159,8 +171,8 @@ export async function post(url, body) {
 /**
  * Make a PATCH request
  */
-export async function patch(url, body) {
-  return apiRequest(
+export async function patch<T = unknown>(url: string, body?: unknown): Promise<T> {
+  return apiRequest<T>(
     url,
     {
       method: 'PATCH',
@@ -172,6 +184,6 @@ export async function patch(url, body) {
 /**
  * Make a DELETE request
  */
-export async function del(url) {
-  return apiRequest(url, { method: 'DELETE' })
+export async function del<T = unknown>(url: string): Promise<T> {
+  return apiRequest<T>(url, { method: 'DELETE' })
 }

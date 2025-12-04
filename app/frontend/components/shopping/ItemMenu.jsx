@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
  * Three-dot menu dropdown for shopping items
  * Displays Edit and Delete options
  */
-export default function ItemMenu({ isOpen, onToggle, onEdit, onDelete }) {
+export default function ItemMenu({ isOpen, onToggle, _onEdit, onDelete }) {
   return (
     <div className="dropdown dropdown-end shrink-0">
       <button
