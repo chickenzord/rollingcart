@@ -14,7 +14,15 @@ Most shopping apps let you create multiple lists. RollingCart takes a different 
 
 Read the [User Guide](USER_GUIDE.md) to understand the full workflow and design philosophy.
 
-**Live demo coming soon.**
+## Try It Out
+
+**Demo instance:** https://rollingcart.mdgrd.net
+
+Test accounts:
+- `demo01@example.com` / `RollingCartDemo` (has some pre-seeded catalog items)
+- `demo02@example.com` / `RollingCartDemo` (starts with empty catalog)
+
+*Note: Demo instance has no uptime guarantee and data might be reset anytime*
 
 ## Features
 
