@@ -65,6 +65,14 @@ export function initSentry(): boolean {
         // }),
       ],
 
+      // Transport options
+      transport: Sentry.makeFetchTransport,
+      transportOptions: {
+        fetchOptions: {
+          keepalive: true,
+        }
+      },
+
       // Performance Monitoring
       tracesSampleRate: config.environment === 'production' ? 0.1 : 1.0, // 10% in prod, 100% in dev
 
@@ -131,7 +139,7 @@ export function captureException(error: Error, context?: Record<string, unknown>
   if (context) {
     Sentry.withScope((scope) => {
       Object.entries(context).forEach(([key, value]) => {
-        scope.setContext(key, value)
+        scope.setContext(key, value as Record<string, unknown>)
       })
       Sentry.captureException(error)
     })
