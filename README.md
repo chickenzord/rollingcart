@@ -106,6 +106,24 @@ Seeding is optional. You can start with zero catalog items and build your own fr
 | `CORS_ORIGINS`     | Allowed CORS origins      | `http://localhost:3000`      |
 | `RAILS_LOG_LEVEL`  | Log verbosity             | `info`                       |
 
+**Error tracking (optional):**
+
+| Variable              | Description                                    | Default      |
+| --------------------- | ---------------------------------------------- | ------------ |
+| `SENTRY_DSN_UI`       | Sentry DSN for frontend errors                 | (disabled)   |
+| `SENTRY_DSN_API`      | Sentry DSN for backend errors (not impl. yet)  | (disabled)   |
+| `SENTRY_DSN`          | Default DSN if specific ones not set           | (disabled)   |
+| `SENTRY_ENVIRONMENT`  | Override environment name sent to Sentry       | `Rails.env`  |
+
+Compatible with [Sentry.io](https://sentry.io), [GlitchTip](https://glitchtip.com), or any Sentry-compatible service.
+
+**Versioning (automatically set by Docker build):**
+
+| Variable      | Description           | Default |
+| ------------- | --------------------- | ------- |
+| `APP_VERSION` | Application version   | `dev`   |
+| `GIT_COMMIT`  | Git commit hash       | -       |
+
 **Docker Compose convenience variables** (used to construct `DATABASE_URL`):
 
 | Variable      | Description              | Default       |

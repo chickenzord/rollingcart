@@ -7,6 +7,7 @@ import { useMutation, useQueryClient, UseMutationResult } from '@tanstack/react-
 import * as authService from '@/services/authService'
 import type { User } from '@/services/authService'
 import { USER_QUERY_KEY } from '@/hooks/useUserQuery'
+import { setSentryUser } from '@/lib/sentry'
 
 interface LoginVariables {
   email: string
@@ -28,10 +29,14 @@ export function useLoginMutation(): UseMutationResult<User, Error, LoginVariable
       // Immediately populate user cache with fetched data
       // No need to refetch - we already have the user data from login
       queryClient.setQueryData(USER_QUERY_KEY, userData)
+
+      // Set user context for Sentry error tracking
+      setSentryUser(userData)
     },
     onError: () => {
       // Clear any stale user data from cache on login failure
       queryClient.removeQueries({ queryKey: USER_QUERY_KEY })
+      setSentryUser(null)
     },
   })
 }
@@ -52,6 +57,9 @@ export function useLogoutMutation(): UseMutationResult<void, Error, void> {
       // This ensures local state is cleared regardless of server response
       queryClient.removeQueries({ queryKey: USER_QUERY_KEY })
       queryClient.clear() // Clear all queries (catalog, shopping, etc.)
+
+      // Clear user context from Sentry
+      setSentryUser(null)
     },
   })
 }
