@@ -1,6 +1,8 @@
 name: Docker
 
 on:
+  release:
+    types: [published]
   push:
     branches:
       - main
@@ -29,7 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Fetch all history for git describe
+          fetch-depth: 0 # Fetch all history for git describe
 
       - name: Extract version metadata
         id: version
