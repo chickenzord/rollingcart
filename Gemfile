@@ -4,6 +4,7 @@ gem "rails", "~> 8.1.1"
 gem "sqlite3", ">= 2.1"
 gem "pg", "~> 1.6"
 gem "puma", ">= 5.0"
+gem "openssl", "~> 3.3"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -54,3 +55,7 @@ end
 
 gem "rack-cors", "~> 3.0"
 gem "vite_rails", "~> 3.0"
+
+# Error tracking with Sentry
+gem "sentry-ruby", "~> 6.2"
+gem "sentry-rails", "~> 6.2"
