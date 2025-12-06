@@ -28,6 +28,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Fetch all history for git describe
+
+      - name: Extract version metadata
+        id: version
+        run: |
+          # Get git commit hash
+          GIT_COMMIT=$(git rev-parse --short HEAD)
+          echo "git_commit=${GIT_COMMIT}" >> $GITHUB_OUTPUT
+
+          # Determine version
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Tagged release (e.g., v1.0.0)
+            APP_VERSION=${GITHUB_REF#refs/tags/}
+          elif git describe --tags 2>/dev/null; then
+            # Development build with tag reference
+            APP_VERSION=$(git describe --tags)
+          else
+            # No tags, use branch and commit
+            APP_VERSION="dev-${GIT_COMMIT}"
+          fi
+          echo "app_version=${APP_VERSION}" >> $GITHUB_OUTPUT
+
+          echo "Version: ${APP_VERSION}"
+          echo "Commit: ${GIT_COMMIT}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -53,6 +78,9 @@ jobs:
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.version.outputs.app_version }}
+            GIT_COMMIT=${{ steps.version.outputs.git_commit }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cache-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }},mode=max
 

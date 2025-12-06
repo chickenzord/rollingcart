@@ -20,6 +20,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- Sentry Configuration (runtime injection) -->
+    <meta name="sentry-dsn" content="<%= ENV['SENTRY_DSN_UI'] || ENV['SENTRY_DSN'] %>">
+    <meta name="sentry-environment" content="<%= ENV.fetch('SENTRY_ENVIRONMENT', Rails.env) %>">
+    <meta name="app-version" content="<%= ENV.fetch('APP_VERSION', "dev-#{ENV['GIT_COMMIT']}") %>">
+
     <%= vite_client_tag %>
     <%= vite_react_refresh_tag %>
     <%= vite_javascript_tag 'application.jsx' %>

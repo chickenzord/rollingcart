@@ -9,6 +9,11 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.4
+
+# Build arguments for versioning
+ARG APP_VERSION=unknown
+ARG GIT_COMMIT=unknown
+
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -68,6 +73,20 @@ RUN SECRET_KEY_BASE_DUMMY=1 bin/vite build
 
 # Final stage for app image
 FROM base
+
+# Pass build args to final stage
+ARG APP_VERSION=unknown
+ARG GIT_COMMIT=unknown
+
+# Set as environment variables (available at runtime)
+ENV APP_VERSION=${APP_VERSION} \
+    GIT_COMMIT=${GIT_COMMIT}
+
+# Add labels for image metadata
+LABEL org.opencontainers.image.version="${APP_VERSION}" \
+      org.opencontainers.image.revision="${GIT_COMMIT}" \
+      org.opencontainers.image.title="RollingCart" \
+      org.opencontainers.image.description="Shopping list app for recurring grocery runs"
 
 # Create rails user and group
 RUN groupadd --system --gid 1000 rails && \
