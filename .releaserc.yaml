@@ -7,5 +7,37 @@ plugins:
   - "@semantic-release/commit-analyzer"
   - - "@semantic-release/release-notes-generator"
     - preset: conventionalcommits
+      writerOpts:
+        commitsSort:
+          - subject
+          - scope
+        transform: |
+          (commit, context) => {
+            // Skip merge commits
+            if (commit.merge || /^Merge (pull request|branch)/i.test(commit.subject)) {
+              return false;
+            }
+            return commit;
+          }
   - - "@semantic-release/github"
     - preset: conventionalcommits
+      addReleases: bottom
+      successComment: false
+      failComment: false
+      releasedLabels: false
+      releaseBodyTemplate: |
+        {{#if notes}}
+        {{notes}}
+
+        {{/if}}
+        ## Docker Image
+
+        ```bash
+        docker pull ghcr.io/chickenzord/rollingcart:{{version}}
+        ```
+
+        Or use the `latest` tag for the most recent release:
+
+        ```bash
+        docker pull ghcr.io/chickenzord/rollingcart:latest
+        ```
