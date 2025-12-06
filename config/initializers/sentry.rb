@@ -45,7 +45,7 @@ if sentry_dsn
       "ActionController::RoutingError",
       "ActiveRecord::RecordNotFound",
       "ActionController::InvalidAuthenticityToken",
-      "Rodauth::InvalidAuthenticityTokenError",
+      "Rodauth::InvalidAuthenticityTokenError"
     ]
 
     # Configure which request data to send
