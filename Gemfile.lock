@@ -86,7 +86,7 @@ GEM
       racc
     builder (3.3.0)
     concurrent-ruby (1.3.5)
-    connection_pool (3.0.1)
+    connection_pool (3.0.2)
     crass (1.0.6)
     date (3.5.0)
     debug (1.11.0)
@@ -172,6 +172,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
+    openssl (3.3.2)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.0)
@@ -288,6 +289,12 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    sentry-rails (6.2.0)
+      railties (>= 5.2.0)
+      sentry-ruby (~> 6.2.0)
+    sentry-ruby (6.2.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sequel (5.99.0)
       bigdecimal
     sequel-activerecord_connection (2.0.1)
@@ -372,12 +379,15 @@ DEPENDENCIES
   debug
   jwt (~> 3.1)
   kamal
+  openssl (~> 3.3)
   pg (~> 1.6)
   puma (>= 5.0)
   rack-cors (~> 3.0)
   rails (~> 8.1.1)
   rodauth-rails (~> 2.1)
   rubocop-rails-omakase
+  sentry-rails (~> 6.2)
+  sentry-ruby (~> 6.2)
   sequel-activerecord_connection (~> 2.0)
   solid_cable
   solid_cache
