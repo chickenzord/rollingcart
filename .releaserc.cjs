@@ -23,6 +23,10 @@ module.exports = {
             if (commit.merge || /^Merge (pull request|branch)/i.test(commit.subject)) {
               return false;
             }
+            // Shorten commit hash to 7 characters
+            if (commit.hash) {
+              commit.hash = commit.hash.substring(0, 7);
+            }
             return commit;
           },
           /**
