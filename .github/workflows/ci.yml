@@ -12,7 +12,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v6
-      - uses: webiny/action-conventional-commits@v1.3.0
+      - uses: webiny/action-conventional-commits@v1.3.1
 
   scan_ruby:
     runs-on: ubuntu-latest
